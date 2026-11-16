@@ -1,0 +1,3810 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>INTERCOP Digital — Prototipo Onboarding Refactorizado</title>
+    <style>
+      :root {
+        --navy: #002d59;
+        --navy-dark: #001b36;
+        --navy-surface: #0a3d73;
+        --capri: #00aeea;
+        --capri-light: #e0f4fc;
+        --capri-soft: #f0f9fd;
+        --magenta: #e94591;
+        --yellow: #ffc700;
+        --white: #ffffff;
+        --bg: #f4f9fd;
+        --border: #bce2f7;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --success-light: #ecfdf5;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --danger-light: #fef2f2;
+        --shadow-sm: 0 2px 8px rgba(0, 45, 89, 0.06);
+        --shadow-md: 0 8px 24px rgba(0, 45, 89, 0.12);
+        --shadow-lg: 0 16px 40px rgba(0, 45, 89, 0.25);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-shell {
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 0;
+        box-shadow: var(--shadow-md);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @media (min-width: 480px) {
+        .app-shell {
+          min-height: 840px;
+          max-height: 840px;
+          border-radius: 40px;
+          border: 8px solid var(--navy);
+          margin: 20px;
+        }
+      }
+
+      .app-header {
+        padding: 12px 18px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fff;
+        position: relative;
+        z-index: 20;
+      }
+
+      .app-mini-logo {
+        font-size: 0.95rem;
+        font-weight: 900;
+        color: var(--navy);
+      }
+
+      .app-mini-logo span {
+        color: var(--capri);
+      }
+
+      .step-badge {
+        background: var(--capri-light);
+        color: var(--navy);
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 12px;
+        min-width: 44px;
+        text-align: center;
+      }
+
+      .progress-wrapper {
+        position: relative;
+        background: #ffffff;
+        z-index: 19;
+      }
+
+      .progress-track {
+        height: 7px;
+        background: #e2e8f0;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-indicator {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          #ffc700 0%,
+          #00aeea 50%,
+          #002d59 100%
+        );
+        width: 0%;
+        transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        border-radius: 0 4px 4px 0;
+        position: relative;
+        box-shadow: 0 0 10px rgba(0, 174, 234, 0.4);
+      }
+
+      .progress-indicator::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.45) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        animation: progressShimmer 2.2s infinite;
+      }
+
+      @keyframes progressShimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .progress-watermark {
+        position: absolute;
+        right: 12px;
+        top: 9px;
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--navy);
+        opacity: 0.35;
+        pointer-events: none;
+        letter-spacing: 0.2px;
+        z-index: 15;
+      }
+
+      /* Z-INDEX 250 PARA MOSTRAR TOASTS INCLUSO SOBRE EL OVERLAY DE SELFIE */
+      .step-toast-container {
+        position: absolute;
+        top: 56px;
+        right: 14px;
+        left: 14px;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 250;
+      }
+
+      .step-toast {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: #ffffff;
+        color: #0047ab;
+        padding: 7px 14px 7px 9px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        border: 1.5px solid #7ba7e1;
+        transform: translateY(-16px) scale(0.95);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          opacity 0.28s ease,
+          border-color 0.25s ease;
+        min-width: 245px;
+        max-width: 94%;
+      }
+
+      .step-toast.show {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .step-toast-left {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        overflow: hidden;
+      }
+
+      .step-toast-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .step-toast-close {
+        background: transparent;
+        border: none;
+        color: #9e9e9e;
+        font-size: 1.15rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 2px;
+        margin-left: 6px;
+        font-weight: 400;
+        flex-shrink: 0;
+        transition: color 0.2s ease;
+      }
+
+      .step-toast-close:hover {
+        color: #475569;
+      }
+
+      .app-body {
+        flex: 1;
+        padding: 20px 18px 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        background: #fafcff;
+        position: relative;
+      }
+
+      .step-title {
+        font-size: 1.22rem;
+        font-weight: 900;
+        color: var(--navy);
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+
+      .step-subtitle {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        line-height: 1.35;
+      }
+
+      .form-group {
+        margin-bottom: 9px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 4px;
+        text-transform: none;
+      }
+
+      .form-input {
+        width: 100%;
+        min-height: 42px;
+        padding: 8px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.86rem;
+        color: var(--navy);
+        background: #ffffff;
+        outline: none;
+        transition: 0.2s;
+      }
+
+      .form-input:focus {
+        border-color: var(--capri);
+        box-shadow: 0 0 0 3px rgba(0, 174, 234, 0.15);
+      }
+
+      .form-input[readonly] {
+        background-color: #f1f5f9;
+        color: #334155;
+      }
+
+      select.form-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23002D59' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 16px;
+      }
+
+      .btn-action-primary {
+        min-height: 46px;
+        background: var(--navy);
+        color: var(--white);
+        border: none;
+        border-radius: 14px;
+        font-size: 0.88rem;
+        font-weight: 800;
+        width: 100%;
+        cursor: pointer;
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.25s ease;
+        box-shadow: 0 4px 12px rgba(0, 45, 89, 0.2);
+        text-decoration: none;
+      }
+
+      .btn-action-primary:active {
+        transform: scale(0.98);
+      }
+
+      .btn-action-capri {
+        min-height: 46px;
+        background: var(--capri);
+        color: var(--white);
+        border: none;
+        border-radius: 14px;
+        font-size: 0.88rem;
+        font-weight: 800;
+        width: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 174, 234, 0.28);
+        text-decoration: none;
+      }
+
+      .btn-action-capri:active {
+        transform: scale(0.98);
+      }
+
+      .btn-action-yellow {
+        min-height: 44px;
+        background: var(--yellow);
+        color: var(--navy);
+        border: none;
+        border-radius: 14px;
+        font-size: 0.86rem;
+        font-weight: 900;
+        width: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(255, 199, 0, 0.3);
+        text-decoration: none;
+      }
+
+      .btn-action-outline {
+        min-height: 40px;
+        background: transparent;
+        color: var(--navy);
+        border: 1.5px solid var(--navy);
+        border-radius: 12px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        width: 100%;
+        cursor: pointer;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+      }
+
+      .info-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .kv-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed #e2e8f0;
+        font-size: 0.8rem;
+      }
+
+      .kv-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .kv-key {
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+
+      .kv-val {
+        color: var(--navy);
+        font-weight: 800;
+        text-align: right;
+      }
+
+      /* BOTONES HORIZONTALES DE TOKEN MÁS PEQUEÑOS, ATRACTIVOS Y DINÁMICOS */
+      .token-channel-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .token-channel-btn {
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1.5px solid #bae6fd;
+        background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+        color: var(--navy);
+        font-size: 0.65rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        box-shadow: 0 2px 5px rgba(0, 45, 89, 0.06);
+        white-space: nowrap;
+      }
+
+      .token-channel-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--capri);
+        box-shadow: 0 4px 10px rgba(0, 174, 234, 0.18);
+      }
+
+      .token-channel-btn:active {
+        transform: scale(0.94);
+      }
+
+      .token-channel-btn.active {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--capri) 100%);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-1px) scale(1.03);
+        box-shadow: 0 4px 12px rgba(0, 174, 234, 0.35);
+      }
+
+      .token-channel-btn .token-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        transition: all 0.25s ease;
+      }
+
+      .token-channel-btn.active .token-dot {
+        background: var(--yellow);
+        box-shadow: 0 0 6px var(--yellow);
+      }
+
+      .dpi-scanner-box {
+        background: #071324;
+        border-radius: 20px;
+        padding: 16px 14px;
+        text-align: center;
+        margin: 8px 0 14px;
+        position: relative;
+        color: #ffffff;
+        overflow: hidden;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .dpi-viewfinder-frame {
+        width: 100%;
+        max-width: 320px;
+        height: 195px;
+        margin: 0 auto;
+        border-radius: 14px;
+        border: 2.5px solid rgba(0, 174, 234, 0.45);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at center, #0f2542 0%, #040b16 100%);
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .dpi-viewfinder-frame.scanning {
+        border-color: var(--capri);
+        box-shadow: 0 0 15px rgba(0, 174, 234, 0.35);
+      }
+
+      .dpi-viewfinder-frame.success {
+        border-color: var(--success);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+      }
+
+      .camera-video-feed {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        display: none;
+      }
+
+      .camera-capture-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 2;
+        display: none;
+      }
+
+      .camera-clean-reticle {
+        position: relative;
+        z-index: 3;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: rgba(224, 244, 252, 0.65);
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+
+      .camera-clean-crosshair {
+        width: 36px;
+        height: 36px;
+        border: 1.5px dashed rgba(0, 174, 234, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .camera-clean-crosshair::after {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--capri);
+      }
+
+      .camera-flash-overlay {
+        position: absolute;
+        inset: 0;
+        background: #ffffff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 8;
+        transition: opacity 0.2s ease;
+      }
+
+      .camera-flash-overlay.flash {
+        opacity: 0.9;
+      }
+
+      .scanner-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background: var(--success);
+        box-shadow: 0 0 12px var(--success);
+        top: 10%;
+        display: none;
+        z-index: 6;
+        animation: scanAnim 1.8s infinite ease-in-out;
+      }
+
+      @keyframes scanAnim {
+        0% {
+          top: 10%;
+        }
+        50% {
+          top: 90%;
+        }
+        100% {
+          top: 10%;
+        }
+      }
+
+      .dpi-corner {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        border-color: var(--yellow);
+        border-style: solid;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .dpi-corner.top-left {
+        top: 8px;
+        left: 8px;
+        border-width: 4px 0 0 4px;
+        border-top-left-radius: 10px;
+      }
+      .dpi-corner.top-right {
+        top: 8px;
+        right: 8px;
+        border-width: 4px 4px 0 0;
+        border-top-right-radius: 10px;
+      }
+      .dpi-corner.bottom-left {
+        bottom: 8px;
+        left: 8px;
+        border-width: 0 0 4px 4px;
+        border-bottom-left-radius: 10px;
+      }
+      .dpi-corner.bottom-right {
+        bottom: 8px;
+        right: 8px;
+        border-width: 0 4px 4px 0;
+        border-bottom-right-radius: 10px;
+      }
+
+      .facephi-stage {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        border-radius: 20px;
+        padding: 16px 14px;
+        text-align: center;
+        margin: 6px 0 12px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .oval-radar {
+        width: 150px;
+        height: 182px;
+        border: 4px solid var(--capri);
+        border-radius: 50% / 60% 60% 40% 40%;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 174, 234, 0.2);
+        background: #071324;
+      }
+
+      .scanner-beam {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--capri);
+        box-shadow: 0 0 12px var(--capri);
+        top: 10%;
+        z-index: 6;
+        animation: scanAnim 1.8s infinite ease-in-out;
+      }
+
+      .selfie-blur-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 27, 54, 0.72);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        z-index: 150;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        animation: fadeSelfieIn 0.3s ease;
+      }
+
+      .selfie-blur-overlay.active {
+        display: flex;
+      }
+
+      @keyframes fadeSelfieIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .selfie-spotlight-circle {
+        width: 225px;
+        height: 225px;
+        border-radius: 50%;
+        border: 5px solid var(--capri);
+        box-shadow:
+          0 0 0 8px rgba(0, 174, 234, 0.2),
+          0 16px 40px rgba(0, 0, 0, 0.6);
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at center, #0f2542 0%, #040b16 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        transition:
+          border-color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .selfie-spotlight-circle.scanning {
+        border-color: var(--yellow);
+        box-shadow:
+          0 0 0 10px rgba(255, 199, 0, 0.25),
+          0 0 30px rgba(0, 174, 234, 0.6);
+      }
+
+      .selfie-spotlight-circle.success {
+        border-color: var(--success);
+        box-shadow:
+          0 0 0 10px rgba(16, 185, 129, 0.3),
+          0 0 35px rgba(16, 185, 129, 0.65);
+      }
+
+      .selfie-capture-btn {
+        min-height: 48px;
+        padding: 10px 26px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--capri), #0088b8);
+        color: var(--white);
+        font-size: 0.92rem;
+        font-weight: 900;
+        border: 3px solid var(--white);
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(0, 174, 234, 0.45);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .selfie-capture-btn:active {
+        transform: scale(0.96);
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--success);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+
+      .chip-option {
+        padding: 8px 14px;
+        background: #ffffff;
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--navy);
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+        display: inline-block;
+        margin: 0 6px 8px 0;
+      }
+
+      .chip-option.selected {
+        background: var(--capri-soft);
+        border-color: var(--capri);
+        color: var(--navy);
+        box-shadow: 0 2px 8px rgba(0, 174, 234, 0.2);
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 45, 89, 0.85);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 300;
+        padding: 20px;
+      }
+
+      .modal-box {
+        background: #ffffff;
+        border-radius: 24px;
+        max-width: 380px;
+        width: 100%;
+        padding: 24px;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+        animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .admin-report-overlay {
+        position: fixed;
+        inset: 0;
+        background: #f1f5f9;
+        z-index: 9500;
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 58px 20px 40px;
+      }
+
+      .admin-report-overlay.active {
+        display: flex;
+      }
+
+      .admin-container {
+        max-width: 980px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .admin-header-banner {
+        background: linear-gradient(
+          135deg,
+          var(--navy) 0%,
+          var(--navy-surface) 100%
+        );
+        color: #fff;
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-md);
+      }
+
+      .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .admin-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .admin-card-title {
+        font-size: 0.88rem;
+        font-weight: 900;
+        color: var(--navy);
+        border-bottom: 2px solid var(--capri-light);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .admin-photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .admin-photo-box {
+        background: #071324;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 2px solid var(--border);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .admin-photo-preview {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #040b16;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 0.8rem;
+      }
+
+      body.user-only-mode #admin-top-bar,
+      body.user-only-mode .admin-only-control {
+        display: none !important;
+      }
+      body.user-only-mode .app-shell {
+        margin-top: 20px !important;
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- BARRA SUPERIOR DE HERRAMIENTAS DEL PROTOTIPO (SIMULADOR ADMIN) -->
+    <!-- <div id="admin-top-bar" style="position:fixed; top:0; left:0; width:100%; background:var(--navy); padding:8px 16px; display:flex; justify-content:space-between; align-items:center; z-index:9999; box-shadow:0 2px 10px rgba(0,0,0,0.3); flex-wrap:wrap; gap:6px;">
+        <div style="color:#FFF; font-weight:900; font-size:0.8rem; display:flex; align-items:center; gap:8px;">
+            <span>INTERCOP DIGITAL</span>
+            <span style="background:rgba(0,174,234,0.2); color:var(--capri); padding:2px 6px; border-radius:4px; border:1px solid var(--capri); font-size:0.6rem;">ADMIN / ONBOARDING</span>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button id="btn-kit-toggle" style="background: #10B981; color: #FFF; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.7rem; font-weight: 800; cursor: pointer;" onclick="toggleWelcomeKitView(false)">📄 Kit de bienvenida</button>
+            <button id="btn-admin-toggle" style="background: var(--capri); color: #FFF; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.7rem; font-weight: 800; cursor: pointer;" onclick="toggleAdminReportView()">📊 Vista Admin (informes)</button>
+            <button id="btn-editor-toggle" style="background: rgba(255, 255, 255, 0.15); color: rgb(255, 255, 255); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer;" onclick="toggleLiveEditor()">✏️ Modo editor</button>
+            <button style="background:var(--yellow); color:var(--navy); border:none; border-radius:6px; padding:4px 8px; font-size:0.7rem; font-weight:800; cursor:pointer;" onclick="downloadSimulatorVariant(false)">💾 Descargar simulador Admin</button>
+            <button style="background:#38BDF8; color:var(--navy); border:none; border-radius:6px; padding:4px 8px; font-size:0.7rem; font-weight:900; cursor:pointer;" onclick="downloadSimulatorVariant(true)">📱 Descargar simulador Usuario</button>
+        </div>
+    </div> -->
+
+    <!-- CONTENEDOR PRINCIPAL DEL DISPOSITIVO -->
+    <div class="app-shell" id="main-app-shell" style="margin-top: 44px">
+      <div class="app-header">
+        <span
+          id="app-back-arrow"
+          style="
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--navy);
+          "
+          onclick="appGoBack()"
+          >←</span
+        >
+        <div class="app-mini-logo">INTERCOP <span>DIGITAL</span></div>
+        <div class="step-badge" id="app-step-tag" style="display: none"></div>
+      </div>
+
+      <!-- BARRA DE PROGRESO + MARCA DE AGUA -->
+      <div class="progress-wrapper">
+        <div class="progress-track">
+          <div
+            class="progress-indicator"
+            id="progress-indicator"
+            style="width: 0%"
+          ></div>
+        </div>
+        <span
+          class="progress-watermark"
+          id="progress-watermark"
+          style="display: none"
+        ></span>
+      </div>
+
+      <!-- TOAST FLOTANTE DE MENSAJES PROGRESIVOS -->
+      <div class="step-toast-container">
+        <div id="step-toast" class="step-toast">
+          <div class="step-toast-left">
+            <span class="step-toast-icon" id="step-toast-icon"></span>
+            <span id="progress-text"></span>
+          </div>
+          <button
+            type="button"
+            class="step-toast-close"
+            onclick="hideStepToast()"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+
+      <!-- INPUTS NATIVOS OCULTOS PARA CÁMARA EN ANDROID/iOS -->
+      <input
+        type="file"
+        id="android-cam-env"
+        accept="image/*"
+        capture="environment"
+        style="display: none"
+        onchange="handleAndroidNativeCameraFile(this, false)"
+      />
+      <input
+        type="file"
+        id="android-cam-user"
+        accept="image/*"
+        capture="user"
+        style="display: none"
+        onchange="handleAndroidNativeCameraFile(this, true)"
+      />
+
+      <!-- VISTA DINÁMICA DE PASOS -->
+      <div class="app-body" id="app-dynamic-view"></div>
+
+      <!-- OVERLAY DIFUMINADO DE SELFIE CON CÍRCULO RESALTADO (PASO 6 — ANTES PASO 8) -->
+      <div class="selfie-blur-overlay" id="selfie-blur-overlay">
+        <div
+          style="
+            color: var(--yellow);
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+          "
+        >
+          Reconocimiento biométrico
+        </div>
+        <div
+          style="
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 900;
+            margin-bottom: 14px;
+          "
+          id="selfie-overlay-title"
+        >
+          Ubica tu rostro en el círculo
+        </div>
+
+        <div class="selfie-spotlight-circle" id="selfie-spotlight-circle">
+          <video
+            id="selfie-live-video"
+            class="camera-video-feed"
+            style="transform: scaleX(-1)"
+            autoplay
+            playsinline
+            webkit-playsinline
+            muted
+          ></video>
+          <canvas
+            id="selfie-live-canvas"
+            class="camera-capture-canvas"
+          ></canvas>
+          <div id="selfie-live-flash" class="camera-flash-overlay"></div>
+          <div
+            class="scanner-beam"
+            style="display: none"
+            id="selfie-live-beam"
+          ></div>
+          <div id="selfie-clean-reticle" class="camera-clean-reticle">
+            <div class="camera-clean-crosshair"></div>
+            <span>Lente frontal activo</span>
+          </div>
+        </div>
+
+        <div
+          id="selfie-overlay-status"
+          style="
+            color: var(--capri-light);
+            font-size: 0.82rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            min-height: 20px;
+          "
+        >
+          Cámara frontal activa • Mira de frente
+        </div>
+
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+          "
+        >
+          <button
+            class="selfie-capture-btn"
+            id="btn-trigger-selfie-capture"
+            onclick="ejecutarCapturaSelfieCircular()"
+          >
+            📸 Capturar
+          </button>
+          <div
+            style="
+              display: flex;
+              gap: 6px;
+              flex-wrap: wrap;
+              justify-content: center;
+              margin-top: 4px;
+            "
+          >
+            <button
+              type="button"
+              style="
+                background: rgba(245, 158, 11, 0.22);
+                color: #fde68a;
+                border: 1px solid #f59e0b;
+                border-radius: 999px;
+                padding: 5px 10px;
+                font-size: 0.66rem;
+                font-weight: 800;
+                cursor: pointer;
+              "
+              onclick="mostrarToastAmbienteSelfie('ILUMINACION')"
+            >
+              💡 No hay suficiente iluminación
+            </button>
+            <button
+              type="button"
+              style="
+                background: rgba(239, 68, 68, 0.22);
+                color: #fecaca;
+                border: 1px solid #ef4444;
+                border-radius: 999px;
+                padding: 5px 10px;
+                font-size: 0.66rem;
+                font-weight: 800;
+                cursor: pointer;
+              "
+              onclick="mostrarToastAmbienteSelfie('DISTORSION')"
+            >
+              🖼️ Hay mucha distorsión en el fondo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA DE ADMINISTRADOR — INFORME DEL ONBOARDING -->
+    <div class="admin-report-overlay" id="admin-report-overlay">
+      <div class="admin-container" id="admin-report-content"></div>
+    </div>
+
+    <!-- VISTA DEL KIT DE BIENVENIDA OFICIAL -->
+    <div class="admin-report-overlay" id="welcome-kit-overlay">
+      <div class="admin-container" id="welcome-kit-content"></div>
+    </div>
+
+    <!-- MODAL MULTIUSO -->
+    <div class="modal-backdrop" id="modal-screen">
+      <div class="modal-box">
+        <div style="font-size: 2.6rem; margin-bottom: 10px" id="modal-icon">
+          ✏️
+        </div>
+        <div
+          style="
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--navy);
+            margin-bottom: 8px;
+            line-height: 1.2;
+          "
+          id="modal-title"
+        >
+          Modo editor activado
+        </div>
+        <div
+          style="
+            font-size: 0.84rem;
+            line-height: 1.5;
+            color: var(--text-dark);
+            margin-bottom: 18px;
+          "
+          id="modal-desc"
+        ></div>
+        <div
+          id="modal-actions"
+          style="display: flex; flex-direction: column; gap: 10px"
+        >
+          <button class="btn-action-primary" onclick="closeModal()">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let isEditorActive = false;
+      let isAdminViewOpen = false;
+      let isWelcomeKitOpen = false;
+      let currentStep = 1;
+      let activeCameraStream = null;
+      let isCameraLiveActive = false;
+      let toastTimeoutId = null;
+
+      const session = {
+        fechaHoraRegistro: new Date().toLocaleString("es-GT"),
+        numeroAsociado: "44-000001",
+        cuentaAportacion: "44-000001-01",
+        cuentaCorriente: "44-002710-05",
+        resideExtranjero: false,
+        telefono: "",
+        correo: "",
+        paisResidencia: "Guatemala",
+        deptoResidencia: "",
+        muniResidencia: "",
+        direccion: "",
+        canalToken: "",
+        otpCode: "",
+        usaPin6Digitos: false,
+        pin6Digitos: "",
+        pin6Confirm: "",
+        propositoIntercop: "",
+        apodoPreferido: "",
+        ingresosMensuales: "",
+        egresosMensuales: "",
+        agenciaAsignada: "",
+        codigoRegistro: "",
+        beneficiarioNombre: "",
+        beneficiarioParentesco: "",
+        contratoAceptado: false,
+        tieneHijosMenores: "",
+        sugerenciasApp: "",
+        datosPersonales: {
+          nombre: "VICTOR MANUEL CHIROY GUARCAX",
+          cui: "3108 19849 0701",
+          nacionalidad: "Guatemalteca",
+          sexo: "Masculino",
+          fNac: "13/03/1998",
+          estadoCivil: "Soltero",
+          profesion: "Lic. en Administración de Empresas",
+          emision: "15/05/2021",
+          vencimiento: "15/05/2031",
+          serie: "A001928374",
+          vecindad: "Sololá, Sololá",
+        },
+        aplicaAsignacion: false,
+        mostrarCuentas: false,
+        fotos: {
+          dpiFrente: null,
+          dpiReverso: null,
+          selfie: null,
+        },
+        preferencias: {
+          gustos: [],
+          productos: [],
+          telefonia: [],
+          inversiones: [],
+          creditos: [],
+          ahorros: [],
+          hijosMenores: [],
+        },
+      };
+
+      let fuentesIngresosList = [{ id: 1, dedicacion: "", descripcion: "" }];
+
+      function obtenerPrimerNombreCapitalizado() {
+        const full = (session.datosPersonales.nombre || "Victor").trim();
+        const first = full.split(/\s+/)[0] || "Victor";
+        return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+      }
+
+      // MAPEO DE NUMERACIÓN DE PASOS (PANTALLA INICIAL SIN NÚMERO, PASO 2 ACTUAL = PASO 1)
+      function getDisplayStepNumber(internalStep) {
+        const stepMap = {
+          1: null, // Sin número en la pantalla de bienvenida/login
+          2: 1, // Paso 1: Tus contactos y dirección
+          4: 2, // Paso 2: Escanea tu DPI (frente)
+          5: 3, // Paso 3: Escanea tu DPI (reverso)
+          6: 4, // Paso 4: Confirma tus datos (1/2)
+          7: 5, // Paso 5: Confirma tus datos (2/2)
+          8: 6, // Paso 6: Prueba de vida
+          9: 7, // Paso 7: Asegura tu acceso
+          10: 8, // Paso 8: Dinos a qué te dedicas y cómo manejas tu dinero
+          11: 9, // Paso 9: Información complementaria
+          12: 10, // Paso 10: Contrato de Términos y Condiciones
+          13: 11, // Paso 11: ¡Victor, Bienvenido a INTERCOP!
+          15: 12, // Paso 12: Ya eres oficialmente asociado de INTERCOP
+          14: 13, // Paso 13: Queremos conocerte para darte una mejor experiencia
+        };
+        return stepMap[internalStep] || null;
+      }
+
+      // GESTIÓN DE CÁMARA
+      function stopActiveCamera() {
+        isCameraLiveActive = false;
+        if (activeCameraStream) {
+          activeCameraStream.getTracks().forEach((track) => track.stop());
+          activeCameraStream = null;
+        }
+      }
+
+      async function startStepCamera(videoId, facingModeType) {
+        stopActiveCamera();
+        const videoEl = document.getElementById(videoId);
+        if (!videoEl) return false;
+
+        videoEl.muted = true;
+        videoEl.defaultMuted = true;
+        videoEl.setAttribute("playsinline", "true");
+        videoEl.setAttribute("webkit-playsinline", "true");
+        videoEl.setAttribute("autoplay", "true");
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          return false;
+        }
+
+        const constraintAttempts = [
+          {
+            video: {
+              facingMode: { exact: facingModeType },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          },
+          {
+            video: {
+              facingMode: { ideal: facingModeType },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          },
+          { video: { facingMode: facingModeType }, audio: false },
+          { video: true, audio: false },
+        ];
+
+        for (const constraints of constraintAttempts) {
+          try {
+            const stream =
+              await navigator.mediaDevices.getUserMedia(constraints);
+            activeCameraStream = stream;
+            videoEl.srcObject = stream;
+            videoEl.style.display = "block";
+
+            await new Promise((resolve) => {
+              let resolved = false;
+              const finish = () => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve();
+                }
+              };
+              videoEl.onloadedmetadata = () => {
+                videoEl.play().then(finish).catch(finish);
+              };
+              setTimeout(finish, 900);
+            });
+
+            await videoEl.play().catch(() => {});
+            isCameraLiveActive = true;
+            return true;
+          } catch (err) {}
+        }
+        return false;
+      }
+
+      function handleAndroidNativeCameraFile(inputEl, isFrontSelfie) {
+        if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
+        const file = inputEl.files[0];
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          const dataUrl = evt.target.result;
+          if (isFrontSelfie || currentStep === 8) {
+            procesarSelfieDesdeDataUrl(dataUrl);
+          } else if (currentStep === 4) {
+            procesarDpiDesdeDataUrl(true, dataUrl);
+          } else if (currentStep === 5) {
+            procesarDpiDesdeDataUrl(false, dataUrl);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function captureFrameToCanvas(
+        videoId,
+        canvasId,
+        mirrorHorizontal = false,
+      ) {
+        const videoEl = document.getElementById(videoId);
+        const canvasEl = document.getElementById(canvasId);
+        if (
+          !videoEl ||
+          !canvasEl ||
+          !videoEl.srcObject ||
+          videoEl.readyState < 2
+        ) {
+          return false;
+        }
+        const w = videoEl.videoWidth || 480;
+        const h = videoEl.videoHeight || 320;
+        canvasEl.width = w;
+        canvasEl.height = h;
+        const ctx = canvasEl.getContext("2d");
+        ctx.save();
+        if (mirrorHorizontal) {
+          ctx.translate(w, 0);
+          ctx.scale(-1, 1);
+        }
+        ctx.drawImage(videoEl, 0, 0, w, h);
+        ctx.restore();
+        canvasEl.style.display = "block";
+        return true;
+      }
+
+      function createCleanCapturedDpiDataUrl(tipoLado) {
+        const c = document.createElement("canvas");
+        c.width = 480;
+        c.height = 300;
+        const ctx = c.getContext("2d");
+
+        const bg = ctx.createLinearGradient(0, 0, 480, 300);
+        bg.addColorStop(0, "#07162C");
+        bg.addColorStop(1, "#0D2B52");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, 480, 300);
+
+        ctx.strokeStyle = "#00AEEA";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(24, 24, 432, 252);
+
+        ctx.fillStyle = "#10B981";
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("✓ CAPTURA ÓPTICA VERIFICADA — " + tipoLado, 45, 65);
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 18px sans-serif";
+        ctx.fillText(
+          session.datosPersonales.nombre || "DOCUMENTO DPI CAPTURADO",
+          45,
+          115,
+        );
+
+        ctx.fillStyle = "#E0F4FC";
+        ctx.font = "14px monospace";
+        if (tipoLado === "FRENTE") {
+          ctx.fillText(
+            "CUI: " + (session.datosPersonales.cui || "LECTURA ÓPTICA FRENTE"),
+            45,
+            150,
+          );
+          ctx.fillText(
+            "NAC: " +
+              (session.datosPersonales.fNac || "--/--/----") +
+              " | SEXO: " +
+              (session.datosPersonales.sexo || "--"),
+            45,
+            178,
+          );
+          ctx.fillText(
+            "SERIE: " + (session.datosPersonales.serie || "OCR-ACTIVO"),
+            45,
+            206,
+          );
+        } else {
+          ctx.fillText(
+            "VECINDAD: " +
+              (session.datosPersonales.vecindad || "LECTURA ÓPTICA REVERSO"),
+            45,
+            150,
+          );
+          ctx.fillText(
+            "EMISIÓN: " +
+              (session.datosPersonales.emision || "--/--/----") +
+              " | VENCE: " +
+              (session.datosPersonales.vencimiento || "--/--/----"),
+            45,
+            178,
+          );
+          ctx.fillText("MRZ: IDGTM<<<<<<<<<<<<<<<<<<<<<<<", 45, 206);
+        }
+
+        ctx.fillStyle = "#FFC700";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(
+          "INTERCOP DIGITAL • SELLO OCR " +
+            new Date().toLocaleTimeString("es-GT"),
+          45,
+          248,
+        );
+
+        return c.toDataURL("image/png");
+      }
+
+      function createCleanCapturedSelfieDataUrl() {
+        const c = document.createElement("canvas");
+        c.width = 400;
+        c.height = 400;
+        const ctx = c.getContext("2d");
+
+        const grad = ctx.createRadialGradient(200, 180, 30, 200, 200, 220);
+        grad.addColorStop(0, "#0A3D73");
+        grad.addColorStop(1, "#001B36");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 400, 400);
+
+        ctx.fillStyle = "#E2E8F0";
+        ctx.beginPath();
+        ctx.arc(200, 150, 56, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#00AEEA";
+        ctx.beginPath();
+        ctx.arc(200, 330, 105, Math.PI * 1.13, Math.PI * 1.87);
+        ctx.fill();
+
+        ctx.strokeStyle = "#10B981";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 5]);
+        ctx.beginPath();
+        ctx.arc(200, 185, 130, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#10B981";
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("LIVENESS 3D: 99.8% VERIFICADO", 200, 365);
+
+        return c.toDataURL("image/png");
+      }
+
+      // MODO EDITOR Y GENERACIÓN DE LOS 2 SIMULADORES INDEPENDIENTES (ADMIN Y USUARIO)
+      function toggleLiveEditor() {
+        isEditorActive = !isEditorActive;
+        const btn = document.getElementById("btn-editor-toggle");
+        if (isEditorActive) {
+          btn.style.background = "var(--capri)";
+          btn.style.borderColor = "var(--capri)";
+          btn.innerText = "💾 Guardar textos";
+          document
+            .querySelectorAll(
+              ".step-title, .step-subtitle, .form-label, .info-card, .chip-option, b",
+            )
+            .forEach((el) => (el.contentEditable = "true"));
+          showModal(
+            "Modo editor activado",
+            "Haz clic sobre cualquier título, texto o etiqueta en pantalla para modificarla directamente con tu teclado.",
+            "✏️",
+          );
+        } else {
+          btn.style.background = "rgba(255,255,255,0.15)";
+          btn.style.borderColor = "rgba(255,255,255,0.3)";
+          btn.innerText = "✏️ Modo editor";
+          document
+            .querySelectorAll(
+              ".step-title, .step-subtitle, .form-label, .info-card, .chip-option, b",
+            )
+            .forEach((el) => (el.contentEditable = "false"));
+        }
+      }
+
+      function downloadSimulatorVariant(isUserOnly) {
+        const cloneDoc = document.documentElement.cloneNode(true);
+        const bodyClone = cloneDoc.querySelector("body");
+        if (isUserOnly) {
+          bodyClone.classList.add("user-only-mode");
+          const topBar = cloneDoc.querySelector("#admin-top-bar");
+          if (topBar) topBar.remove();
+          cloneDoc
+            .querySelectorAll(".admin-only-control")
+            .forEach((el) => el.remove());
+        } else {
+          bodyClone.classList.remove("user-only-mode");
+        }
+        const htmlContent = "<!DOCTYPE html>\n" + cloneDoc.outerHTML;
+        const blob = new Blob([htmlContent], {
+          type: "text/html;charset=utf-8",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = isUserOnly
+          ? "Simulador_Onboarding_Usuario_INTERCOP.html"
+          : "Simulador_Onboarding_Admin_INTERCOP.html";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showModal(
+          isUserOnly
+            ? "Simulador de usuario descargado"
+            : "Simulador de administrador descargado",
+          isUserOnly
+            ? "Se descargó <b>Simulador_Onboarding_Usuario_INTERCOP.html</b> con el flujo completo para el asociado y sin los botones administrativos."
+            : "Se descargó <b>Simulador_Onboarding_Admin_INTERCOP.html</b> con todos los paneles, informes y herramientas de edición.",
+          "💾",
+        );
+      }
+
+      function showModal(title, text, icon = "⚠️", actionsHtml = null) {
+        document.getElementById("modal-title").innerText = title;
+        document.getElementById("modal-desc").innerHTML = text;
+        document.getElementById("modal-icon").innerText = icon;
+        document.getElementById("modal-actions").innerHTML =
+          actionsHtml ||
+          '<button class="btn-action-primary" onclick="closeModal()">Entendido</button>';
+        document.getElementById("modal-screen").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("modal-screen").style.display = "none";
+      }
+
+      // CONFIGURACIÓN DE TOASTS
+      function getToastTypeVisuals(type) {
+        const types = {
+          success: {
+            color: "#28A745",
+            border: "#9BD6A9",
+            svg: `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="13" cy="13" r="13" fill="#28A745"/><path d="M7.5 13.5L11 17L18.5 9.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          },
+          info: {
+            color: "#0047AB",
+            border: "#7BA7E1",
+            svg: `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="13" cy="13" r="13" fill="#0047AB"/><circle cx="13" cy="8" r="1.5" fill="#FFFFFF"/><path d="M11.5 11.5H13.5V18.5H11.5V11.5Z" fill="#FFFFFF"/><path d="M10.5 18.5H15.5" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+          },
+          warning: {
+            color: "#D98218",
+            border: "#F3C78B",
+            svg: `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.27 3.8C12.04 2.47 13.96 2.47 14.73 3.8L23.56 19.1C24.33 20.43 23.37 22.1 21.83 22.1H4.17C2.63 22.1 1.67 20.43 2.44 19.1L11.27 3.8Z" fill="#F0941F"/><path d="M13 9.5V14.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/><circle cx="13" cy="18" r="1.3" fill="#FFFFFF"/></svg>`,
+          },
+          danger: {
+            color: "#E53935",
+            border: "#EFA2A0",
+            svg: `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="13" cy="13" r="13" fill="#E53935"/><path d="M13 7.5V14.2" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/><circle cx="13" cy="18.2" r="1.4" fill="#FFFFFF"/></svg>`,
+          },
+        };
+        return types[type] || types.info;
+      }
+
+      function getProgressConfig(phase) {
+        const configs = {
+          1: { hideToast: true, type: "info", msg: "" },
+          2: {
+            type: "info",
+            msg: "Excelente decisión, iniciemos con lo principal",
+          },
+          3: {
+            type: "info",
+            msg: "Excelente decisión, iniciemos con lo principal",
+          },
+          4: { type: "info", msg: "Sigue los pasos que se te pide" },
+          5: { type: "info", msg: "Sigue los pasos que se te pide" },
+          6: { type: "success", msg: "Esto será rápido" },
+          7: { type: "success", msg: "Que buen ritmo llevas" },
+          8: { type: "info", msg: "Haz la mejor toma y sonríe" },
+          9: { type: "warning", msg: "Detente un poco aquí y hazlo bien" },
+          10: {
+            type: "warning",
+            msg: "Ya estás cerca de formar parte de INTERCOP",
+          },
+          11: {
+            type: "info",
+            msg: "Deja a alguien en que confías como INTERCOP en ti",
+          },
+          12: {
+            type: "info",
+            msg: "Si no deseas leerlo ahora, te llegará por correo",
+          },
+          13: { type: "success", msg: "Perfecto, lo lograste" },
+          14: { type: "info", msg: "Personaliza tu experiencia" },
+          15: { type: "success", msg: "Bienvenido a INTERCOP" },
+        };
+        return configs[phase] || configs[1];
+      }
+
+      function hideStepToast() {
+        const toastEl = document.getElementById("step-toast");
+        if (toastTimeoutId) clearTimeout(toastTimeoutId);
+        if (toastEl) toastEl.classList.remove("show");
+      }
+
+      function showStepToast(cfg) {
+        const toastEl = document.getElementById("step-toast");
+        const textEl = document.getElementById("progress-text");
+        const iconEl = document.getElementById("step-toast-icon");
+        const watermarkEl = document.getElementById("progress-watermark");
+
+        if (toastTimeoutId) clearTimeout(toastTimeoutId);
+        if (!toastEl || !textEl || !iconEl) return;
+
+        toastEl.classList.remove("show");
+
+        if (!cfg || cfg.hideToast || !cfg.msg) {
+          if (watermarkEl) {
+            watermarkEl.innerText = "";
+            watermarkEl.style.display = "none";
+          }
+          return;
+        }
+
+        if (watermarkEl) {
+          watermarkEl.innerText = cfg.msg;
+          watermarkEl.style.display = "inline";
+        }
+
+        const visuals = getToastTypeVisuals(cfg.type);
+
+        setTimeout(() => {
+          textEl.innerText = cfg.msg;
+          textEl.style.color = visuals.color;
+          iconEl.innerHTML = visuals.svg;
+          iconEl.style.background = "transparent";
+          toastEl.style.background = "#FFFFFF";
+          toastEl.style.borderColor = visuals.border;
+          toastEl.classList.add("show");
+
+          toastTimeoutId = setTimeout(() => {
+            toastEl.classList.remove("show");
+          }, 4200);
+        }, 60);
+      }
+
+      // TOASTS DE ENTORNO EN EL PASO 6 (ILUMINACIÓN Y DISTORSIÓN EN EL FONDO)
+      function mostrarToastAmbienteSelfie(tipo) {
+        if (tipo === "ILUMINACION") {
+          showStepToast({
+            type: "warning",
+            msg: "No hay suficiente iluminación",
+          });
+        } else if (tipo === "DISTORSION") {
+          showStepToast({
+            type: "danger",
+            msg: "Hay mucha distorsión en el fondo",
+          });
+        }
+      }
+
+      function jumpToPhase(phase) {
+        stopActiveCamera();
+        const overlay = document.getElementById("selfie-blur-overlay");
+        if (overlay) overlay.classList.remove("active");
+
+        const view = document.getElementById("app-dynamic-view");
+        if (view) view.style.padding = "20px 18px 16px";
+
+        currentStep = phase;
+        const stepTag = document.getElementById("app-step-tag");
+        const displayStep = getDisplayStepNumber(phase);
+
+        if (displayStep === null) {
+          stepTag.style.display = "none";
+          stepTag.innerText = "";
+        } else {
+          stepTag.style.display = "inline-block";
+          stepTag.innerText = displayStep + "/13";
+        }
+
+        const indicator = document.getElementById("progress-indicator");
+        const cfg = getProgressConfig(phase);
+        const pct =
+          displayStep === null
+            ? 0
+            : Math.min(100, Math.round((displayStep / 13) * 100));
+
+        if (indicator) {
+          indicator.style.width = pct + "%";
+          indicator.style.background =
+            "linear-gradient(90deg, #FFC700 0%, #00AEEA 50%, #002D59 100%)";
+        }
+
+        showStepToast(cfg);
+        renderView();
+      }
+
+      function appGoBack() {
+        if (currentStep === 4) {
+          jumpToPhase(2);
+        } else if (currentStep === 15) {
+          jumpToPhase(13);
+        } else if (currentStep === 14) {
+          jumpToPhase(15);
+        } else if (currentStep > 1) {
+          jumpToPhase(currentStep - 1);
+        }
+      }
+
+      function toggleChip(chipEl, category, value) {
+        chipEl.classList.toggle("selected");
+        const arr = session.preferencias[category];
+        if (arr.includes(value)) {
+          arr.splice(arr.indexOf(value), 1);
+        } else {
+          arr.push(value);
+        }
+      }
+
+      // PASO 1: SELECCIÓN DE CANAL DE TOKEN Y HABILITACIÓN DINÁMICA DEL BOTÓN AL INGRESAR EL TOKEN
+      function seleccionarCanalToken(canal) {
+        session.canalToken = canal;
+        document.querySelectorAll(".token-channel-btn").forEach((btn) => {
+          btn.classList.toggle(
+            "active",
+            btn.getAttribute("data-canal") === canal,
+          );
+        });
+
+        showStepToast({
+          type: "success",
+          msg: `Se ha enviado el token por ${canal}`,
+        });
+
+        const otpBox = document.getElementById("otp-box");
+        const otpTitle = document.getElementById("otp-dynamic-title");
+        const otpInput = document.getElementById("otp-input");
+        if (otpTitle) {
+          otpTitle.innerText = `Ingresa el token enviado al ${canal}`;
+        }
+        if (otpBox) {
+          otpBox.style.display = "block";
+        }
+        if (otpInput) {
+          setTimeout(() => otpInput.focus(), 80);
+        }
+        actualizarEstadoBotonToken(otpInput ? otpInput.value : session.otpCode);
+      }
+
+      function actualizarEstadoBotonToken(val) {
+        session.otpCode = (val || "").trim();
+        const btnVerif = document.getElementById("btn-verif");
+        if (!btnVerif) return;
+        const habilitado = Boolean(
+          session.canalToken && session.otpCode.length > 0,
+        );
+        btnVerif.style.opacity = habilitado ? "1" : "0.45";
+        btnVerif.style.pointerEvents = habilitado ? "auto" : "none";
+      }
+
+      function renderView() {
+        const view = document.getElementById("app-dynamic-view");
+        let h = "";
+
+        if (currentStep === 1) {
+          h = `
+                    <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+                        <div style="text-align:center; margin-bottom:28px;">
+                            <div style="font-size:3.5rem; color:var(--capri); margin-bottom:10px;">🏛️</div>
+                            <div style="font-size:1.6rem; font-weight:900; color:var(--navy); line-height:1.1;">Bienvenido a<br>INTERCOP Digital</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">La cooperativa de todos</div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" class="form-input" value="" placeholder="Usuario (CUI)" style="text-align:center;">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-input" value="" placeholder="Contraseña" style="text-align:center;">
+                        </div>
+                        <button class="btn-action-primary" style="margin-top:0;" onclick="showModal('Inicio de sesión', 'Esta función es para asociados ya registrados.')">Iniciar sesión</button>
+                        
+                        <div style="margin:22px 0; border-top:1px solid #E2E8F0; position:relative; text-align:center;">
+                            <span style="background:#FAFCFF; padding:0 10px; position:relative; top:-9px; font-size:0.75rem; color:var(--text-muted); font-weight:700;">¿Aún no eres asociado?</span>
+                        </div>
+                        
+                        <button class="btn-action-capri" onclick="jumpToPhase(2)">🚀 Quiero asociarme</button>
+                    </div>
+                `;
+        } else if (currentStep === 2) {
+          // PASO 1 (1/13): ETIQUETA DE DIRECCIÓN EXACTA + BOTONES DE TOKEN PEQUEÑOS Y DINÁMICOS + BOTÓN HABILITADO HASTA INGRESAR TOKEN
+          const deptos = [
+            "Alta Verapaz",
+            "Baja Verapaz",
+            "Chimaltenango",
+            "Chiquimula",
+            "El Progreso",
+            "Escuintla",
+            "Guatemala",
+            "Huehuetenango",
+            "Izabal",
+            "Jalapa",
+            "Jutiapa",
+            "Petén",
+            "Quetzaltenango",
+            "Quiché",
+            "Retalhuleu",
+            "Sacatepéquez",
+            "San Marcos",
+            "Santa Rosa",
+            "Sololá",
+            "Suchitepéquez",
+            "Totonicapán",
+            "Zacapa",
+          ];
+          const paisesExt = [
+            "Estados Unidos",
+            "México",
+            "Canadá",
+            "Belice",
+            "El Salvador",
+            "Honduras",
+            "Nicaragua",
+            "Costa Rica",
+            "Panamá",
+            "Colombia",
+            "Perú",
+            "Chile",
+            "Argentina",
+            "Brasil",
+            "España",
+            "Italia",
+            "Francia",
+            "Alemania",
+            "Reino Unido",
+            "Suiza",
+            "Suecia",
+            "Países Bajos",
+            "Bélgica",
+            "Portugal",
+          ];
+          const tokenListo = Boolean(
+            session.canalToken &&
+            session.otpCode &&
+            session.otpCode.trim().length > 0,
+          );
+
+          h = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div class="step-title">Tus contactos y dirección</div>
+                            <div class="step-subtitle" style="margin-bottom:8px;">Registra tus medios de contacto y domicilio actual.</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <label style="font-size:0.62rem; font-weight:800; color:var(--navy); display:block; margin-bottom:4px;">¿Resides fuera de Guatemala?</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" onchange="toggleExtranjero(this.checked)" id="chk-extranjero" ${session.resideExtranjero ? "checked" : ""}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="form-local" style="display:${session.resideExtranjero ? "none" : "block"};">
+                        <div style="display:flex; gap:8px;">
+                            <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                <label class="form-label">Número de celular</label>
+                                <div style="display:flex; align-items:center; background:#FFF; border:1.5px solid var(--border); border-radius:12px; overflow:hidden;">
+                                    <span style="padding:7px 7px; background:#F1F5F9; color:var(--navy); font-weight:800; font-size:0.76rem; border-right:1px solid var(--border);">+502</span>
+                                    <input type="tel" class="form-input" style="border:none; border-radius:0; min-height:36px;" value="${session.telefono}" placeholder="Ej. 41234567" maxlength="8" onchange="session.telefono = this.value">
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                <label class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-input" style="min-height:38px;" value="${session.correo}" placeholder="tucorreo@ej.com" onchange="session.correo = this.value">
+                            </div>
+                        </div>
+
+                        <div class="info-card" style="padding:9px 11px; margin-bottom:7px;">
+                            <div style="font-size:0.73rem; font-weight:800; color:var(--navy); margin-bottom:5px;">Dirección de residencia</div>
+                            <div class="form-group" style="margin-bottom:7px;">
+                                <label class="form-label">País</label>
+                                <input type="text" class="form-input" style="min-height:36px;" value="Guatemala" readonly>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                    <label class="form-label">Departamento</label>
+                                    <select class="form-input" style="min-height:36px;" onchange="session.deptoResidencia = this.value">
+                                        <option value="">Selecciona...</option>
+                                        ${deptos.map((d) => `<option value="${d}" ${d === session.deptoResidencia ? "selected" : ""}>${d}</option>`).join("")}
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                    <label class="form-label">Municipio</label>
+                                    <select class="form-input" style="min-height:36px;" onchange="session.muniResidencia = this.value">
+                                        <option value="">Selecciona...</option>
+                                        <option value="Sololá" ${session.muniResidencia === "Sololá" ? "selected" : ""}>Sololá</option>
+                                        <option value="San Juan Comalapa" ${session.muniResidencia === "San Juan Comalapa" ? "selected" : ""}>San Juan Comalapa</option>
+                                        <option value="Tecpán" ${session.muniResidencia === "Tecpán" ? "selected" : ""}>Tecpán</option>
+                                        <option value="Panajachel" ${session.muniResidencia === "Panajachel" ? "selected" : ""}>Panajachel</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Escribe tu dirección exacta (sin ingresar el municipio ni departamento)</label>
+                                <input type="text" class="form-input" style="min-height:36px;" value="${session.direccion}" placeholder="Calle, zona, barrio, caserío, cantón..." onchange="session.direccion = this.value">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="form-extranjero" style="display:${session.resideExtranjero ? "block" : "none"};">
+                        <div style="display:flex; gap:8px;">
+                            <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                <label class="form-label">Número de celular</label>
+                                <div style="display:flex; align-items:center; background:#FFF; border:1.5px solid var(--border); border-radius:12px; overflow:hidden;">
+                                    <input type="tel" class="form-input" style="width:52px; border:none; border-radius:0; border-right:1px solid var(--border); padding:7px 4px; text-align:center; min-height:36px;" value="" placeholder="+1">
+                                    <input type="tel" class="form-input" style="border:none; border-radius:0; flex:1; min-height:36px;" value="${session.telefono}" placeholder="Tu número" onchange="session.telefono = this.value">
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:7px;">
+                                <label class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-input" style="min-height:38px;" value="${session.correo}" placeholder="tucorreo@ej.com" onchange="session.correo = this.value">
+                            </div>
+                        </div>
+
+                        <div class="info-card" style="padding:9px 11px; margin-bottom:7px;">
+                            <div style="font-size:0.73rem; font-weight:800; color:var(--navy); margin-bottom:5px;">Dirección de residencia (extranjero)</div>
+                            <div class="form-group" style="margin-bottom:7px;">
+                                <label class="form-label">País de residencia</label>
+                                <select class="form-input" style="min-height:36px;" onchange="session.paisResidencia = this.value">
+                                    <option value="">Selecciona país...</option>
+                                    ${paisesExt.map((p) => `<option value="${p}" ${p === session.paisResidencia ? "selected" : ""}>${p}</option>`).join("")}
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:7px;">
+                                <label class="form-label">Estado / provincia / ciudad</label>
+                                <input type="text" class="form-input" style="min-height:36px;" value="${session.deptoResidencia}" placeholder="Ej. California, Los Ángeles" onchange="session.deptoResidencia = this.value">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Escribe tu dirección exacta (sin ingresar el municipio ni departamento)</label>
+                                <input type="text" class="form-input" style="min-height:36px;" value="${session.direccion}" placeholder="Zip code, calle, número de apartamento..." onchange="session.direccion = this.value">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OPCIÓN HORIZONTAL DE BOTONES PEQUEÑOS, ATRACTIVOS Y DINÁMICOS PARA EL TOKEN -->
+                    <div class="info-card" style="padding:8px 10px; margin-bottom:8px; background:#F8FAFC;">
+                        <label class="form-label" style="margin-bottom:5px; text-align:center;">¿Dónde quieres recibir el token?</label>
+                        <div class="token-channel-row">
+                            <button type="button" class="token-channel-btn ${session.canalToken === "Correo electrónico" ? "active" : ""}" data-canal="Correo electrónico" onclick="seleccionarCanalToken('Correo electrónico')">
+                                <span class="token-dot"></span>✉️ Correo electrónico
+                            </button>
+                            <button type="button" class="token-channel-btn ${session.canalToken === "SMS" ? "active" : ""}" data-canal="SMS" onclick="seleccionarCanalToken('SMS')">
+                                <span class="token-dot"></span>💬 SMS
+                            </button>
+                            <button type="button" class="token-channel-btn ${session.canalToken === "WhatsApp" ? "active" : ""}" data-canal="WhatsApp" onclick="seleccionarCanalToken('WhatsApp')">
+                                <span class="token-dot"></span>📱 WhatsApp
+                            </button>
+                        </div>
+
+                        <div id="otp-box" style="display:${session.canalToken ? "block" : "none"}; background:var(--capri-soft); border:1px solid var(--capri); border-radius:10px; padding:6px 10px; text-align:center; margin-top:7px; animation: pop 0.25s ease;">
+                            <div id="otp-dynamic-title" style="font-size:0.7rem; font-weight:800; color:var(--navy); margin-bottom:3px;">
+                                Ingresa el token enviado al ${session.canalToken || "canal seleccionado"}
+                            </div>
+                            <input type="text" id="otp-input" class="form-input" style="text-align:center; font-size:1.05rem; font-weight:900; letter-spacing:5px; min-height:32px; padding:3px 8px;" value="${session.otpCode}" placeholder="------" maxlength="6" oninput="actualizarEstadoBotonToken(this.value)">
+                        </div>
+                    </div>
+
+                    <button class="btn-action-primary" id="btn-verif" style="min-height:42px; opacity:${tokenListo ? "1" : "0.45"}; pointer-events:${tokenListo ? "auto" : "none"};" onclick="jumpToPhase(4)">
+                        Validar token y continuar →
+                    </button>
+                `;
+        } else if (currentStep === 3) {
+          jumpToPhase(4);
+          return;
+        } else if (currentStep === 4) {
+          h = `
+                    <div class="step-title">Escanea tu DPI (frente)</div>
+                    <div class="step-subtitle">Alinea la parte frontal de tu DPI en el recuadro.</div>
+
+                    <div class="dpi-scanner-box">
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--capri-light); font-weight:800; margin-bottom:10px;">
+                            <span>Cámara trasera activa</span><span style="color:var(--success);">● En vivo</span>
+                        </div>
+                        
+                        <div class="dpi-viewfinder-frame" id="dpi-front-frame">
+                            <video id="dpi-front-video" class="camera-video-feed" autoplay playsinline webkit-playsinline muted></video>
+                            <canvas id="dpi-front-canvas" class="camera-capture-canvas"></canvas>
+                            <div id="dpi-front-flash" class="camera-flash-overlay"></div>
+                            <div class="dpi-corner top-left"></div>
+                            <div class="dpi-corner top-right"></div>
+                            <div class="dpi-corner bottom-left"></div>
+                            <div class="dpi-corner bottom-right"></div>
+                            <div class="scanner-line" id="dpi-front-line"></div>
+                            <div class="camera-clean-reticle" id="dpi-front-reticle">
+                                <div class="camera-clean-crosshair"></div>
+                                <span>Visor óptico limpio • Frente DPI</span>
+                            </div>
+                        </div>
+
+                        <div id="dpi-front-status" style="font-size:0.75rem; font-weight:800; margin-top:12px; min-height:18px; color:var(--capri-light);">Enfoca el documento en el visor...</div>
+                    </div>
+
+                    <div class="admin-only-control" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+                        <button class="btn-action-outline" style="border-color:var(--danger); color:var(--danger); font-size:0.65rem; margin-top:0;" onclick="simularFallaDPI('ASOCIADO')">Simular: Ya asociado</button>
+                        <button class="btn-action-outline" style="border-color:var(--danger); color:var(--danger); font-size:0.65rem; margin-top:0;" onclick="simularFallaDPI('PEP')">Simular: Alerta PEP</button>
+                        <button class="btn-action-outline" style="border-color:var(--warning); color:#B45309; font-size:0.65rem; margin-top:0;" onclick="simularFallaDPI('VENCIDO')">Simular: DPI vencido/inválido</button>
+                        <button class="btn-action-outline" style="border-color:var(--warning); color:#B45309; font-size:0.65rem; margin-top:0;" onclick="simularFallaDPI('DETERIORO')">Simular: Ilegible/deterioro</button>
+                    </div>
+
+                    <div class="info-card" style="font-size:0.75rem; color:var(--navy); line-height:1.45;">
+                        <b>Consejos para una captura óptima:</b><br>
+                        • Coloca tu DPI sobre una superficie plana y de fondo oscuro.<br>
+                        • Evita brillos directos de focos o sombras sobre tu DPI.<br>
+                        • Las 4 esquinas deben quedar alineadas dentro de los marcos amarillos.
+                    </div>
+                    <button class="btn-action-primary" id="btn-scan-frente" onclick="iniciarEscaneo(true)">📷 Capturar</button>
+                `;
+        } else if (currentStep === 5) {
+          h = `
+                    <div class="step-title">Escanea tu DPI (reverso)</div>
+                    <div class="step-subtitle">Asegúrate de que el dorso de tu DPI se vea claro.</div>
+
+                    <div class="dpi-scanner-box">
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--capri-light); font-weight:800; margin-bottom:10px;">
+                            <span>Cámara trasera activa</span><span style="color:var(--success);">● Reverso</span>
+                        </div>
+                        
+                        <div class="dpi-viewfinder-frame" id="dpi-back-frame">
+                            <video id="dpi-back-video" class="camera-video-feed" autoplay playsinline webkit-playsinline muted></video>
+                            <canvas id="dpi-back-canvas" class="camera-capture-canvas"></canvas>
+                            <div id="dpi-back-flash" class="camera-flash-overlay"></div>
+                            <div class="dpi-corner top-left"></div>
+                            <div class="dpi-corner top-right"></div>
+                            <div class="dpi-corner bottom-left"></div>
+                            <div class="dpi-corner bottom-right"></div>
+                            <div class="scanner-line" id="dpi-back-line"></div>
+                            <div class="camera-clean-reticle" id="dpi-back-reticle">
+                                <div class="camera-clean-crosshair"></div>
+                                <span>Visor óptico limpio • Reverso DPI</span>
+                            </div>
+                        </div>
+
+                        <div id="dpi-back-status" style="font-size:0.75rem; font-weight:800; margin-top:12px; min-height:18px; color:var(--capri-light);">Enfoca el reverso del documento...</div>
+                    </div>
+
+                    <div class="info-card" style="font-size:0.75rem; color:var(--navy); line-height:1.45;">
+                        <b>Consejos para una captura óptima:</b><br>
+                        • Coloca tu DPI sobre una superficie plana y de fondo oscuro.<br>
+                        • Evita brillos directos de focos o sombras sobre tu DPI.<br>
+                        • Asegúrate de enfocar claramente el código de barras y texto MRZ inferior.
+                    </div>
+                    <button class="btn-action-primary" id="btn-scan-atras" onclick="iniciarEscaneo(false)">📷 Capturar</button>
+                `;
+        } else if (currentStep === 6) {
+          h = `
+                    <div class="step-title">Confirma tus datos</div>
+                    <div class="step-subtitle">Valida que tus datos estén correctos (paso 1 de 2).</div>
+
+                    <div class="info-card">
+                        <div class="form-group">
+                            <label class="form-label">Nombre completo</label>
+                            <input type="text" class="form-input" value="${session.datosPersonales.nombre}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Código único de identificación (CUI)</label>
+                            <input type="text" class="form-input" value="${session.datosPersonales.cui}" readonly>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label class="form-label">Nacionalidad</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.nacionalidad}" readonly>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label class="form-label">Sexo</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.sexo}" readonly>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label class="form-label">Fecha de nacimiento</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.fNac}" readonly>
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label class="form-label">Estado civil</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.estadoCivil}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-action-primary" onclick="jumpToPhase(7)">Siguiente: datos de origen →</button>
+                `;
+        } else if (currentStep === 7) {
+          h = `
+                    <div class="step-title">Confirma tus datos</div>
+                    <div class="step-subtitle">Valida que tus datos estén correctos (paso 2 de 2).</div>
+
+                    <div class="info-card">
+                        <div class="form-group">
+                            <label class="form-label">Departamento y municipio de vecindad</label>
+                            <input type="text" class="form-input" value="${session.datosPersonales.vecindad}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Profesión u oficio</label>
+                            <input type="text" class="form-input" value="${session.datosPersonales.profesion}" readonly>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label class="form-label">Fecha de emisión</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.emision}" readonly>
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label class="form-label">Fecha de vencimiento</label>
+                                <input type="text" class="form-input" value="${session.datosPersonales.vencimiento}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Número de serie</label>
+                            <input type="text" class="form-input" value="${session.datosPersonales.serie}" readonly>
+                        </div>
+                    </div>
+                    <button class="btn-action-primary" onclick="jumpToPhase(8)">Confirmar y continuar →</button>
+                `;
+        } else if (currentStep === 8) {
+          // PASO 6 (6/13): PRUEBA DE VIDA CON DISPARADORES DE TOASTS "No hay suficiente iluminación" Y "Hay mucha distorsión en el fondo"
+          const tieneFoto = !!session.fotos.selfie;
+          h = `
+                    <div class="step-title">Prueba de vida (biometría)</div>
+                    <div class="step-subtitle">Aseguramos que eres tú para proteger tu cuenta.</div>
+
+                    <div class="facephi-stage">
+                        <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--navy); font-weight:800; margin-bottom:8px;">
+                            <span>Cámara frontal (selfie)</span>
+                            <span style="color:${tieneFoto ? "var(--success)" : "var(--capri)"};">${tieneFoto ? "● Fotografía capturada" : "● Lista para captura"}</span>
+                        </div>
+                        <div class="oval-radar" id="face-radar" style="border-color:${tieneFoto ? "var(--success)" : "var(--capri)"};">
+                            ${
+                              tieneFoto
+                                ? `<img src="${session.fotos.selfie}" alt="Selfie capturada" style="width:100%; height:100%; object-fit:cover; display:block;">
+                                   <div style="position:absolute; bottom:8px; right:8px; background:var(--success); color:#FFF; border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:900; z-index:7; box-shadow:0 2px 8px rgba(0,0,0,0.3);">✓</div>`
+                                : `<div class="scanner-beam" style="display:none;" id="face-beam"></div>
+                                   <div style="font-size:3.2rem; position:relative; z-index:5; color:var(--capri-light);" id="face-icon">👤</div>`
+                            }
+                        </div>
+                        <div id="face-status" style="font-size:0.82rem; font-weight:800; color:${tieneFoto ? "var(--success)" : "var(--navy)"};">
+                            ${tieneFoto ? "✓ Prueba de vida superada (99.8%) • Fotografía verificada" : "Ubica tu rostro en el marco para tomar tu selfie"}
+                        </div>
+                    </div>
+
+                    <!-- BOTONES PARA GENERAR LOS TOASTS DE ILUMINACIÓN Y DISTORSIÓN -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
+                        <button type="button" class="btn-action-outline" style="margin-top:0; min-height:34px; font-size:0.65rem; border-color:var(--warning); color:#B45309; padding:4px 6px;" onclick="mostrarToastAmbienteSelfie('ILUMINACION')">
+                            💡 No hay suficiente iluminación
+                        </button>
+                        <button type="button" class="btn-action-outline" style="margin-top:0; min-height:34px; font-size:0.65rem; border-color:var(--danger); color:var(--danger); padding:4px 6px;" onclick="mostrarToastAmbienteSelfie('DISTORSION')">
+                            🖼️ Hay mucha distorsión en el fondo
+                        </button>
+                    </div>
+
+                    <div class="info-card" style="font-size:0.74rem; color:var(--navy); line-height:1.42;">
+                        <b>Instrucciones obligatorias:</b><br>
+                        • Mira de frente a la cámara y parpadea suavemente.<br>
+                        • Busca un lugar donde haya suficiente iluminación.<br>
+                        • Evita que existan personas u objetos al fondo que puedan distorsionar la toma.
+                    </div>
+                    
+                    ${
+                      tieneFoto
+                        ? `<div style="display:flex; flex-direction:column; gap:8px; margin-top:auto;">
+                               <button class="btn-action-primary" onclick="jumpToPhase(9)">Continuar al siguiente paso →</button>
+                               <button class="btn-action-outline" style="margin-top:0;" onclick="abrirModoSelfieDifuminado()">🔄 Volver a capturar</button>
+                           </div>`
+                        : `<div style="display:flex; gap:8px; margin-top:auto;">
+                               <button class="btn-action-primary" id="btn-face" style="flex:2;" onclick="solicitarPermisoYTomarSelfie()">📸 Capturar</button>
+                               <button class="btn-action-outline admin-only-control" id="btn-face-fail" style="flex:1; border-color:var(--danger); color:var(--danger); font-size:0.65rem; margin-top:0;" onclick="simularFacephi(false)">Forzar falla &lt;95%</button>
+                           </div>`
+                    }
+                `;
+        } else if (currentStep === 9) {
+          h = `
+                    <div class="step-title">Asegura tu acceso</div>
+                    <div class="step-subtitle">Crea tu clave de acceso para ingresar a INTERCOP Digital. Tu usuario siempre será tu CUI.</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tu usuario (CUI)</label>
+                        <input type="text" class="form-input" value="${session.datosPersonales.cui}" readonly>
+                    </div>
+
+                    <div id="pwd-standard-section" style="display:${session.usaPin6Digitos ? "none" : "block"};">
+                        <div class="form-group">
+                            <label class="form-label">Asigna una contraseña</label>
+                            <input type="password" class="form-input" id="pwd-input" value="" placeholder="Escribe tu contraseña" onkeyup="validarCredencialesPaso9()">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Confirma tu contraseña</label>
+                            <input type="password" class="form-input" id="pwd-confirm" value="" placeholder="Vuelve a escribir tu contraseña" onkeyup="validarCredencialesPaso9()">
+                        </div>
+                    </div>
+
+                    <div id="pin-6-section" style="display:${session.usaPin6Digitos ? "block" : "none"};">
+                        <div class="form-group">
+                            <label class="form-label">Clave de 6 dígitos</label>
+                            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="form-input" id="pin6-input" value="${session.pin6Digitos}" placeholder="••••••" style="text-align:center; font-size:1.3rem; letter-spacing:8px; font-weight:900;" oninput="this.value=this.value.replace(/[^0-9]/g,''); session.pin6Digitos=this.value; validarCredencialesPaso9();">
+                            <div style="margin-top:6px; text-align:center;">
+                                <div style="font-size:0.7rem; color:var(--navy); font-weight:700;">Este código será válido únicamente en tu dispositivo móvil</div>
+                                <div style="font-size:0.62rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Código alineado con el estándar NIST</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Confirma tu contraseña (6 dígitos)</label>
+                            <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="form-input" id="pin6-confirm" value="${session.pin6Confirm}" placeholder="••••••" style="text-align:center; font-size:1.3rem; letter-spacing:8px; font-weight:900;" oninput="this.value=this.value.replace(/[^0-9]/g,''); session.pin6Confirm=this.value; validarCredencialesPaso9();">
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:var(--capri-soft); border-color:var(--capri);">
+                        <div>
+                            <div style="font-size:0.82rem; font-weight:900; color:var(--navy);">Clave de 6 dígitos</div>
+                            <div style="font-size:0.68rem; color:var(--text-muted);">Usar código numérico rápido de 6 dígitos</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="togglePin6Digitos(this.checked)" ${session.usaPin6Digitos ? "checked" : ""}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="pwd-req-card" class="info-card" style="padding:12px; display:${session.usaPin6Digitos ? "none" : "block"};">
+                        <div style="font-size:0.72rem; font-weight:800; color:var(--navy); margin-bottom:6px;">Requisitos de seguridad:</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.7rem; color:var(--text-muted);">
+                            <div id="req-len">❌ Mínimo 8 caracteres</div>
+                            <div id="req-up">❌ Una letra mayúscula</div>
+                            <div id="req-num">❌ Un número</div>
+                            <div id="req-sym">❌ Un símbolo (!@#$%)</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-action-primary" id="btn-pwd" style="opacity:0.5; pointer-events:none;" onclick="jumpToPhase(10)">Guardar credenciales →</button>
+                `;
+        } else if (currentStep === 10) {
+          // PASO 8 (8/13): CORREGIDO "Dinos a qué te dedicas y cómo manejas tu dinero" Y "¿Cuánto gastas al mes?"
+          h = `
+                    <div class="step-title">Dinos a qué te dedicas y cómo manejas tu dinero</div>
+                    <div class="step-subtitle">Selecciona a qué te dedicas y registra tus ingresos y egresos.</div>
+
+                    <div class="info-card" style="padding:12px; margin-bottom:12px; border-left:3px solid var(--capri);">
+                        <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:8px;">¿De dónde provienen tus ingresos?</div>
+                        
+                        <div id="sources-container">
+                            ${renderFuentesIngreso()}
+                        </div>
+
+                        <button class="btn-action-outline" id="btn-add-fuente" style="min-height:30px; padding:4px 8px; font-size:0.7rem; margin-top:8px;" onclick="addFuenteIngreso()">+ Agregar otra fuente de ingresos</button>
+                    </div>
+
+                    <div class="info-card" style="padding:12px; margin-bottom:14px;">
+                        <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:8px;">¿Cuánto ganas y gastas durante cada mes?</div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label class="form-label">¿Cuánto ganas al mes?</label>
+                                <div style="display:flex; align-items:center; border:1.5px solid var(--border); border-radius:12px; overflow:hidden;">
+                                    <span style="padding:10px 8px; background:#F1F5F9; color:var(--navy); font-weight:800; border-right:1px solid var(--border);">Q</span>
+                                    <input type="number" class="form-input" style="border:none; border-radius:0; min-height:42px;" placeholder="0.00" step="100" value="${session.ingresosMensuales}" onchange="session.ingresosMensuales = this.value">
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label class="form-label">¿Cuánto gastas al mes?</label>
+                                <div style="display:flex; align-items:center; border:1.5px solid var(--border); border-radius:12px; overflow:hidden;">
+                                    <span style="padding:10px 8px; background:#F1F5F9; color:var(--navy); font-weight:800; border-right:1px solid var(--border);">Q</span>
+                                    <input type="number" class="form-input" style="border:none; border-radius:0; min-height:42px;" placeholder="0.00" step="100" value="${session.egresosMensuales}" onchange="session.egresosMensuales = this.value">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-action-primary" onclick="jumpToPhase(11)">Siguiente paso →</button>
+                    <datalist id="occupations-list">
+                        ${getOccupationsOptions()}
+                    </datalist>
+                `;
+        } else if (currentStep === 11) {
+          // PASO 9 (9/13): CAMBIADO A "Deja a alguien de tu confianza"
+          const listaAgencias = [
+            "00 INTERCOP DIGITAL",
+            "01 SOLOLA",
+            "02 TECPAN",
+            "03 COMALAPA",
+            "04 PANAJACHEL",
+            "05 CHIMALTENANGO",
+            "06 PATZUN",
+            "07 SAN JOSE POAQUIL",
+            "08 SAN MARTIN JILOTEPEQUE",
+            "09 SAN PEDRO YEPOCAPA",
+            "10 SAN LUCAS SACATEPEQUEZ",
+            "11 PLAZA Z4 GUATEMALA",
+            "12 QUICHE",
+            "13 CHICHICASTENANGO",
+            "14 QUETZALTENANGO",
+            "15 MAYOREO SOLOLA",
+            "16 PRADERA CHIMALTENANGO",
+            "17 PAQUIP TECPÁN",
+            "18 C.C. MUNICIPAL SOLOLA",
+            "19 CAQUIXAJAY TECPAN",
+            "20 ZARAGOZA CHIMALTENANGO",
+            "21 CERRO DE ORO SOLOLA",
+            "22 CHUPOL CHICHICASTENANGO",
+            "23 ITZAPA CHIMALTENANGO",
+            "24 METRONORTE GUATEMALA",
+            "25 TERMINAL Z4 GUATEMALA",
+            "26 PASEO ANDARIA CHIMALTENANGO",
+            "27 PERIROOSEVELT CC",
+            "28 CANILLÁ",
+            "29 SAN ANTONIO ILOTENANGO",
+            "30 INTERPLAZA CHIMALTENANGO",
+            "31 NEBAJ",
+            "32 AGENCIA CHUACRUZ",
+            "33 METROPLAZA 4 CAMINOS",
+            "34 SANTA LUCÍA UTATLÁN",
+            "35 JOYABAJ",
+            "36 NAHUALÁ",
+            "37 SAN JUAN LA LAGUNA",
+            "38 SANTIAGO ATITLÁN",
+            "39 SAN PEDRO SACATEPÉQUEZ",
+            "40 SAN JUAN SACATEPÉQUEZ",
+            "41 LOS CELAJES, QUICHÉ",
+            "42 HERMO VISTA, CHICHICASTENAGO",
+            "43 PARQUE SAN LUACAS SACATEPÉQUEZ",
+          ];
+
+          h = `
+                    <div class="step-title">Información complementaria</div>
+                    <div class="step-subtitle">Asigna a una persona como tu beneficiario</div>
+
+                    <div class="info-card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.85rem; font-weight:900; color:var(--navy);">¿Aplica asignación?</div>
+                            <div style="font-size:0.7rem; color:var(--text-muted);">Asignarse a una agencia específica o asesor.</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleAsignacion(this.checked)" ${session.aplicaAsignacion ? "checked" : ""}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="box-asignacion" style="display:${session.aplicaAsignacion ? "block" : "none"};">
+                        <div class="form-group">
+                            <label class="form-label">Asignarse a una agencia</label>
+                            <select class="form-input" onchange="session.agenciaAsignada = this.value">
+                                <option value="">Selecciona una agencia...</option>
+                                ${listaAgencias.map((a) => `<option value="${a}" ${a === session.agenciaAsignada ? "selected" : ""}>${a}</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Código de registro (opcional)</label>
+                            <input type="text" class="form-input" placeholder="Ej. AB12345" value="${session.codigoRegistro}" onchange="session.codigoRegistro = this.value">
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="margin-top:6px;">
+                        <div style="font-size:0.82rem; font-weight:800; color:var(--navy); margin-bottom:8px;">Deja a alguien de tu confianza</div>
+                        <div class="form-group">
+                            <label class="form-label">Nombre completo</label>
+                            <input type="text" class="form-input" placeholder="Nombre de tu beneficiario" value="${session.beneficiarioNombre}" onchange="session.beneficiarioNombre = this.value">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Parentesco</label>
+                            <input type="text" list="parentescos-list" class="form-input" placeholder="Buscar parentesco..." value="${session.beneficiarioParentesco}" onchange="session.beneficiarioParentesco = this.value">
+                            <datalist id="parentescos-list">
+                                <option value="Padre"><option value="Madre"><option value="Hijo"><option value="Hija">
+                                <option value="Hermano"><option value="Hermana"><option value="Abuelo"><option value="Abuela">
+                                <option value="Tío"><option value="Tía"><option value="Sobrino"><option value="Sobrina">
+                                <option value="Cónyuge"><option value="Suegro"><option value="Suegra"><option value="Yerno"><option value="Nuera">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <button class="btn-action-outline" onclick="toggleCuentas()">👁️ Ver montos requeridos para apertura</button>
+                    
+                    <div id="box-cuentas" style="display:${session.mostrarCuentas ? "block" : "none"}; margin-top:10px;" class="info-card">
+                        <div class="kv-row"><span class="kv-key">Aportación ordinaria:</span><span class="kv-val">Q 100.00</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta corriente:</span><span class="kv-val">Q 25.00</span></div>
+                        <div class="kv-row" style="font-weight:900; color:var(--navy); border-top:1px solid #E2E8F0; padding-top:6px;"><span>Total apertura:</span><span style="color:var(--capri);">Q 125.00</span></div>
+                    </div>
+
+                    <button class="btn-action-primary" style="margin-top:12px;" onclick="jumpToPhase(12)">Continuar →</button>
+                `;
+        } else if (currentStep === 12) {
+          // PASO 10 (10/13): CAMBIADO "Firma electrónica" POR "Contrato de Términos y Condiciones"
+          h = `
+                    <div class="step-title">Contrato de Términos y Condiciones</div>
+                    <div class="step-subtitle">Revisa y lee tu Contrato de Adhesión Digital a INTERCOP</div>
+
+                    <div class="info-card" style="font-size:0.74rem; line-height:1.5; color:var(--text-dark); max-height:220px; overflow-y:auto; border-left:4px solid var(--navy);">
+                        <b>Contrato único de adhesión digital</b><br><br>
+                        Yo, manifiesto mi voluntad libre y consciente de asociarme a COOPERATIVA INTERCOP, R.L.<br><br>
+                        • Acepto los estatutos y la política de canales digitales.<br>
+                        • Declaro la licitud de mis fondos amparado en la normativa vigente.<br>
+                        • Autorizo la validación biométrica y confirmación mediante código de seguridad.
+                    </div>
+                    
+                    <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:14px;">
+                        <input type="checkbox" id="chk-term" style="margin-right:6px;" ${session.contratoAceptado ? "checked" : ""} onchange="session.contratoAceptado = this.checked; document.getElementById('btn-firma').style.opacity = this.checked ? '1' : '0.5'; document.getElementById('btn-firma').style.pointerEvents = this.checked ? 'auto' : 'none';">
+                        He leído y acepto los términos del contrato.
+                    </div>
+
+                    <button class="btn-action-primary" id="btn-firma" style="opacity:${session.contratoAceptado ? "1" : "0.5"}; pointer-events:${session.contratoAceptado ? "auto" : "none"};" onclick="jumpToPhase(13)">Aceptar Contrato de Términos y Condiciones ✓</button>
+                `;
+        } else if (currentStep === 13) {
+          // PASO 11 (11/13): CAMBIADO A "¡Victor, Bienvenido a INTERCOP!"
+          const primerNombre = obtenerPrimerNombreCapitalizado();
+          h = `
+                    <div style="text-align:center; margin-bottom:12px;">
+                        <div style="font-size:2.4rem; margin-bottom:4px;">🤝</div>
+                        <div class="step-title">¡${primerNombre}, Bienvenido a INTERCOP!</div>
+                        <div style="font-size:0.84rem; font-weight:800; color:var(--capri); margin-top:4px; line-height:1.35;">
+                            ¡Te estábamos esperando!<br>Ahora formas parte de los más de 170 mil asociados en todo el país.
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="font-size:0.8rem; line-height:1.55; color:var(--navy);">
+                        <b>¿Qué significa ser Asociado de INTERCOP?</b><br><br>
+                        En INTERCOP no eres un cliente: eres asociado de la Cooperativa, con voz y voto según los estatutos y con los siguientes beneficios:<br><br>
+                        ✓ Sin cobro de manejo de cuenta ni membresías.<br>
+                        ✓ Altos rendimientos en tus cuentas de ahorro e inversión.<br>
+                        ✓ Préstamos con tasas justas, trámites ágiles y ahora 100% Digital.<br>
+                        ✓ Atención cercana en más de 44 agencias en todo el país y en INTERCOP Digital desde cualquier parte.<br>
+                        ✓ Y otros beneficios exclusivos que solo INTERCOP te lo puede dar.
+                    </div>
+
+                    <button class="btn-action-primary" onclick="jumpToPhase(15)">Ver mi perfil y cuentas →</button>
+                `;
+        } else if (currentStep === 15) {
+          // PASO 12 (12/13): NÚMERO DE ASOCIADO "44-000001", APORTACIÓN "44-000001-01", CORRIENTE "44-002710-05"
+          h = `
+                    <div style="text-align:center; margin-bottom:10px;">
+                        <div style="font-size:2.4rem;">🎉</div>
+                        <div class="step-title">Ya eres oficialmente asociado de INTERCOP</div>
+                        <div style="font-size:0.82rem; font-weight:800; color:var(--capri); margin-top:2px;">
+                            Conoce tus cuentas y cómo activarlas
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="margin-bottom:10px;">
+                        <div class="kv-row"><span class="kv-key">Número de asociado:</span><span class="kv-val" style="color:var(--capri); font-weight:900;">${session.numeroAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta aportación (01):</span><span class="kv-val">${session.cuentaAportacion} (Q 0.00)</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta corriente (05):</span><span class="kv-val">${session.cuentaCorriente} (Q 0.00)</span></div>
+                        <div class="kv-row"><span class="kv-key">Agencia adscrita:</span><span class="kv-val">${session.agenciaAsignada || "00 INTERCOP DIGITAL"}</span></div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                        <button class="btn-action-capri" onclick="renderFundingOptionsModal()">
+                            💳 Opciones para Activar mis cuentas
+                        </button>
+                        <button class="btn-action-primary" style="background:var(--navy); margin-top:0;" onclick="verYEnviarKitBienvenida()">
+                            📄 Ver mi Kit de Bienvenida
+                        </button>
+                        <button class="btn-action-capri" onclick="renderShareModal()">
+                            👥 Invitar a mis amigos y familiares
+                        </button>
+                        <a href="https://www.intercop.gt/" target="_blank" rel="noopener noreferrer" class="btn-action-outline" style="border-color:var(--capri); color:var(--navy); margin-top:0; background:#F0F9FD;">
+                            🌐 Más información en nuestra página
+                        </a>
+                        <button class="btn-action-outline admin-only-control" style="border-color:var(--navy); color:var(--navy); margin-top:0; min-height:40px;" onclick="toggleAdminReportView()">
+                            📊 Ver informe completo de onboarding (Admin)
+                        </button>
+                        <div style="font-size:0.72rem; color:var(--navy); text-align:center; font-weight:800; padding:6px 8px; background:var(--capri-soft); border-radius:8px; line-height:1.35;">
+                            “Invita a tus amigos y familiares a asociarse a INTERCOP y participa en promociones exclusivas”
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-action-primary" style="flex:1; font-size:0.75rem; margin-top:0;" onclick="renderDashboardImage()">🏠 Ir a menú principal</button>
+                        <button class="btn-action-outline" style="flex:1; border-color:var(--capri); color:var(--capri); margin-top:0; font-size:0.75rem;" onclick="jumpToPhase(14)">⚙️ Personaliza tu perfil</button>
+                    </div>
+                `;
+        } else if (currentStep === 14) {
+          h = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <div class="step-title" style="margin:0;">Queremos conocerte para darte una mejor experiencia</div>
+                        <button style="background:transparent; border:none; color:var(--text-muted); font-size:0.7rem; font-weight:800; text-decoration:underline; cursor:pointer;" onclick="renderDashboardImage()">Hacerlo luego ⏭️</button>
+                    </div>
+                    <div class="step-subtitle">Selecciona las opciones que prefieras (puedes elegir varias).</div>
+                    
+                    <div style="flex:1; overflow-y:auto; padding-right:4px;">
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">¿Cómo te gustaría que te llamemos?</div>
+                            <input type="text" class="form-input" maxlength="25" placeholder="Ej. Victor Chiroy" value="${session.apodoPreferido}" onchange="session.apodoPreferido = this.value" style="min-height:40px; font-size:0.8rem;">
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">1. ¿Qué te gustaría hacer en INTERCOP?</div>
+                            <select class="form-input" id="feis-proposito" onchange="session.propositoIntercop = this.value">
+                                <option value="">Selecciona una opción...</option>
+                                <option value="Centros de formación y recreación" ${session.propositoIntercop === "Centros de formación y recreación" ? "selected" : ""}>Centros de formación y recreación</option>
+                                <option value="Servicio de ahorros" ${session.propositoIntercop === "Servicio de ahorros" ? "selected" : ""}>Servicio de ahorros</option>
+                                <option value="Servicio de créditos" ${session.propositoIntercop === "Servicio de créditos" ? "selected" : ""}>Servicio de créditos</option>
+                                <option value="Servicio de remesas" ${session.propositoIntercop === "Servicio de remesas" ? "selected" : ""}>Servicio de remesas</option>
+                                <option value="Servicio de terceros" ${session.propositoIntercop === "Servicio de terceros" ? "selected" : ""}>Servicio de terceros</option>
+                                <option value="Todas las anteriores" ${session.propositoIntercop === "Todas las anteriores" ? "selected" : ""}>Todas las anteriores</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">2. ¿Qué actividades disfrutas más en tu tiempo libre?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Viajar')">✈️ Viajar fuera del país</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Comercial')">🛍️ Centros comerciales</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Cine')">🍿 Ir al cine</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Deporte')">⚽ Deportes/gym</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Lectura')">📚 Lectura</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Familia')">👨‍👩‍👧‍👦 Tiempo en familia</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'gustos', 'Naturaleza')">🌲 Naturaleza y ecoturismo</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">3. ¿Qué productos financieros prefieres usar?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'TC')">💳 Tarjeta de crédito</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'Prestamos')">🏦 Préstamos convencionales</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'Microcreditos')">📱 Microcréditos digitales</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'Seguros')">🛡️ Seguros de vida/médicos</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'AhorroProgramado')">📈 Ahorro programado</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'productos', 'Remesas')">💸 Cobro de remesas</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">4. ¿Qué compañía telefónica utilizas?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'telefonia', 'Tigo')">🔵 Tigo</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'telefonia', 'Claro')">🔴 Claro</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'telefonia', 'Ambos')">📱 Utilizo ambas</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">5. ¿En qué te gusta invertir o gastar más?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Ropa')">👕 Ropa y calzado</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Comida')">🍔 Restaurantes/comida</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Videojuegos')">🎮 Videojuegos/streaming</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Tecnologia')">💻 Tecnología/celulares</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Herramientas')">🛠️ Herramientas/maquinaria</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Educacion')">🎓 Educación/cursos</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'inversiones', 'Hogar')">🏡 Mejoras del hogar</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">6. ¿Dónde tienes o has tenido créditos anteriormente?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Bancos')">🏦 Bancos del sistema</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Cooperativas')">🤝 Otras cooperativas</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Microfinancieras')">🏢 Microfinancieras</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Casas Empeno')">🪙 Casas de empeño</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Comercios')">🛒 Casas comerciales</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Personas')">👤 Prestamistas particulares</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'creditos', 'Ninguno')">🚫 Nunca he tenido créditos</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">7. ¿Tienes cuentas de ahorro o inversión activas en otros lados?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'ahorros', 'Bancos')">🏦 Bancos</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'ahorros', 'Cooperativas')">🤝 Cooperativas</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'ahorros', 'Asociaciones')">🏢 Asociaciones solidaristas</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'ahorros', 'Bolsa')">📈 Bolsa de valores / cripto</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'ahorros', 'Ninguno')">🚫 Solo en INTERCOP</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">8. ¿Tienes hijos menores de 18 años?</div>
+                            <span class="chip-option" onclick="toggleChip(this, 'hijosMenores', 'Sí, tengo hijos menores de 18 años'); session.tieneHijosMenores='Sí';">👶 Sí, tengo hijos menores de 18 años</span>
+                            <span class="chip-option" onclick="toggleChip(this, 'hijosMenores', 'No'); session.tieneHijosMenores='No';">🚫 No</span>
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.75rem; font-weight:800; color:var(--navy); margin-bottom:6px;">9. ¿Algo nuevo que te gustaría encontrar en INTERCOP?</div>
+                            <textarea class="form-input" style="height:60px; padding:10px; font-size:0.8rem;" placeholder="Escribe aquí tus sugerencias..." onchange="session.sugerenciasApp = this.value">${session.sugerenciasApp}</textarea>
+                        </div>
+                    </div>
+
+                    <button class="btn-action-primary" onclick="renderDashboardImage()">Guardar mis preferencias ✓</button>
+                `;
+        }
+
+        view.innerHTML = h;
+
+        if (currentStep === 4) {
+          startStepCamera("dpi-front-video", "environment").then((started) => {
+            const st = document.getElementById("dpi-front-status");
+            const ret = document.getElementById("dpi-front-reticle");
+            if (started && ret) ret.style.display = "none";
+            if (st) {
+              st.innerText = started
+                ? "Cámara trasera activa • Enfoca el frente de tu DPI"
+                : "Presiona Capturar para activar la cámara y escanear";
+            }
+          });
+        } else if (currentStep === 5) {
+          startStepCamera("dpi-back-video", "environment").then((started) => {
+            const st = document.getElementById("dpi-back-status");
+            const ret = document.getElementById("dpi-back-reticle");
+            if (started && ret) ret.style.display = "none";
+            if (st) {
+              st.innerText = started
+                ? "Cámara trasera activa • Enfoca el reverso de tu DPI"
+                : "Presiona Capturar para activar la cámara y escanear";
+            }
+          });
+        }
+      }
+
+      function togglePin6Digitos(activo) {
+        session.usaPin6Digitos = activo;
+        renderView();
+        validarCredencialesPaso9();
+      }
+
+      function validarCredencialesPaso9() {
+        const btn = document.getElementById("btn-pwd");
+        if (!btn) return;
+
+        if (session.usaPin6Digitos) {
+          const p1 = (
+            document.getElementById("pin6-input")?.value || ""
+          ).trim();
+          const p2 = (
+            document.getElementById("pin6-confirm")?.value || ""
+          ).trim();
+          const valido = p1.length === 6 && /^\d{6}$/.test(p1) && p1 === p2;
+          btn.style.opacity = valido ? "1" : "0.5";
+          btn.style.pointerEvents = valido ? "auto" : "none";
+        } else {
+          const val = document.getElementById("pwd-input")?.value || "";
+          const conf = document.getElementById("pwd-confirm")?.value || "";
+          const rL = document.getElementById("req-len");
+          const rU = document.getElementById("req-up");
+          const rN = document.getElementById("req-num");
+          const rS = document.getElementById("req-sym");
+
+          let vL = val.length >= 8;
+          let vU = /[A-Z]/.test(val);
+          let vN = /[0-9]/.test(val);
+          let vS = /[^A-Za-z0-9]/.test(val);
+
+          if (rL) {
+            rL.innerHTML = vL
+              ? "✅ Mínimo 8 caracteres"
+              : "❌ Mínimo 8 caracteres";
+            rL.style.color = vL ? "var(--success)" : "var(--danger)";
+          }
+          if (rU) {
+            rU.innerHTML = vU
+              ? "✅ Una letra mayúscula"
+              : "❌ Una letra mayúscula";
+            rU.style.color = vU ? "var(--success)" : "var(--danger)";
+          }
+          if (rN) {
+            rN.innerHTML = vN ? "✅ Un número" : "❌ Un número";
+            rN.style.color = vN ? "var(--success)" : "var(--danger)";
+          }
+          if (rS) {
+            rS.innerHTML = vS
+              ? "✅ Un símbolo (!@#$%)"
+              : "❌ Un símbolo (!@#$%)";
+            rS.style.color = vS ? "var(--success)" : "var(--danger)";
+          }
+
+          const coincide = conf.length === 0 || val === conf;
+          if (vL && vU && vN && vS && coincide) {
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+          } else {
+            btn.style.opacity = "0.5";
+            btn.style.pointerEvents = "none";
+          }
+        }
+      }
+
+      function solicitarPermisoYTomarSelfie() {
+        abrirModoSelfieDifuminado();
+      }
+
+      function abrirModoSelfieDifuminado() {
+        const overlay = document.getElementById("selfie-blur-overlay");
+        const circle = document.getElementById("selfie-spotlight-circle");
+        const titleEl = document.getElementById("selfie-overlay-title");
+        const statusEl = document.getElementById("selfie-overlay-status");
+        const btnCapture = document.getElementById(
+          "btn-trigger-selfie-capture",
+        );
+        const beam = document.getElementById("selfie-live-beam");
+        const canvasEl = document.getElementById("selfie-live-canvas");
+        const reticle = document.getElementById("selfie-clean-reticle");
+
+        if (!overlay) return;
+        overlay.classList.add("active");
+        circle.classList.remove("scanning", "success");
+        if (beam) beam.style.display = "none";
+        if (canvasEl) canvasEl.style.display = "none";
+        if (reticle) reticle.style.display = "flex";
+        if (titleEl) titleEl.innerText = "Ubica tu rostro en el círculo";
+        if (statusEl) {
+          statusEl.innerText = "Activando cámara frontal...";
+          statusEl.style.color = "var(--capri-light)";
+        }
+        if (btnCapture) btnCapture.style.display = "inline-flex";
+
+        startStepCamera("selfie-live-video", "user").then((started) => {
+          if (started && reticle) reticle.style.display = "none";
+          if (statusEl) {
+            statusEl.innerText = started
+              ? "Cámara frontal activa • Presiona Capturar"
+              : "Presiona Capturar para tomar tu fotografía";
+          }
+        });
+      }
+
+      function procesarSelfieDesdeDataUrl(selfieDataUrl) {
+        const overlay = document.getElementById("selfie-blur-overlay");
+        const circle = document.getElementById("selfie-spotlight-circle");
+        const titleEl = document.getElementById("selfie-overlay-title");
+        const statusEl = document.getElementById("selfie-overlay-status");
+        const btnCapture = document.getElementById(
+          "btn-trigger-selfie-capture",
+        );
+        const beam = document.getElementById("selfie-live-beam");
+        const flash = document.getElementById("selfie-live-flash");
+        const canvasEl = document.getElementById("selfie-live-canvas");
+        const reticle = document.getElementById("selfie-clean-reticle");
+
+        if (overlay && !overlay.classList.contains("active")) {
+          overlay.classList.add("active");
+        }
+        if (btnCapture) btnCapture.style.display = "none";
+        if (reticle) reticle.style.display = "none";
+
+        if (flash) {
+          flash.classList.add("flash");
+          setTimeout(() => flash.classList.remove("flash"), 240);
+        }
+
+        stopActiveCamera();
+
+        if (canvasEl && selfieDataUrl) {
+          const img = new Image();
+          img.onload = () => {
+            canvasEl.width = img.width || 400;
+            canvasEl.height = img.height || 400;
+            canvasEl
+              .getContext("2d")
+              .drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+            canvasEl.style.display = "block";
+          };
+          img.src = selfieDataUrl;
+        }
+
+        if (circle) circle.classList.add("scanning");
+        if (beam) beam.style.display = "block";
+        if (titleEl) titleEl.innerText = "Escaneando biometría facial...";
+        if (statusEl) {
+          statusEl.innerText = "Verificando prueba de vida 3D...";
+          statusEl.style.color = "var(--yellow)";
+        }
+
+        setTimeout(() => {
+          if (beam) beam.style.display = "none";
+          if (circle) {
+            circle.classList.remove("scanning");
+            circle.classList.add("success");
+          }
+          if (titleEl) titleEl.innerText = "¡Captura y escaneo exitoso!";
+          if (statusEl) {
+            statusEl.innerText = "✓ Biometría verificada con éxito (99.8%)";
+            statusEl.style.color = "var(--success)";
+          }
+
+          setTimeout(() => {
+            session.fotos.selfie = selfieDataUrl;
+            if (overlay) overlay.classList.remove("active");
+            renderView();
+          }, 1100);
+        }, 2000);
+      }
+
+      function ejecutarCapturaSelfieCircular() {
+        const canvasEl = document.getElementById("selfie-live-canvas");
+        const captured = captureFrameToCanvas(
+          "selfie-live-video",
+          "selfie-live-canvas",
+          true,
+        );
+        let selfieDataUrl = null;
+        if (captured && canvasEl) {
+          selfieDataUrl = canvasEl.toDataURL("image/png");
+        } else {
+          selfieDataUrl = createCleanCapturedSelfieDataUrl();
+        }
+        procesarSelfieDesdeDataUrl(selfieDataUrl);
+      }
+
+      function procesarDpiDesdeDataUrl(isFront, fotoDataUrl) {
+        const frameId = isFront ? "dpi-front-frame" : "dpi-back-frame";
+        const lineId = isFront ? "dpi-front-line" : "dpi-back-line";
+        const statusId = isFront ? "dpi-front-status" : "dpi-back-status";
+        const canvasId = isFront ? "dpi-front-canvas" : "dpi-back-canvas";
+        const flashId = isFront ? "dpi-front-flash" : "dpi-back-flash";
+        const reticleId = isFront ? "dpi-front-reticle" : "dpi-back-reticle";
+
+        const frame = document.getElementById(frameId);
+        const line = document.getElementById(lineId);
+        const stat = document.getElementById(statusId);
+        const btn = document.getElementById(
+          isFront ? "btn-scan-frente" : "btn-scan-atras",
+        );
+        const flash = document.getElementById(flashId);
+        const canvasEl = document.getElementById(canvasId);
+        const reticle = document.getElementById(reticleId);
+
+        if (reticle) reticle.style.display = "none";
+
+        if (flash) {
+          flash.classList.add("flash");
+          setTimeout(() => flash.classList.remove("flash"), 220);
+        }
+
+        stopActiveCamera();
+
+        if (canvasEl && fotoDataUrl) {
+          const img = new Image();
+          img.onload = () => {
+            canvasEl.width = img.width || 480;
+            canvasEl.height = img.height || 300;
+            canvasEl
+              .getContext("2d")
+              .drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+            canvasEl.style.display = "block";
+          };
+          img.src = fotoDataUrl;
+        }
+
+        if (isFront) {
+          session.fotos.dpiFrente = fotoDataUrl;
+        } else {
+          session.fotos.dpiReverso = fotoDataUrl;
+        }
+
+        if (frame) frame.classList.add("scanning");
+        if (line) line.style.display = "block";
+        if (stat) {
+          stat.innerText = "Escaneando lectura óptica OCR...";
+          stat.style.color = "var(--yellow)";
+        }
+        if (btn) btn.style.display = "none";
+
+        setTimeout(() => {
+          if (line) line.style.display = "none";
+          if (frame) {
+            frame.classList.remove("scanning");
+            frame.classList.add("success");
+          }
+          if (stat) {
+            stat.innerText = "✓ Captura y lectura exitosa";
+            stat.style.color = "var(--success)";
+          }
+
+          setTimeout(() => {
+            if (isFront) jumpToPhase(5);
+            else jumpToPhase(6);
+          }, 1000);
+        }, 1900);
+      }
+
+      function iniciarEscaneo(isFront) {
+        const videoId = isFront ? "dpi-front-video" : "dpi-back-video";
+        const canvasId = isFront ? "dpi-front-canvas" : "dpi-back-canvas";
+        const canvasEl = document.getElementById(canvasId);
+        const captured = captureFrameToCanvas(videoId, canvasId, false);
+
+        let fotoDataUrl = null;
+        if (captured && canvasEl) {
+          fotoDataUrl = canvasEl.toDataURL("image/png");
+        } else {
+          fotoDataUrl = createCleanCapturedDpiDataUrl(
+            isFront ? "FRENTE" : "REVERSO",
+          );
+        }
+        procesarDpiDesdeDataUrl(isFront, fotoDataUrl);
+      }
+
+      function simularFacephi(isSuccess) {
+        if (isSuccess) {
+          abrirModoSelfieDifuminado();
+          return;
+        }
+        const radar = document.getElementById("face-radar");
+        const beam = document.getElementById("face-beam");
+        const stat = document.getElementById("face-status");
+        const btn1 = document.getElementById("btn-face");
+        const btn2 = document.getElementById("btn-face-fail");
+
+        if (radar) radar.style.borderColor = "var(--capri)";
+        if (beam) beam.style.display = "block";
+        if (stat) stat.innerText = "Analizando biometría facial...";
+        if (btn1) btn1.style.display = "none";
+        if (btn2) btn2.style.display = "none";
+
+        mostrarToastAmbienteSelfie("ILUMINACION");
+
+        setTimeout(() => {
+          mostrarToastAmbienteSelfie("DISTORSION");
+        }, 900);
+
+        setTimeout(() => {
+          if (beam) beam.style.display = "none";
+          if (radar) radar.style.borderColor = "var(--danger)";
+          const iconEl = document.getElementById("face-icon");
+          if (iconEl) iconEl.innerText = "❌";
+          if (stat) {
+            stat.innerText = "Coincidencia facial menor al 95%";
+            stat.style.color = "var(--danger)";
+          }
+
+          showModal(
+            "Reconocimiento facial fallido",
+            "El sistema obtuvo una coincidencia menor al 95% respecto a la fotografía de tu DPI.<br><br><b>Causas detectadas:</b><br>• No hay suficiente iluminación.<br>• Hay mucha distorsión en el fondo.",
+            "👤",
+            `<button class="btn-action-primary" onclick="closeModal(); jumpToPhase(8);">Reintentar biometría</button>`,
+          );
+
+          if (btn1) btn1.style.display = "flex";
+          if (btn2) btn2.style.display = "flex";
+        }, 1900);
+      }
+
+      function copiarCuentaACH() {
+        const numeroACH = "1500014400271005";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(numeroACH).catch(() => {});
+        } else {
+          const temp = document.createElement("input");
+          temp.value = numeroACH;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+        }
+        const btnCopy = document.getElementById("btn-copy-ach");
+        if (btnCopy) {
+          btnCopy.innerText = "✓ Copiado";
+          btnCopy.style.background = "var(--success)";
+        }
+        showStepToast({
+          type: "success",
+          msg: "Número de cuenta 1500014400271005 copiado",
+        });
+      }
+
+      function renderFundingOptionsModal() {
+        const h = `
+                <div style="text-align:left; font-size:0.8rem; color:var(--navy);">
+                    <div style="margin-bottom:10px; padding:10px; background:var(--capri-soft); border-radius:10px;">
+                        <b>1. Desde otros bancos (ACH):</b><br>
+                        Selecciona siempre el Banco INV, Cuenta de ahorro e ingresa el código obligatorio <b>150001</b> antes del número de tu cuenta a depositar:<br>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:6px; background:#FFFFFF; padding:6px 10px; border-radius:8px; border:1px solid var(--border);">
+                            <span style="font-family:monospace; font-weight:900; color:var(--navy); font-size:0.9rem;">1500014400271005</span>
+                            <button type="button" id="btn-copy-ach" style="background:var(--capri); color:#FFF; border:none; border-radius:6px; padding:4px 10px; font-size:0.72rem; font-weight:800; cursor:pointer;" onclick="copiarCuentaACH()">📋 Copiar</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:10px; padding:10px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px;">
+                        <b>2. Mediante tarjeta de débito:</b><br>
+                        <input type="text" class="form-input" placeholder="Ingresa tu número de tarjeta (16 dígitos)" style="margin-top:4px; font-size:0.8rem;" maxlength="19">
+                        <button class="btn-action-capri" style="margin-top:6px; min-height:36px; font-size:0.75rem;" onclick="closeModal(); showModal('Pago procesado', 'Se han debitado Q125.00 de tu tarjeta exitosamente.', '✅');">Debitar Q 125.00 y activar</button>
+                    </div>
+
+                    <div style="margin-bottom:10px; padding:10px; background:var(--capri-soft); border-radius:10px;">
+                        <b>3. Solicitarle fondos a un amigo de INTERCOP:</b><br>
+                        <input type="text" class="form-input" placeholder="Número de cuenta o celular de tu amigo" style="margin-top:4px; font-size:0.8rem;">
+                        <button class="btn-action-primary" style="margin-top:6px; min-height:36px; font-size:0.75rem;" onclick="closeModal(); showModal('Solicitud enviada', 'A tu amigo le ha llegado una notificación por Q125.00 para activar tus cuentas.', '✅');">Enviar solicitud (Q100 aporte + Q25 ahorro)</button>
+                    </div>
+
+                    <div style="padding:10px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px;">
+                        <b>4. Puntos Akí Sí:</b><br>
+                        Deposita en efectivo en comercios como Super 24, Despensa Familiar y otros afiliados proporcionando únicamente tu número de cuenta <b>${session.cuentaCorriente}</b>.
+                    </div>
+                </div>
+            `;
+        showModal("Opciones para activar mis cuentas", h, "💳");
+      }
+
+      function verYEnviarKitBienvenida() {
+        const correoDestino =
+          session.correo || "tu correo electrónico registrado";
+        showStepToast({
+          type: "success",
+          msg: `Kit de Bienvenida enviado automáticamente a ${correoDestino}`,
+        });
+        toggleWelcomeKitView(true);
+      }
+
+      function renderShareModal() {
+        const textoInvitacionExacto =
+          "¡Hola! Te invito a asociarte a INTERCOP en menos de 5 minutos y formar parte de la Cooperativa de Todos, descargando la APP o ingresando a este enlace: https://digital.intercop.gt/login";
+        const msgInvitacion = encodeURIComponent(textoInvitacionExacto);
+        const urlIntercop = encodeURIComponent(
+          "https://digital.intercop.gt/login",
+        );
+        const h = `
+                <style>
+                    .share-btn { display: flex; flex-direction: column; align-items: center; justify-content:center; gap: 4px; padding: 12px 10px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; text-decoration: none; color: var(--navy); font-weight: 800; font-size: 0.74rem; transition: 0.2s; background: #FFF; }
+                    .share-btn:hover { background: var(--capri-soft); border-color: var(--capri); transform: translateY(-2px); }
+                </style>
+                <div style="font-size:0.74rem; color:var(--navy); background:var(--capri-soft); border:1px solid var(--border); border-radius:10px; padding:8px 10px; margin-bottom:12px; text-align:left; line-height:1.4;">
+                    <b>Mensaje a compartir:</b><br>${textoInvitacionExacto}
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${urlIntercop}&quote=${msgInvitacion}" target="_blank" rel="noopener noreferrer" class="share-btn">
+                        <span style="font-size:1.6rem;">📘</span><span>Facebook</span>
+                    </a>
+                    <a href="https://wa.me/?text=${msgInvitacion}" target="_blank" rel="noopener noreferrer" class="share-btn">
+                        <span style="font-size:1.6rem;">💬</span><span>WhatsApp</span>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="share-btn">
+                        <span style="font-size:1.6rem;">📸</span><span>Instagram</span>
+                    </a>
+                    <a href="https://t.me/share/url?url=${urlIntercop}&text=${msgInvitacion}" target="_blank" rel="noopener noreferrer" class="share-btn">
+                        <span style="font-size:1.6rem;">🌐</span><span>Telegram / X</span>
+                    </a>
+                    <a href="sms:?&body=${msgInvitacion}" target="_top" class="share-btn">
+                        <span style="font-size:1.6rem;">📱</span><span>SMS</span>
+                    </a>
+                    <a href="mailto:?subject=${encodeURIComponent("Invitación a INTERCOP Digital")}&body=${msgInvitacion}" target="_top" class="share-btn">
+                        <span style="font-size:1.6rem;">✉️</span><span>Correo</span>
+                    </a>
+                </div>
+            `;
+        showModal("Invitar a mis amigos y familiares", h, "🎉");
+      }
+
+      function renderDashboardImage() {
+        closeModal();
+        stopActiveCamera();
+        const view = document.getElementById("app-dynamic-view");
+        const stepTag = document.getElementById("app-step-tag");
+        stepTag.style.display = "inline-block";
+        stepTag.innerText = "INTERCOP Digital";
+        view.style.padding = "0";
+        view.innerHTML = `
+                <div style="height:100%; width:100%; position:relative; min-height:650px; background:var(--navy);">
+                    <div style="position:absolute; inset:0; background:linear-gradient(160deg, var(--navy) 0%, var(--navy-dark) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; color:#FFF;">
+                        <div style="font-size:3.5rem; margin-bottom:12px;">🏛️</div>
+                        <h2 style="margin-bottom:10px; font-weight:900;">INTERCOP Digital Activo</h2>
+                        <p style="font-size:0.85rem; line-height:1.5; color:var(--capri-light);">Tu perfil ha sido configurado correctamente. Aquí verás tus saldos de cuentas, ahorros y créditos 100% digitales.</p>
+                        <a href="https://www.intercop.gt/" target="_blank" rel="noopener noreferrer" class="btn-action-capri" style="margin-top:18px; max-width:260px;">🌐 Más información en nuestra página</a>
+                        <button class="btn-action-capri admin-only-control" style="margin-top:10px; max-width:260px; background:var(--navy-surface);" onclick="toggleAdminReportView()">📊 Ver informe Admin</button>
+                        <button class="btn-action-yellow" style="margin-top:10px; max-width:260px;" onclick="jumpToPhase(1)">↻ Volver a empezar</button>
+                    </div>
+                </div>
+            `;
+      }
+
+      function buildAdminReportInnerHTML(isStandaloneFile = false) {
+        const imgFrente =
+          session.fotos.dpiFrente || createCleanCapturedDpiDataUrl("FRENTE");
+        const imgReverso =
+          session.fotos.dpiReverso || createCleanCapturedDpiDataUrl("REVERSO");
+        const imgSelfie =
+          session.fotos.selfie || createCleanCapturedSelfieDataUrl();
+
+        const chipsResumen = Object.entries(session.preferencias)
+          .map(
+            ([cat, vals]) =>
+              `<div class="kv-row"><span class="kv-key">${cat}:</span><span class="kv-val">${vals.length ? vals.join(", ") : "Sin selección"}</span></div>`,
+          )
+          .join("");
+
+        const fuentesHtml = fuentesIngresosList
+          .map(
+            (f, idx) =>
+              `<div class="kv-row"><span class="kv-key">Fuente #${idx + 1}:</span><span class="kv-val">${f.dedicacion || "No especificada"} — ${f.descripcion || "Sin detalle"}</span></div>`,
+          )
+          .join("");
+
+        return `
+                <div class="admin-header-banner">
+                    <div>
+                        <div style="font-size:0.72rem; font-weight:900; color:var(--yellow); letter-spacing:1px;">Panel de control • Cumplimiento y operaciones</div>
+                        <h1 style="font-size:1.5rem; font-weight:900; margin:4px 0;">Informe oficial de onboarding digital — INTERCOP, R.L.</h1>
+                        <div style="font-size:0.8rem; color:var(--capri-light);">Expediente electrónico auditado • Fecha/hora: ${session.fechaHoraRegistro}</div>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        ${
+                          !isStandaloneFile
+                            ? `
+                            <button class="btn-action-yellow" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem;" onclick="downloadAdminReportHTML()">📥 Descargar informe Admin (HTML)</button>
+                            <button class="btn-action-capri" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem;" onclick="toggleAdminReportView()">← Volver al simulador</button>
+                        `
+                            : `
+                            <button class="btn-action-yellow" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem;" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+                        `
+                        }
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-bottom:20px;">
+                    <div class="admin-card-title">📸 Evidencia fotográfica y biométrica capturada</div>
+                    <div class="admin-photo-grid">
+                        <div class="admin-photo-box">
+                            <img src="${imgFrente}" alt="DPI Frente" class="admin-photo-preview">
+                            <div style="padding:10px 12px; background:#FFF;">
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">1. Documento DPI — Frente</div>
+                                <div style="font-size:0.7rem; color:var(--success); font-weight:800;">✓ OCR extraído • Sin alertas PEP/AML</div>
+                            </div>
+                        </div>
+                        <div class="admin-photo-box">
+                            <img src="${imgReverso}" alt="DPI Reverso" class="admin-photo-preview">
+                            <div style="padding:10px 12px; background:#FFF;">
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">2. Documento DPI — Reverso</div>
+                                <div style="font-size:0.7rem; color:var(--success); font-weight:800;">✓ Código MRZ y vigencia verificados</div>
+                            </div>
+                        </div>
+                        <div class="admin-photo-box">
+                            <img src="${imgSelfie}" alt="Selfie Biométrica" class="admin-photo-preview">
+                            <div style="padding:10px 12px; background:#FFF;">
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">3. Prueba de vida selfie</div>
+                                <div style="font-size:0.7rem; color:var(--success); font-weight:800;">✓ Coincidencia biométrica: 99.8%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="admin-card-title">🪪 Datos de identificación (DPI / CUI)</div>
+                        <div class="kv-row"><span class="kv-key">Nombre completo:</span><span class="kv-val">${session.datosPersonales.nombre}</span></div>
+                        <div class="kv-row"><span class="kv-key">CUI / usuario:</span><span class="kv-val">${session.datosPersonales.cui}</span></div>
+                        <div class="kv-row"><span class="kv-key">Fecha de nacimiento:</span><span class="kv-val">${session.datosPersonales.fNac}</span></div>
+                        <div class="kv-row"><span class="kv-key">Sexo / estado civil:</span><span class="kv-val">${session.datosPersonales.sexo} / ${session.datosPersonales.estadoCivil}</span></div>
+                        <div class="kv-row"><span class="kv-key">Modalidad de acceso:</span><span class="kv-val">${session.usaPin6Digitos ? "Clave de 6 dígitos (Estándar NIST)" : "Contraseña alfanumérica"}</span></div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-title">📍 Contacto y domicilio</div>
+                        <div class="kv-row"><span class="kv-key">Reside en el extranjero:</span><span class="kv-val">${session.resideExtranjero ? "Sí" : "No (Guatemala)"}</span></div>
+                        <div class="kv-row"><span class="kv-key">Teléfono:</span><span class="kv-val">${session.telefono || "Por definir"}</span></div>
+                        <div class="kv-row"><span class="kv-key">Correo electrónico:</span><span class="kv-val">${session.correo || "Por definir"}</span></div>
+                        <div class="kv-row"><span class="kv-key">Canal de token elegido:</span><span class="kv-val">${session.canalToken || "SMS"}</span></div>
+                        <div class="kv-row"><span class="kv-key">País / depto / municipio:</span><span class="kv-val">${session.paisResidencia} / ${session.deptoResidencia} / ${session.muniResidencia}</span></div>
+                        <div class="kv-row"><span class="kv-key">Dirección exacta:</span><span class="kv-val">${session.direccion || "Por definir"}</span></div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-title">💼 Actividad económica</div>
+                        ${fuentesHtml}
+                        <div class="kv-row"><span class="kv-key">¿Cuánto ganas al mes?:</span><span class="kv-val" style="color:var(--success);">Q ${session.ingresosMensuales || "0.00"}</span></div>
+                        <div class="kv-row"><span class="kv-key">¿Cuánto gastas al mes?:</span><span class="kv-val">Q ${session.egresosMensuales || "0.00"}</span></div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-title">🏛️ Cuentas y persona de confianza</div>
+                        <div class="kv-row"><span class="kv-key">Número de asociado:</span><span class="kv-val" style="color:var(--capri);">${session.numeroAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta aportación (01):</span><span class="kv-val">${session.cuentaAportacion}</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta corriente (05):</span><span class="kv-val">${session.cuentaCorriente}</span></div>
+                        <div class="kv-row"><span class="kv-key">Deja a alguien de tu confianza:</span><span class="kv-val">${session.beneficiarioNombre || "Por definir"} (${session.beneficiarioParentesco || "N/A"})</span></div>
+                    </div>
+
+                    <div class="admin-card" style="grid-column: 1 / -1;">
+                        <div class="admin-card-title">✨ Preferencias y experiencia del asociado</div>
+                        <div class="kv-row"><span class="kv-key">Nombre preferido:</span><span class="kv-val">${session.apodoPreferido || "No indicado"}</span></div>
+                        <div class="kv-row"><span class="kv-key">1. ¿Qué te gustaría hacer en INTERCOP?:</span><span class="kv-val" style="color:var(--capri);">${session.propositoIntercop || "No indicado"}</span></div>
+                        ${chipsResumen}
+                        <div class="kv-row"><span class="kv-key">9. ¿Algo nuevo que te gustaría encontrar en INTERCOP?:</span><span class="kv-val">${session.sugerenciasApp || "Ninguna sugerencia registrada"}</span></div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function toggleAdminReportView() {
+        if (isWelcomeKitOpen) {
+          isWelcomeKitOpen = false;
+          document
+            .getElementById("welcome-kit-overlay")
+            .classList.remove("active");
+        }
+        isAdminViewOpen = !isAdminViewOpen;
+        const overlay = document.getElementById("admin-report-overlay");
+        const content = document.getElementById("admin-report-content");
+        const btn = document.getElementById("btn-admin-toggle");
+
+        if (isAdminViewOpen) {
+          content.innerHTML = buildAdminReportInnerHTML(false);
+          overlay.classList.add("active");
+          if (btn) btn.innerText = "📱 Volver al simulador";
+        } else {
+          overlay.classList.remove("active");
+          if (btn) btn.innerText = "📊 Vista Admin (informes)";
+        }
+      }
+
+      // GENERADOR DEL KIT DE BIENVENIDA OFICIAL
+      function buildWelcomeKitInnerHTML(
+        isStandaloneFile = false,
+        enviadoPorCorreo = false,
+      ) {
+        const nombreAsociado =
+          session.datosPersonales.nombre ||
+          session.apodoPreferido ||
+          "VICTOR MANUEL CHIROY GUARCAX";
+        const primerNombre = obtenerPrimerNombreCapitalizado();
+        const cuiAsociado =
+          session.datosPersonales.cui || "Pendiente de registro";
+        const agenciaAsociado =
+          session.agenciaAsignada || "00 INTERCOP DIGITAL";
+        const correoAsociado = session.correo || "tucorreo@intercop.gt";
+
+        return `
+                <div class="admin-header-banner" style="background: linear-gradient(135deg, #002D59 0%, #0A3D73 55%, #00AEEA 100%); border-bottom: 5px solid #FFC700;">
+                    <div>
+                        <div style="display:inline-block; background:#FFC700; color:#002D59; font-size:0.7rem; font-weight:900; padding:3px 10px; border-radius:999px; margin-bottom:6px;">
+                            🏛️ 36 AÑOS EN EL MERCADO FINANCIERO COOPERATIVO • +170,000 ASOCIADOS
+                        </div>
+                        <h1 style="font-size:1.6rem; font-weight:900; margin:4px 0;">¡${primerNombre}, Bienvenido a INTERCOP!</h1>
+                        <div style="font-size:0.84rem; color:#E0F4FC;">Kit de Bienvenida Oficial • INTERCOP Digital • Emitido: ${session.fechaHoraRegistro}</div>
+                        ${enviadoPorCorreo ? `<div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.22); border:1px solid #10B981; color:#FFFFFF; padding:4px 12px; border-radius:999px; font-size:0.74rem; font-weight:800;">✉️ Copia enviada automáticamente a: ${correoAsociado}</div>` : ""}
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn-action-yellow" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem;" onclick="downloadWelcomeKitHTML()">📥 Descargar mi Kit de Bienvenida</button>
+                        <button class="btn-action-primary" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem; background:#001B36; margin-top:0;" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+                        ${
+                          !isStandaloneFile
+                            ? `
+                            <button class="btn-action-capri" style="width:auto; padding:10px 16px; min-height:40px; font-size:0.78rem; background:#FFFFFF; color:#002D59;" onclick="toggleWelcomeKitView(false)">← Volver al simulador</button>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+
+                <div class="admin-card" style="margin-bottom:20px; border-left:5px solid var(--capri); background:linear-gradient(90deg, #FFFFFF 0%, #F0F9FD 100%);">
+                    <div class="admin-card-title">🤝 ¡Te estábamos esperando! Ahora formas parte de INTERCOP, R.L.</div>
+                    <p style="font-size:0.86rem; line-height:1.6; color:var(--text-dark);">
+                        Estimado(a) asociado(a) <b>${nombreAsociado}</b>,<br><br>
+                        Hoy te unes a los <b>más de 170 mil asociados en todo el país</b> respaldados por <b>36 años de solidez y trayectoria</b> en el mercado financiero cooperativo de Guatemala. En <b>INTERCOP</b> no eres un cliente: eres asociado de la Cooperativa, con voz y voto según los estatutos.
+                    </p>
+                </div>
+
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="admin-card-title">🏛️ Conoce tus cuentas y cómo activarlas</div>
+                        <div class="kv-row"><span class="kv-key">Asociado titular:</span><span class="kv-val">${nombreAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Número de asociado:</span><span class="kv-val" style="color:var(--capri); font-size:0.95rem;">${session.numeroAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Usuario INTERCOP Digital (CUI):</span><span class="kv-val">${cuiAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta aportación (01):</span><span class="kv-val">${session.cuentaAportacion} (Apertura Q 100.00)</span></div>
+                        <div class="kv-row"><span class="kv-key">Cuenta corriente (05):</span><span class="kv-val">${session.cuentaCorriente} (Apertura Q 25.00)</span></div>
+                        <div class="kv-row"><span class="kv-key">Agencia adscrita:</span><span class="kv-val">${agenciaAsociado}</span></div>
+                        <div class="kv-row"><span class="kv-key">Deja a alguien de tu confianza:</span><span class="kv-val">${session.beneficiarioNombre || "Por definir"} (${session.beneficiarioParentesco || "N/A"})</span></div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-title">🌟 ¿Qué significa ser asociado de INTERCOP?</div>
+                        <div style="font-size:0.8rem; line-height:1.68; color:var(--navy);">
+                            ✓ Sin cobro de manejo de cuenta ni membresías.<br>
+                            ✓ Altos rendimientos en tus cuentas de ahorro e inversión.<br>
+                            ✓ Préstamos con tasas justas, trámites ágiles y ahora 100% Digital.<br>
+                            ✓ Atención cercana en <b>más de 44 agencias en todo el país</b> y en <b>INTERCOP Digital</b> desde cualquier parte.<br>
+                            ✓ Y otros beneficios exclusivos que solo INTERCOP te lo puede dar.
+                        </div>
+                    </div>
+
+                    <div class="admin-card" style="grid-column: 1 / -1;">
+                        <div class="admin-card-title">💳 Opciones para activar mis cuentas (Total apertura: Q 125.00)</div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+                            <div style="padding:12px; background:#F0F9FD; border:1px solid #BCE2F7; border-radius:12px; font-size:0.78rem; color:var(--navy);">
+                                <b>1. Desde otros bancos (ACH)</b><br>
+                                Selecciona <b>Banco INV</b>, tipo <b>Cuenta de ahorro</b> e ingresa el código obligatorio <b>150001</b> seguido de tu cuenta:<br>
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; background:#FFF; padding:5px 8px; border-radius:8px; border:1px solid #BCE2F7;">
+                                    <span style="font-family:monospace; font-weight:900; font-size:0.86rem; color:var(--navy);">1500014400271005</span>
+                                    <button type="button" style="background:var(--capri); color:#FFF; border:none; border-radius:6px; padding:3px 8px; font-size:0.68rem; font-weight:800; cursor:pointer;" onclick="copiarCuentaACH()">Copiar</button>
+                                </div>
+                            </div>
+                            <div style="padding:12px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; font-size:0.78rem; color:var(--navy);">
+                                <b>2. Con tarjeta de débito</b><br>
+                                Realiza el débito directo por <b>Q 125.00</b> desde la sección <i>Opciones para activar mis cuentas</i> en INTERCOP Digital con tarjeta Visa o Mastercard.
+                            </div>
+                            <div style="padding:12px; background:#F0F9FD; border:1px solid #BCE2F7; border-radius:12px; font-size:0.78rem; color:var(--navy);">
+                                <b>3. Solicitar a un amigo de INTERCOP</b><br>
+                                Envía una solicitud de activación por Q 125.00 (Q 100.00 aportación + Q 25.00 ahorro) indicando el número de cuenta o celular de un asociado activo.
+                            </div>
+                            <div style="padding:12px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; font-size:0.78rem; color:var(--navy);">
+                                <b>4. Puntos Akí Sí y agencias</b><br>
+                                Deposita en efectivo en Super 24, Despensa Familiar o cualquiera de nuestras <b>más de 44 agencias</b> indicando tu cuenta <b>${session.cuentaCorriente}</b>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card" style="background:linear-gradient(135deg, #002D59 0%, #0A3D73 100%); color:#FFFFFF; border:2px solid #FFC700;">
+                        <div class="admin-card-title" style="color:#FFC700; border-bottom-color:rgba(255,199,0,0.35);">🎉 Promoción exclusiva: ¡Vive la INTERFIESTA de INTERCOP!</div>
+                        <p style="font-size:0.8rem; line-height:1.55; color:#E0F4FC; margin-bottom:10px;">
+                            Al activar tus cuentas, incrementar tus ahorros, realizar tus operaciones en <b>INTERCOP Digital</b> o mantener al día tus productos financieros, participas automáticamente en los grandes sorteos y premios de <b>INTERFIESTA</b>: vehículos, motocicletas, electrodomésticos y premios en efectivo para nuestros asociados.
+                        </p>
+                        <a href="https://www.intercop.gt/" target="_blank" rel="noopener noreferrer" class="btn-action-yellow" style="min-height:38px; font-size:0.78rem;">🎁 Conoce las bases de INTERFIESTA en intercop.gt</a>
+                    </div>
+
+                    <div class="admin-card" style="border-top:4px solid var(--capri);">
+                        <div class="admin-card-title">📍 Cobertura nacional (+44 agencias) y 36 años de historia</div>
+                        <p style="font-size:0.78rem; line-height:1.5; color:var(--navy); margin-bottom:8px;">
+                            Con <b>36 años de trayectoria</b> en el sector financiero cooperativo guatemalteco, contamos con <b>más de 44 agencias</b> en Sololá, Chimaltenango, Quiché, Quetzaltenango, Sacatepéquez, Guatemala y puntos estratégicos en todo el país.
+                        </p>
+                        <div style="font-size:0.73rem; color:var(--text-muted); margin-bottom:10px; line-height:1.4;">
+                            <b>Regiones con cobertura:</b> Central Sololá, Tecpán, Comalapa, Panajachel, Chimaltenango, Patzún, Quiché, Chichicastenango, Quetzaltenango, San Lucas, Zona 4, Metronorte, Periroosevelt, Nebaj, Joyabaj, Santiago Atitlán y Agencia Digital.
+                        </div>
+                        <a href="https://www.intercop.gt/" target="_blank" rel="noopener noreferrer" class="btn-action-capri" style="min-height:38px; font-size:0.76rem;">🗺️ Ver directorio completo de agencias en intercop.gt</a>
+                    </div>
+
+                    <div class="admin-card" style="grid-column: 1 / -1; background:#F8FAFC;">
+                        <div class="admin-card-title">🤝 Nuestros aliados estratégicos y redes de servicio</div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+                            <div style="background:#FFF; border:1px solid #BCE2F7; border-radius:10px; padding:10px; text-align:center;">
+                                <div style="font-size:1.3rem;">🏧</div>
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">Red de Cajeros 5B</div>
+                                <div style="font-size:0.68rem; color:var(--text-muted);">Retiros y consultas a nivel nacional</div>
+                            </div>
+                            <div style="background:#FFF; border:1px solid #BCE2F7; border-radius:10px; padding:10px; text-align:center;">
+                                <div style="font-size:1.3rem;">🏦</div>
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">Transferencias ACH / INV</div>
+                                <div style="font-size:0.68rem; color:var(--text-muted);">Operaciones interbancarias inmediatas</div>
+                            </div>
+                            <div style="background:#FFF; border:1px solid #BCE2F7; border-radius:10px; padding:10px; text-align:center;">
+                                <div style="font-size:1.3rem;">💸</div>
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">Remesas Familiares</div>
+                                <div style="font-size:0.68rem; color:var(--text-muted);">Western Union, Vigo, Ria, MoneyGram, Intermex</div>
+                            </div>
+                            <div style="background:#FFF; border:1px solid #BCE2F7; border-radius:10px; padding:10px; text-align:center;">
+                                <div style="font-size:1.3rem;">🛡️</div>
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">Seguros y Respaldo</div>
+                                <div style="font-size:0.68rem; color:var(--text-muted);">Protección solidaria y pólizas para asociados</div>
+                            </div>
+                            <div style="background:#FFF; border:1px solid #BCE2F7; border-radius:10px; padding:10px; text-align:center;">
+                                <div style="font-size:1.3rem;">🛒</div>
+                                <div style="font-size:0.78rem; font-weight:900; color:var(--navy);">Puntos Akí Sí y Super 24</div>
+                                <div style="font-size:0.68rem; color:var(--text-muted);">Depósitos y pagos cerca de ti</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card" style="grid-column: 1 / -1; border-left:5px solid #FFC700;">
+                        <div class="admin-card-title">📞 Canales oficiales de contacto y atención al asociado</div>
+                        <div class="kv-row"><span class="kv-key">PBX central:</span><span class="kv-val">(+502) 7931-1919 / 7873-4444</span></div>
+                        <div class="kv-row"><span class="kv-key">WhatsApp oficial de asistencia:</span><span class="kv-val">(+502) 7931-1919 • Atención personalizada</span></div>
+                        <div class="kv-row"><span class="kv-key">Correo electrónico:</span><span class="kv-val">info@intercop.gt / servicioalasociado@intercop.gt</span></div>
+                        <div class="kv-row"><span class="kv-key">Facebook y redes oficiales:</span><span class="kv-val">Cooperativa INTERCOP R.L. (@intercopgt)</span></div>
+                        <div class="kv-row"><span class="kv-key">Sitio web y portal digital:</span><span class="kv-val"><a href="https://www.intercop.gt/" target="_blank" rel="noopener noreferrer" style="color:var(--capri); text-decoration:underline;">https://www.intercop.gt/</a> • https://digital.intercop.gt/login</span></div>
+                        <div class="kv-row"><span class="kv-key">Seguridad digital:</span><span class="kv-val">INTERCOP nunca te solicitará tu contraseña ni tokens por llamada o WhatsApp.</span></div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function toggleWelcomeKitView(enviadoPorCorreo = false) {
+        if (isAdminViewOpen) {
+          isAdminViewOpen = false;
+          document
+            .getElementById("admin-report-overlay")
+            .classList.remove("active");
+        }
+        isWelcomeKitOpen = !isWelcomeKitOpen;
+        const overlay = document.getElementById("welcome-kit-overlay");
+        const content = document.getElementById("welcome-kit-content");
+        const btn = document.getElementById("btn-kit-toggle");
+
+        if (isWelcomeKitOpen) {
+          content.innerHTML = buildWelcomeKitInnerHTML(false, enviadoPorCorreo);
+          overlay.classList.add("active");
+          if (btn) btn.innerText = "📱 Volver al simulador";
+        } else {
+          overlay.classList.remove("active");
+          if (btn) btn.innerText = "📄 Kit de bienvenida";
+        }
+      }
+
+      function downloadWelcomeKitHTML() {
+        const kitBody = buildWelcomeKitInnerHTML(true, true);
+        const standaloneKitHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kit de Bienvenida Oficial — INTERCOP, R.L.</title>
+    <style>
+        :root {
+            --navy: #002D59;
+            --navy-dark: #001B36;
+            --navy-surface: #0A3D73;
+            --capri: #00AEEA;
+            --capri-light: #E0F4FC;
+            --yellow: #FFC700;
+            --border: #BCE2F7;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --shadow-sm: 0 2px 8px rgba(0, 45, 89, 0.06);
+            --shadow-md: 0 8px 24px rgba(0, 45, 89, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #F1F5F9; color: var(--text-dark); padding: 30px 20px; }
+        .admin-container { max-width: 980px; margin: 0 auto; }
+        .admin-header-banner { background: linear-gradient(135deg, var(--navy) 0%, var(--capri) 100%); color: #FFF; border-radius: 20px; padding: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; box-shadow: var(--shadow-md); }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .admin-card { background: #FFF; border-radius: 16px; padding: 18px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm); }
+        .admin-card-title { font-size: 0.88rem; font-weight: 900; color: var(--navy); border-bottom: 2px solid var(--capri-light); padding-bottom: 8px; margin-bottom: 12px; }
+        .kv-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #E2E8F0; font-size: 0.8rem; gap: 10px; }
+        .kv-row:last-child { border-bottom: none; }
+        .kv-key { color: var(--text-muted); font-weight: 700; }
+        .kv-val { color: var(--navy); font-weight: 800; text-align: right; }
+        .btn-action-yellow { background: var(--yellow); color: var(--navy); border: none; border-radius: 12px; padding: 10px 18px; font-weight: 900; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-action-capri { background: var(--capri); color: #FFF; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 900; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-action-primary { background: var(--navy); color: #FFF; border: none; border-radius: 12px; padding: 10px 18px; font-weight: 900; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        ${kitBody}
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([standaloneKitHTML], {
+          type: "text/html;charset=utf-8",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Kit_Bienvenida_Oficial_INTERCOP.html";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showModal(
+          "Kit de Bienvenida descargado",
+          "Se ha generado y descargado el archivo <b>Kit_Bienvenida_Oficial_INTERCOP.html</b> listo para visualizarse o imprimirse.",
+          "📄",
+        );
+      }
+
+      function downloadAdminReportHTML() {
+        const reportBody = buildAdminReportInnerHTML(true);
+        const standaloneHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Onboarding — Vista Administrador | INTERCOP Digital</title>
+    <style>
+        :root {
+            --navy: #002D59;
+            --navy-dark: #001B36;
+            --navy-surface: #0A3D73;
+            --capri: #00AEEA;
+            --capri-light: #E0F4FC;
+            --yellow: #FFC700;
+            --border: #BCE2F7;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --shadow-sm: 0 2px 8px rgba(0, 45, 89, 0.06);
+            --shadow-md: 0 8px 24px rgba(0, 45, 89, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #F1F5F9; color: var(--text-dark); padding: 30px 20px; }
+        .admin-container { max-width: 980px; margin: 0 auto; }
+        .admin-header-banner { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-surface) 100%); color: #FFF; border-radius: 20px; padding: 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; box-shadow: var(--shadow-md); }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .admin-card { background: #FFF; border-radius: 16px; padding: 18px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm); }
+        .admin-card-title { font-size: 0.88rem; font-weight: 900; color: var(--navy); border-bottom: 2px solid var(--capri-light); padding-bottom: 8px; margin-bottom: 12px; }
+        .admin-photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+        .admin-photo-box { background: #071324; border-radius: 14px; overflow: hidden; border: 2px solid var(--border); display: flex; flex-direction: column; }
+        .admin-photo-preview { width: 100%; height: 190px; object-fit: cover; background: #040B16; }
+        .kv-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #E2E8F0; font-size: 0.8rem; gap: 10px; }
+        .kv-row:last-child { border-bottom: none; }
+        .kv-key { color: var(--text-muted); font-weight: 700; }
+        .kv-val { color: var(--navy); font-weight: 800; text-align: right; }
+        .btn-action-yellow { background: var(--yellow); color: var(--navy); border: none; border-radius: 12px; padding: 10px 18px; font-weight: 900; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        ${reportBody}
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([standaloneHTML], {
+          type: "text/html;charset=utf-8",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Informe_Onboarding_Admin_INTERCOP.html";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showModal(
+          "Informe de administrador descargado",
+          "Se ha generado el archivo HTML independiente (<b>Informe_Onboarding_Admin_INTERCOP.html</b>).",
+          "📊",
+        );
+      }
+
+      function simularFallaDPI(tipo) {
+        if (tipo === "ASOCIADO") {
+          showModal(
+            "Identificación registrada",
+            "<b>El CUI leído pertenece a un asociado activo.</b><br><br>No es necesario realizar un nuevo enrolamiento. Si no tienes usuario digital, por favor solicítalo, o inicia sesión si ya cuentas con uno.",
+            "⚠️",
+            `<button class="btn-action-primary" onclick="closeModal(); jumpToPhase(1);">Ir a iniciar sesión</button>`,
+          );
+        } else if (tipo === "PEP") {
+          showModal(
+            "Alerta de cumplimiento normativo",
+            "Hemos detectado una coincidencia en listas de cumplimiento.<br><br>Tu solicitud será atendida por la Agencia Digital para su debida diligencia.",
+            "🛡️",
+          );
+        } else if (tipo === "VENCIDO") {
+          showModal(
+            "Documento inválido o vencido",
+            "<b>El DPI escaneado se encuentra vencido o no es válido según los registros oficiales.</b><br><br>Debes presentar un DPI vigente para aperturar tus cuentas.",
+            "❌",
+          );
+        } else if (tipo === "DETERIORO") {
+          showModal(
+            "Documento ilegible",
+            "<b>No fue posible extraer la información de tu DPI.</b><br><br>Asegúrate de tener buena iluminación y evitar reflejos sobre el documento.",
+            "🚫",
+          );
+        }
+      }
+
+      function toggleExtranjero(isExtranjero) {
+        session.resideExtranjero = isExtranjero;
+        if (!isExtranjero) {
+          session.paisResidencia = "Guatemala";
+        } else if (session.paisResidencia === "Guatemala") {
+          session.paisResidencia = "";
+        }
+        document.getElementById("form-local").style.display = isExtranjero
+          ? "none"
+          : "block";
+        document.getElementById("form-extranjero").style.display = isExtranjero
+          ? "block"
+          : "none";
+      }
+
+      function toggleAsignacion(val) {
+        session.aplicaAsignacion = val;
+        document.getElementById("box-asignacion").style.display = val
+          ? "block"
+          : "none";
+      }
+
+      function toggleCuentas() {
+        session.mostrarCuentas = !session.mostrarCuentas;
+        document.getElementById("box-cuentas").style.display =
+          session.mostrarCuentas ? "block" : "none";
+      }
+
+      const catalogOccupations = [
+        "Agricultor / campesino",
+        "Ganadero / avicultor",
+        "Pescador",
+        "Minero / extracción",
+        "Albañil / constructor",
+        "Plomero",
+        "Electricista",
+        "Mecánico automotriz / enderezado",
+        "Comerciante / vendedor en mercado",
+        "Propietario de abarrotería / tienda",
+        "Vendedor de ropa / calzado",
+        "Dueño de farmacia",
+        "Piloto de bus urbano / extraurbano",
+        "Piloto de taxi / tuc-tuc",
+        "Piloto de transporte de carga / fletes",
+        "Propietario de hospedaje / hotel",
+        "Propietario de restaurante / comedor",
+        "Vendedor de comida callejera",
+        "Desarrollador de software / IT",
+        "Trabajador bancario / servicios financieros",
+        "Agente de seguros",
+        "Agente de bienes raíces / inmobiliaria",
+        "Auditor / perito contador",
+        "Abogado / notario",
+        "Ingeniero / arquitecto",
+        "Publicista / diseñador",
+        "Guardia de seguridad / policía",
+        "Personal de limpieza / conserje",
+        "Maestro / educador",
+        "Médico / enfermero / personal de salud",
+        "Odontólogo",
+        "Peluquero / estilista / barbero",
+        "Músico / entretenimiento",
+        "Deportista",
+        "Técnico en electrodomésticos",
+        "Empleado público / gobierno",
+        "Jubilado / pensionado",
+        "Beneficiario de remesas",
+        "Ama de casa",
+        "Estudiante",
+        "Costurero / sastre",
+        "Panadero / pastelero",
+        "Artesano",
+        "Carpintero",
+        "Herrero / soldador",
+        "Zapatero",
+        "Carnicero",
+        "Tramitador",
+        "Secretaria / asistente",
+        "Locutor / periodista",
+      ];
+
+      function getOccupationsOptions() {
+        return catalogOccupations.map((o) => `<option value="${o}">`).join("");
+      }
+
+      function renderFuentesIngreso() {
+        let html = "";
+        fuentesIngresosList.forEach((f, index) => {
+          html += `
+                <div style="background:#F4F9FD; border:1px solid #BCE2F7; border-radius:8px; padding:10px; margin-bottom:10px; position:relative;">
+                    ${index > 0 ? `<button style="position:absolute; top:8px; right:8px; background:var(--danger); color:white; border:none; border-radius:4px; font-size:0.6rem; padding:3px 6px; cursor:pointer;" onclick="removeFuenteIngreso(${f.id})">❌ Quitar</button>` : ""}
+                    <div style="font-size:0.7rem; font-weight:800; color:var(--navy); margin-bottom:6px;">Fuente de ingresos #${index + 1}</div>
+                    
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label class="form-label" style="font-size:0.68rem;">¿A qué te dedicas?</label>
+                        <input type="text" list="occupations-list" class="form-input" style="min-height:38px; font-size:0.8rem;" placeholder="Busca tu ocupación principal..." value="${f.dedicacion}" onchange="updateFuenteDedicacion(${f.id}, this.value)">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" style="font-size:0.68rem;">Especifica o describe a qué te dedicas</label>
+                        <textarea class="form-input" style="height:48px; font-size:0.8rem; padding:8px;" placeholder="Ej. Piloto de bus extraurbano, viajo de Sololá a la capital..." minlength="15" maxlength="50" onchange="updateFuenteDesc(${f.id}, this.value)">${f.descripcion}</textarea>
+                    </div>
+                </div>
+                `;
+        });
+
+        setTimeout(() => {
+          const btnAdd = document.getElementById("btn-add-fuente");
+          if (btnAdd) {
+            btnAdd.style.display =
+              fuentesIngresosList.length >= 5 ? "none" : "block";
+          }
+        }, 50);
+
+        return html;
+      }
+
+      function updateFuenteDedicacion(id, val) {
+        const fuente = fuentesIngresosList.find((f) => f.id === id);
+        if (fuente) fuente.dedicacion = val;
+      }
+
+      function updateFuenteDesc(id, val) {
+        const fuente = fuentesIngresosList.find((f) => f.id === id);
+        if (fuente) fuente.descripcion = val;
+      }
+
+      function addFuenteIngreso() {
+        if (fuentesIngresosList.length < 5) {
+          fuentesIngresosList.push({
+            id: Date.now(),
+            dedicacion: "",
+            descripcion: "",
+          });
+          document.getElementById("sources-container").innerHTML =
+            renderFuentesIngreso();
+        }
+      }
+
+      function removeFuenteIngreso(id) {
+        fuentesIngresosList = fuentesIngresosList.filter((f) => f.id !== id);
+        document.getElementById("sources-container").innerHTML =
+          renderFuentesIngreso();
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        jumpToPhase(1);
+      });
+    </script>
+  </body>
+</html>
