@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Matriz Estratégica 2026-2030 | INTERCOP </title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Inter Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            brand: ['Arial', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            // Paleta Manual de Marca INTERCOP 2026 (Página 12)
+            interBlue: '#002D59',    // Pantone 648 C / Honorable Blue
+            interLightBlue: '#00AEEA', // Pantone P 115-7 C / Capri
+            interYellow: '#FFD000',   // Pantone P 7-8 C / Forsythia
+            interPink: '#E94591',     // Pantone P 75-7 C / Exuberant Pink
+            interWhite: '#FBFBFB',    // Pantone 179-1 C
+            interNavyDark: '#001D3A'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F4F7FA;
+      color: #0F172A;
+    }
+
+    .brand-wordmark {
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .chevron-rotate {
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #EDF2F7;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #00AEEA;
+      border-radius: 9999px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F4F7FA] antialiased text-slate-800">
+
+  <!-- ================= AUTHENTICATION MODAL GATE (VERTICAL ISOLOGOTIPO) ================= -->
+  <div id="authGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#002D59]/90 backdrop-blur-md px-4 py-6">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border-2 border-[#00AEEA]/30 overflow-hidden p-8 animate-fadeIn relative">
+      
+      <!-- Fondo con formas geométricas de la marca -->
+      <div class="absolute -top-10 -right-10 w-28 h-28 bg-[#00AEEA]/15 rounded-3xl -rotate-12 pointer-events-none"></div>
+      <div class="absolute -bottom-8 -left-8 w-24 h-24 bg-[#FFD000]/15 rounded-3xl rotate-12 pointer-events-none"></div>
+      
+      <!-- ISOLOGOTIPO VERTICAL INTERCOP -->
+      <div class="text-center mb-6 relative">
+        <div class="inline-flex flex-col items-center">
+          <svg class="w-20 h-20 drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="6" width="88" height="88" rx="22" stroke="#002D59" stroke-width="8" fill="white" />
+            <path d="M63 24C44 24 37 36 37 50C37 64 45 74 52 79C42 75 35 65 35 50C35 34 46 25 63 24Z" fill="#002D59"/>
+            <path d="M60 38C46 38 42 46 42 57C42 66 47 71 50 73C44 70 40 64 40 56C40 45 47 39 60 38Z" fill="#00AEEA"/>
+          </svg>
+          
+          <span class="brand-wordmark text-3xl text-[#002D59] mt-2 block tracking-wider">
+            INTERCOP
+          </span>
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+          </span>
+        </div>
+
+        <div class="mt-3 flex items-center justify-center gap-1.5">
+          <span class="inline-block text-[11px] font-black px-3 py-0.5 rounded-full bg-[#00AEEA] text-white shadow-sm">
+            2026-2030
+          </span>
+          <span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-[#002D59]">
+            Matriz Estratégica
+          </span>
+        </div>
+      </div>
+
+      <!-- Lockout Notice (5-minute cooldown) -->
+      <div id="lockoutBanner" class="hidden mb-5 p-4 rounded-2xl bg-rose-50 border-2 border-rose-400 text-rose-900 text-xs font-medium space-y-1.5">
+        <div class="flex items-center gap-2 font-black text-rose-950">
+          <i class="fa-solid fa-lock text-sm text-[#E94591]"></i>
+          <span>Acceso Bloqueado Temporalmente</span>
+        </div>
+        <p>Ha excedido el límite de 3 intentos fallidos consecutivos.</p>
+        <div class="pt-2 flex items-center justify-between font-bold border-t border-rose-200">
+          <span>Tiempo restante de espera:</span>
+          <span id="countdownTimer" class="px-2.5 py-0.5 rounded-lg bg-[#E94591] text-white font-mono text-xs font-black">05:00</span>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="authForm" onsubmit="handleLogin(event)" class="space-y-4 relative">
+        <div>
+          <label for="corporateEmail" class="block text-xs font-black text-[#002D59] uppercase tracking-wider mb-1">
+            Correo Institucional
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#00AEEA]">
+              <i class="fa-regular fa-envelope"></i>
+            </span>
+            <input 
+              type="email" 
+              id="corporateEmail" 
+              placeholder="nombreapellido@intercop.gt" 
+              required
+              autocomplete="email"
+              class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-[#00AEEA] focus:border-[#002D59] outline-none transition disabled:bg-slate-200 disabled:cursor-not-allowed text-slate-800 font-medium"
+            >
+          </div>
+        </div>
+
+        <div>
+          <label for="corporatePassword" class="block text-xs font-black text-[#002D59] uppercase tracking-wider mb-1">
+            Contraseña
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#00AEEA]">
+              <i class="fa-solid fa-key"></i>
+            </span>
+            <input 
+              type="password" 
+              id="corporatePassword" 
+              placeholder="Ingrese la contraseña" 
+              required
+              autocomplete="current-password"
+              class="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-[#00AEEA] focus:border-[#002D59] outline-none transition disabled:bg-slate-200 disabled:cursor-not-allowed text-slate-800 font-medium"
+            >
+            <button 
+              type="button" 
+              onclick="togglePasswordVisibility()" 
+              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-[#002D59] transition"
+              tabindex="-1"
+              aria-label="Ver u ocultar contraseña"
+            >
+              <i id="passwordEyeIcon" class="fa-regular fa-eye text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="authError" class="hidden p-3 rounded-xl bg-amber-50 border border-[#FFD000] text-amber-950 text-xs font-medium space-y-1">
+          <div class="flex items-center gap-1.5 font-bold">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            <span id="authErrorTitle">Acceso denegado</span>
+          </div>
+          <p id="authErrorMsg">El correo debe ser del dominio @intercop.gt y la contraseña debe ser la autorizada.</p>
+          <p id="attemptsWarning" class="font-bold text-[#E94591] text-[11px] pt-0.5"></p>
+        </div>
+
+        <button 
+          id="loginSubmitBtn"
+          type="submit" 
+          class="w-full py-3 px-4 bg-[#002D59] hover:bg-[#001D3A] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-[#00AEEA]/40"
+        >
+          <span>Ingresar</span>
+          <i class="fa-solid fa-arrow-right text-xs text-[#00AEEA]"></i>
+        </button>
+      </form>
+      
+      <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+        <span class="flex items-center gap-1 font-semibold text-[#002D59]">
+          <i class="fa-solid fa-shield-halved text-[#00AEEA]"></i> Portal Corporativo
+        </span>
+        <span class="font-medium text-slate-500">INTERCOP R.L.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOP HEADER ================= -->
+  <header class="bg-[#002D59] text-white shadow-md border-b-2 border-[#00AEEA] sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-9 h-9 flex-shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="6" width="88" height="88" rx="22" stroke="white" stroke-width="8" fill="#002D59" />
+              <path d="M63 24C44 24 37 36 37 50C37 64 45 74 52 79C42 75 35 65 35 50C35 34 46 25 63 24Z" fill="white"/>
+              <path d="M60 38C46 38 42 46 42 57C42 66 47 71 50 73C44 70 40 64 40 56C40 45 47 39 60 38Z" fill="#00AEEA"/>
+            </svg>
+            
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                <span class="brand-wordmark text-xl text-white tracking-wider leading-none">
+                  INTERCOP
+                </span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#00AEEA] text-white tracking-wider">
+                  2026-2030
+                </span>
+              </div>
+              <span class="text-[10px] font-semibold text-slate-300 tracking-wide mt-0.5 hidden sm:block">
+                Tablero de Mapa Estratégico
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3.5">
+          <div class="text-right hidden sm:block">
+            <div id="userDisplayEmail" class="text-xs font-bold text-white tracking-wide">
+              usuario@intercop.gt
+            </div>
+            <div class="text-[10px] text-[#00FF00] font-bold flex items-center justify-end gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#00FF00]"></span>
+              Acceso Verificado
+            </div>
+          </div>
+
+          <button 
+            onclick="handleLogout()" 
+            class="px-3.5 py-1.5 bg-[#E94591] hover:bg-[#d0337b] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+            title="Cerrar Sesión Segura"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+            <span>Salir</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= BARRA DE MÉTRICAS & BOTONES DE VISTA ================= -->
+  <section class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-semibold shadow-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#002D59]"></span>
+            <span class="font-black text-[#002D59]" id="countPerspectives">5</span>
+            <span class="text-slate-600">Perspectivas</span>
+          </div>
+
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-semibold shadow-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#00AEEA]"></span>
+            <span class="font-black text-[#002D59]" id="countStatements">11</span>
+            <span class="text-slate-600">Enunciados</span>
+          </div>
+
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-semibold shadow-xs">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#E94591]"></span>
+            <span class="font-black text-[#002D59]" id="countObjectives">49</span>
+            <span class="text-slate-600">Objetivos (OKRs)</span>
+          </div>
+        </div>
+
+        <!-- FILTROS DE VISTA (4 BOTONES OFICIALES) -->
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <button 
+            id="btnModePerspectives"
+            onclick="setMode('perspectives')"
+            class="px-3 py-1.5 rounded-xl font-bold bg-[#002D59] text-white border border-[#002D59] flex items-center gap-1.5 shadow-sm transition"
+          >
+            <i class="fa-solid fa-sitemap text-[#00AEEA]"></i>
+            <span>Perspectivas</span>
+          </button>
+          
+          <button 
+            id="btnModeOwners"
+            onclick="setMode('owners')"
+            class="px-3 py-1.5 rounded-xl font-semibold text-slate-700 hover:text-[#002D59] hover:bg-[#00AEEA]/10 border border-slate-200 flex items-center gap-1.5 transition"
+          >
+            <i class="fa-solid fa-briefcase text-[#00AEEA]"></i>
+            <span>Por Gerencia</span>
+          </button>
+
+          <button 
+            id="btnModeStatements"
+            onclick="setMode('statements')"
+            class="px-3 py-1.5 rounded-xl font-semibold text-slate-700 hover:text-[#002D59] hover:bg-[#00AEEA]/10 border border-slate-200 flex items-center gap-1.5 transition"
+          >
+            <i class="fa-solid fa-list-check text-[#00AEEA]"></i>
+            <span>Todos los Enunciados</span>
+          </button>
+
+          <button 
+            id="btnModeAllObjectives"
+            onclick="setMode('allObjectives')"
+            class="px-3 py-1.5 rounded-xl font-semibold text-slate-700 hover:text-[#002D59] hover:bg-[#00AEEA]/10 border border-slate-200 flex items-center gap-1.5 transition"
+          >
+            <i class="fa-solid fa-bullseye text-[#00AEEA]"></i>
+            <span>Todos los Objetivos Estratégicos</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTROLES DE BÚSQUEDA Y BOTONES DE ACCIÓN RÁPIDA ================= -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full">
+    
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-4">
+      
+      <div class="relative flex-1">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#00AEEA]">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="onSearchInput()" 
+          placeholder="Buscar por correlativo (#1-#49), código (ej. OEE1.1), objetivo, glosario o métrica..."
+          class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEA] focus:border-[#002D59] outline-none shadow-sm transition font-medium"
+        >
+      </div>
+
+      <div class="md:w-72">
+        <select 
+          id="ownerSelect" 
+          onchange="onOwnerSelect()" 
+          class="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEA] focus:border-[#002D59] outline-none text-slate-700 shadow-sm transition font-medium"
+        >
+          <option value="ALL">Todas las Gerencias Responsables</option>
+        </select>
+      </div>
+
+      <div id="quickAccordionButtons" class="flex items-center gap-2">
+        <button 
+          onclick="toggleAllAccordions(true)" 
+          class="px-3.5 py-2 text-xs font-black rounded-xl bg-[#FFD000] hover:bg-[#e6bb00] text-[#002D59] transition flex items-center gap-1.5 shadow-sm"
+          title="Expandir todos los enunciados"
+        >
+          <i class="fa-solid fa-angles-down text-[11px]"></i>
+          <span>Expandir</span>
+        </button>
+
+        <button 
+          onclick="toggleAllAccordions(false)" 
+          class="px-3.5 py-2 text-xs font-bold rounded-xl bg-[#E94591] hover:bg-[#d0337b] text-white transition flex items-center gap-1.5 shadow-sm"
+          title="Colapsar todos los enunciados"
+        >
+          <i class="fa-solid fa-angles-up text-[11px]"></i>
+          <span>Colapsar</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Indicador de Resultados Activos -->
+    <div class="flex items-center justify-between text-xs text-slate-500 px-1 mb-4">
+      <div id="statsFeedback" class="font-semibold text-[#002D59]">
+        Mostrando 49 de 49 Objetivos Estratégicos asignados (Correlativo #1 al #49)
+      </div>
+      <div class="hidden sm:block text-slate-400 font-medium">
+        Haga clic en un objetivo para consultar su Ficha Técnica y Glosario (2026-2030)
+      </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL DE MATRIZ ESTRATÉGICA -->
+    <div id="matrixContainer" class="space-y-6"></div>
+
+  </main>
+
+  <!-- ================= MODAL DE FICHA TÉCNICA / GLOSARIO (2026-2030) ================= -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden bg-[#002D59]/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border-2 border-[#00AEEA] max-w-2xl w-full max-h-[92vh] overflow-y-auto custom-scroll flex flex-col animate-fadeIn">
+      
+      <div class="p-6 bg-[#002D59] text-white flex items-start justify-between rounded-t-3xl sticky top-0 z-10 border-b border-[#00AEEA]/40">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1.5">
+            <!-- Correlativo General Destacado -->
+            <span id="mNumBadge" class="px-2.5 py-0.5 rounded-lg text-xs font-black bg-[#E94591] text-white shadow-xs">#0</span>
+            <span id="mCodeBadge" class="px-2.5 py-0.5 rounded-lg text-xs font-black bg-[#FFD000] text-[#002D59]">COD</span>
+            <span id="mPerspectiveBadge" class="text-xs text-[#00AEEA] font-bold">Perspectiva</span>
+          </div>
+          <h2 id="mTitle" class="text-base sm:text-lg font-black text-white leading-snug">Nombre del Objetivo</h2>
+        </div>
+        <button 
+          onclick="closeModal()" 
+          class="w-8 h-8 rounded-full bg-white/10 hover:bg-[#E94591] text-white flex items-center justify-center transition flex-shrink-0 ml-3"
+          aria-label="Cerrar ventana"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4 text-sm">
+        
+        <div class="bg-[#00AEEA]/10 p-3.5 rounded-2xl border border-[#00AEEA]/30">
+          <p class="text-[11px] font-black text-[#002D59] uppercase tracking-wider">Enunciado Estratégico Vinculado</p>
+          <p id="mStatement" class="text-xs font-bold text-slate-800 mt-0.5">-</p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black uppercase text-[#002D59] tracking-wider mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-book-open text-[#00AEEA]"></i>
+            Glosario / Definición del Objetivo
+          </h4>
+          <p id="mGlossary" class="text-slate-700 text-xs leading-relaxed bg-[#FBFBFB] border border-slate-200 rounded-2xl p-3.5">
+            -
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[11px] text-slate-400 font-bold block uppercase">Owner / Responsable</span>
+            <span id="mOwner" class="text-xs font-black text-[#002D59] flex items-center gap-1.5 mt-0.5">
+              <i class="fa-solid fa-briefcase text-[#00AEEA]"></i>
+              <span>-</span>
+            </span>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[11px] text-slate-400 font-bold block uppercase">Frecuencia de Medición</span>
+            <span id="mFrequency" class="text-xs font-black text-[#002D59] flex items-center gap-1.5 mt-0.5">
+              <i class="fa-regular fa-clock text-[#FFD000]"></i>
+              <span>-</span>
+            </span>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[11px] text-slate-400 font-bold block uppercase">Línea Base</span>
+            <span id="mBaseline" class="text-xs font-black text-slate-800 mt-0.5 block">-</span>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[11px] text-slate-400 font-bold block uppercase">Fuente de Datos</span>
+            <span id="mSource" class="text-xs font-bold text-slate-800 mt-0.5 block truncate">-</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black uppercase text-[#002D59] tracking-wider mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-bullseye text-[#00AEEA]"></i>
+            Métrica (Key Result) 2030
+          </h4>
+          <div id="mMetric" class="text-xs font-bold text-[#002D59] bg-[#00AEEA]/10 border border-[#00AEEA]/40 rounded-2xl p-3">
+            -
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black uppercase text-[#002D59] tracking-wider mb-2 flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-line text-[#00AEEA]"></i>
+              Metas Anuales Proyectadas (2026-2030)
+            </span>
+            <span class="text-[10px] font-bold text-slate-400">Quinquenio Oficial</span>
+          </h4>
+          
+          <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-[#002D59] text-white">
+                <tr>
+                  <th class="py-2.5 px-3 font-bold text-center bg-[#00AEEA] text-[#002D59]">Meta 2026</th>
+                  <th class="py-2.5 px-3 font-semibold text-center">2027</th>
+                  <th class="py-2.5 px-3 font-semibold text-center">2028</th>
+                  <th class="py-2.5 px-3 font-semibold text-center">2029</th>
+                  <th class="py-2.5 px-3 font-semibold text-center bg-[#001D3A]">2030</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white text-center font-bold text-slate-700">
+                <tr>
+                  <td id="t2026" class="py-2.5 px-3 text-[#002D59] bg-[#00AEEA]/15 font-black">-</td>
+                  <td id="t2027" class="py-2.5 px-3">-</td>
+                  <td id="t2028" class="py-2.5 px-3">-</td>
+                  <td id="t2029" class="py-2.5 px-3">-</td>
+                  <td id="t2030" class="py-2.5 px-3 bg-slate-50 text-[#002D59] font-black">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end rounded-b-3xl">
+        <button 
+          onclick="closeModal()" 
+          class="px-5 py-2 bg-[#002D59] hover:bg-[#001D3A] text-white text-xs font-bold rounded-xl transition shadow-sm border border-[#00AEEA]/30"
+        >
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= PIE DE PÁGINA INSTITUCIONAL ================= -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="brand-wordmark text-[#002D59] text-sm">INTERCOP</span>
+        <span class="text-slate-400">•</span>
+        <span class="font-medium">Plan Estratégico Institucional 2026-2030</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-slate-400 font-medium">
+        <i class="fa-solid fa-lock text-[#00AEEA] text-[10px]"></i>
+        <span>Acceso restringido a colaboradores autorizados</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= SCRIPT & DATA ENGINE (PLAN ESTRATÉGICO OFICIAL 2026-2030) ================= -->
+  <script>
+    const CORPORATE_DOMAIN = "@intercop.gt";
+    const AUTHORIZED_PASS = "Canalesyserv2026..";
+    const MAX_ATTEMPTS = 3;
+    const LOCK_MINUTES = 5;
+
+    let lockoutTimerId = null;
+
+    // 5 Perspectivas Oficiales del Plan Estratégico
+    const PERSPECTIVES = {
+      "P1-FA": {
+        id: "1-FA",
+        key: "P1-FA",
+        name: "Finanzas Autosostenibles",
+        description: "Salud financiera, crecimiento sostenible y gestión óptima de los recursos.",
+        justification: "Alcanzar y permanecer entre las tres cooperativas más grandes y sólidas del país, fortaleciendo el liderazgo institucional, la reputación, incidencia y el reconocimiento a nivel nacional."
+      },
+      "P2-A": {
+        id: "2-A",
+        key: "P2-A",
+        name: "Asociados",
+        description: "Inclusión financiera, accesibilidad y fortalecimiento del vínculo cooperativo.",
+        justification: "Ampliar la cobertura de servicios financieros mediante canales físicos y digitales."
+      },
+      "P3-PI": {
+        id: "3-PI",
+        key: "P3-PI",
+        name: "Procesos e Innovación",
+        description: "Eficiencia administrativa, operativa y transformación digital en todos los niveles.",
+        justification: "Convertirse en una institución financiera referente en innovación y procesos óptimos para una eficiente gestión administrativa."
+      },
+      "P3-CH": {
+        id: "3-CH",
+        key: "P3-CH",
+        name: "Capital Humano",
+        description: "Formación, desarrollo, profesionalización y experiencia del colaborador.",
+        justification: "Generar experiencia a través del desarrollo de habilidades técnicas y blandas de los colaboradores."
+      },
+      "P4-DS": {
+        id: "4-DS",
+        key: "P4-DS",
+        name: "Desarrollo Sostenible",
+        description: "Diversificación de beneficios y otras actividades afines con innovación social.",
+        justification: "Formalizar las empresas relacionadas a la Cooperativa y promover la innovación social para aumentar el impacto en el desarrollo socioeconómico de los asociados."
+      }
+    };
+
+    // 11 Enunciados Estratégicos Oficiales (EE1 a EE11)
+    const STATEMENTS = [
+      {
+        id: "EE1",
+        perspectiveKey: "P1-FA",
+        title: "Consolidar liderazgo financiero y posicionamiento en el sistema cooperativo de Guatemala.",
+        description: "Alcanzar y permanecer entre las tres cooperativas más grandes y sólidas del país, fortaleciendo el liderazgo institucional, la reputación, incidencia y el reconocimiento a nivel nacional.",
+        enfoque: "Salud financiera, crecimiento sostenible y gestión óptima de los recursos."
+      },
+      {
+        id: "EE2",
+        perspectiveKey: "P1-FA",
+        title: "Expandir presencia territorial estratégica y rentable para el crecimiento sostenible.",
+        description: "Instalar en promedio 6 agencias anuales, alcanzando al menos 70 agencias físicas en 12 departamentos para 2030.",
+        enfoque: "Crecimiento sostenible, rentable y expansión territorial estratégico."
+      },
+      {
+        id: "EE3",
+        perspectiveKey: "P1-FA",
+        title: "Gestionar de manera integral los riesgos para eficiencia y resiliencia institucional.",
+        description: "Fortalecer la sostenibilidad integral y la resiliencia institucional.",
+        enfoque: "Sostenibilidad financiera, económica y administración de riesgos."
+      },
+      {
+        id: "EE4",
+        perspectiveKey: "P2-A",
+        title: "Generar innovación, accesibilidad en canales, inclusión financiera y experiencias.",
+        description: "Ampliar la cobertura de servicios financieros mediante canales físicos y digitales.",
+        enfoque: "Inclusión financiera, accesibilidad y fortalecimiento del vínculo cooperativo."
+      },
+      {
+        id: "EE5",
+        perspectiveKey: "P2-A",
+        title: "Elevar experiencia del asociado y marca reduciendo fricciones y reclamos.",
+        description: "Brindar calidad de atención y lograr satisfacción del asociado con los productos y servicios a través de procesos optimizados.",
+        enfoque: "Experiencia, cercanía y fidelización del asociado."
+      },
+      {
+        id: "EE6",
+        perspectiveKey: "P3-PI",
+        title: "Lograr excelencia y calidad en todos los niveles de la Cooperativa.",
+        description: "Convertirse en una institución financiera referente en innovación y procesos óptimos para una eficiente gestión administrativa.",
+        enfoque: "Eficiencia administrativa, operativa y transformación digital en todos los niveles."
+      },
+      {
+        id: "EE7",
+        perspectiveKey: "P3-CH",
+        title: "Fomentar la formación, desarrollo y experiencia del talento humano.",
+        description: "Generar experiencia a través del desarrollo de habilidades técnicas y blandas de los colaboradores.",
+        enfoque: "Formación, desarrollo, profesionalización y experiencia del colaborador"
+      },
+      {
+        id: "EE8",
+        perspectiveKey: "P3-CH",
+        title: "Construir cultura de servicio, cordialidad y alto desempeño con capacidad de ejecución y resiliencia.",
+        description: "Incentivar la productividad de los colaboradores según la filosofía institucional.",
+        enfoque: "Empoderamiento integral de los colaboradores."
+      },
+      {
+        id: "EE9",
+        perspectiveKey: "P3-CH",
+        title: "Fortalecer gobierno cooperativo, regulación y capacidad de ejecución.",
+        description: "Fomentar las buenas prácticas y promover la auto regulación para tener estándares de ejecución en todos los niveles.",
+        enfoque: "Autoregulación y estructura de gobierno cooperativo."
+      },
+      {
+        id: "EE10",
+        perspectiveKey: "P4-DS",
+        title: "Fortalecer el ecosistema cooperativo.",
+        description: "Formalizar las empresas relacionadas a la Cooperativa.",
+        enfoque: "Diversificación de beneficios y otras actividades afines"
+      },
+      {
+        id: "EE11",
+        perspectiveKey: "P4-DS",
+        title: "Crear valor a través de la Responsabilidad Social Cooperativa.",
+        description: "Promover la innovación social para aumentar el impacto en el desarrollo socioeconómico de los asociados.",
+        enfoque: "Fomento de proyectos, programas y beneficios para mejorar el nivel de vida de los asociados."
+      }
+    ];
+
+    // 49 Objetivos Estratégicos Oficiales con Correlativo General #1 al #49
+    const STRATEGIC_OBJECTIVES = [
+      // EE1 (1 al 9)
+      {
+        num: 1,
+        code: "OEE1.1",
+        statementId: "EE1",
+        title: "Posicionar a INTERCOP en el ranking de las tres (3) cooperativas más grandes del país",
+        glossary: "Posicionamiento de marca en el mercado financiero guatemalteco",
+        metric: "Top 3 nacional",
+        owner: "Gerencia General",
+        baseline: "9",
+        target2026: "8",
+        frequency: "Trimestral",
+        source: "Finanzas, Información Sistema MICOOPE / Censo INACOP",
+        m2027: "Top 6",
+        m2028: "Top 5",
+        m2029: "Top 4",
+        m2030: "Top 3"
+      },
+      {
+        num: 2,
+        code: "OEE1.2",
+        statementId: "EE1",
+        title: "Gestionar la gobernanza de datos para monitoreo el alcance de metas.",
+        glossary: "Manejo de data como activo estratégico para la toma decisiones oportunas.",
+        metric: "Activos totales a 3,200,000,000.00",
+        owner: "Gerencia Financiera",
+        baseline: "2,443MM",
+        target2026: "3,200MM",
+        frequency: "Mensual",
+        source: "Sistema SCORINT",
+        m2027: "4,200MM",
+        m2028: "5,500MM",
+        m2029: "7,000MM",
+        m2030: "8,700MM"
+      },
+      {
+        num: 3,
+        code: "OEE1.3",
+        statementId: "EE1",
+        title: "Incrementar cartera de ahorros",
+        glossary: "Crecimiento de cartera de ahorros según proyecciones",
+        metric: "Incrementar cartera total de ahorros a un 25%",
+        owner: "Gerencia Comercial",
+        baseline: "1,970MM",
+        target2026: "2,560MM",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / Reportes MICOOPE / BI / SIB - BANGUAT",
+        m2027: "Según proyecciones",
+        m2028: "Según proyecciones",
+        m2029: "Según proyecciones",
+        m2030: "Según proyecciones"
+      },
+      {
+        num: 4,
+        code: "OEE1.4",
+        statementId: "EE1",
+        title: "Incrementar excedentes",
+        glossary: "Excedentes anuales según proyecciones financieras",
+        metric: "Alcanzar 50 millones en excedentes",
+        owner: "Gerencia Comercial",
+        baseline: "24MM",
+        target2026: "30MM",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "35MM",
+        m2028: "40MM",
+        m2029: "45MM",
+        m2030: "50MM"
+      },
+      {
+        num: 5,
+        code: "OEE1.5",
+        statementId: "EE1",
+        title: "Mejorar índice de morosidad",
+        glossary: "Mitigación y recuperación de cartera morosa",
+        metric: "Mantener mora menor o igual al 2.5%",
+        owner: "Gerencia Legal y Recuperación",
+        baseline: "3.20%",
+        target2026: "2.80%",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "2.50%",
+        m2028: "2.50%",
+        m2029: "2.50%",
+        m2030: "2.50%"
+      },
+      {
+        num: 6,
+        code: "OEE1.6",
+        statementId: "EE1",
+        title: "Fomentar la asociatividad activa (productos activos)",
+        glossary: "Incremento de aportaciones de bajo costo y participación en productos",
+        metric: "Aportaciones a 650,000,000.00",
+        owner: "Gerencia Productos Financieros",
+        baseline: "237MM",
+        target2026: "305MM",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "390MM",
+        m2028: "480MM",
+        m2029: "560MM",
+        m2030: "650MM"
+      },
+      {
+        num: 7,
+        code: "OEE1.7",
+        statementId: "EE1",
+        title: "Mejorar incidencia institucional en el país",
+        glossary: "Participación representativa en gremiales, mesas financieras y foros de decisión",
+        metric: "10 participaciones estratégicas",
+        owner: "Gerencia General",
+        baseline: "2",
+        target2026: "4",
+        frequency: "Semestral",
+        source: "Relaciones Institucionales / Gerencia General",
+        m2027: "6",
+        m2028: "7",
+        m2029: "8",
+        m2030: "10"
+      },
+      {
+        num: 8,
+        code: "OEE1.8",
+        statementId: "EE1",
+        title: "Incrementar cartera crediticia",
+        glossary: "Crecimiento de cartera crediticia rentable y diversificada según metas institucionales",
+        metric: "Incrementar cartera total de créditos",
+        owner: "Gerencia Comercial",
+        baseline: "1,750MM",
+        target2026: "2,200MM",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "2,700MM",
+        m2028: "3,300MM",
+        m2029: "4,000MM",
+        m2030: "4,800MM"
+      },
+      {
+        num: 9,
+        code: "OEE1.9",
+        statementId: "EE1",
+        title: "Investigar, innovar e implementar productos y servicios financieros acordes.",
+        glossary: "Desarrollo de oferta adaptada a las necesidades del mercado",
+        metric: "3 productos/servicios nuevos",
+        owner: "Gerencia de Mercadeo y Experiencia",
+        baseline: "1",
+        target2026: "2",
+        frequency: "Anual",
+        source: "Investigación de Mercados / BI",
+        m2027: "2",
+        m2028: "3",
+        m2029: "3",
+        m2030: "3"
+      },
+
+      // EE2 (10 al 13)
+      {
+        num: 10,
+        code: "OEE2.1",
+        statementId: "EE2",
+        title: "Incrementar ingresos financieros por productos, servicios o canales.",
+        glossary: "Diversificación de ingresos operativos y no financieros",
+        metric: "Incrementar ingresos no financieros a 15%",
+        owner: "Gerencia Financiera",
+        baseline: "8%",
+        target2026: "10%",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "11%",
+        m2028: "12%",
+        m2029: "13%",
+        m2030: "15%"
+      },
+      {
+        num: 11,
+        code: "OEE2.2",
+        statementId: "EE2",
+        title: "Expandir participación a través de nuevas agencias en puntos estratégicos.",
+        glossary: "Agencias secundarias en mercados con mayor participación y éxito (agentes)",
+        metric: "Alcanzar 71 agencias",
+        owner: "Gerencia de Mercadeo y Experiencia",
+        baseline: "41",
+        target2026: "47",
+        frequency: "Trimestral",
+        source: "Investigación de Mercados / BI /",
+        m2027: "6 (53)",
+        m2028: "6 (59)",
+        m2029: "6 (65)",
+        m2030: "6 (71)"
+      },
+      {
+        num: 12,
+        code: "OEE2.3",
+        statementId: "EE2",
+        title: "Expandir cobertura territorial estratégica.",
+        glossary: "Presencia física en departamentos estratégicos priorizados",
+        metric: "Presencia en 12 departamentos",
+        owner: "Gerencia de Mercadeo y Experiencia",
+        baseline: "6",
+        target2026: "8",
+        frequency: "Anual",
+        source: "Investigación de Mercados / BI",
+        m2027: "9",
+        m2028: "10",
+        m2029: "11",
+        m2030: "12"
+      },
+      {
+        num: 13,
+        code: "OEE2.4",
+        statementId: "EE2",
+        title: "Aumentar la proporción de agencias rentables",
+        glossary: "Agencias que alcanzan su punto de equilibrio y generan excedentes netos",
+        metric: "100% de agencias en punto de equilibrio",
+        owner: "Gerencia Comercial",
+        baseline: "75%",
+        target2026: "85%",
+        frequency: "Trimestral",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "90%",
+        m2028: "95%",
+        m2029: "98%",
+        m2030: "100%"
+      },
+
+      // EE3 (14 al 16)
+      {
+        num: 14,
+        code: "OEE3.1",
+        statementId: "EE3",
+        title: "Optimizar gastos administrativos y operativos",
+        glossary: "Control de gasto operativo sobre activos totales para eficiencia de balance",
+        metric: "Ratio de gastos operativos <= 5.5%",
+        owner: "Gerencia Financiera",
+        baseline: "6.2%",
+        target2026: "5.8%",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad",
+        m2027: "5.7%",
+        m2028: "5.6%",
+        m2029: "5.5%",
+        m2030: "5.5%"
+      },
+      {
+        num: 15,
+        code: "OEE3.2",
+        statementId: "EE3",
+        title: "Fortalecer metodologías de apetito y mitigación de riesgos",
+        glossary: "Prevención y mitigación de todos los riesgos asociados al negocio",
+        metric: "% Apetito de riesgo",
+        owner: "Auditoría Interna",
+        baseline: "0",
+        target2026: "0.25",
+        frequency: "Mensual",
+        source: "Finanzas / Contabilidad / BI",
+        m2027: "0.9",
+        m2028: "0.9",
+        m2029: "0.9",
+        m2030: "0.9"
+      },
+      {
+        num: 16,
+        code: "OEE3.3",
+        statementId: "EE3",
+        title: "Implementar y aplicar Plan de Continuidad del Negocio (BCP)",
+        glossary: "Planes operativos de continuidad ante contingencias y desastres",
+        metric: "100% BCP implementado y probado",
+        owner: "Gerencia Procesos",
+        baseline: "40%",
+        target2026: "70%",
+        frequency: "Semestral",
+        source: "Gerencia de Procesos",
+        m2027: "85%",
+        m2028: "95%",
+        m2029: "100%",
+        m2030: "100%"
+      },
+
+      // EE4 (17 al 21)
+      {
+        num: 17,
+        code: "OEE4.1",
+        statementId: "EE4",
+        title: "Incrementar base de membresía de asociados",
+        glossary: "Crecimiento del número de asociados activos incorporados a la cooperativa",
+        metric: "Alcanzar 200,000 asociados",
+        owner: "Gerencia Comercial",
+        baseline: "95,000",
+        target2026: "115,000",
+        frequency: "Mensual",
+        source: "Base de datos de asociados / BI",
+        m2027: "135,000",
+        m2028: "155,000",
+        m2029: "175,000",
+        m2030: "200,000"
+      },
+      {
+        num: 18,
+        code: "OEE4.2",
+        statementId: "EE4",
+        title: "Migrar productos y servicios financieros en canales digitales y alternos.",
+        glossary: "Transaccionalidad en App Móvil, web y redes de canales alternos",
+        metric: "60% de transacciones en canales digitales",
+        owner: "Gerencia Productos Financieros",
+        baseline: "25%",
+        target2026: "35%",
+        frequency: "Mensual",
+        source: "Canales Digitales / BI",
+        m2027: "42%",
+        m2028: "48%",
+        m2029: "55%",
+        m2030: "60%"
+      },
+      {
+        num: 19,
+        code: "OEE4.3",
+        statementId: "EE4",
+        title: "Aumentar vinculación y fidelización del asociado con la Cooperativa (adopción de productos)",
+        glossary: "Promedio de productos activos contratados por cada asociado",
+        metric: "3 productos promedio por asociado",
+        owner: "Gerencia Productos Financieros",
+        baseline: "1.8",
+        target2026: "2.1",
+        frequency: "Semestral",
+        source: "BI / CRM",
+        m2027: "2.3",
+        m2028: "2.5",
+        m2029: "2.8",
+        m2030: "3.0"
+      },
+      {
+        num: 20,
+        code: "OEE4.4",
+        statementId: "EE4",
+        title: "Incrementar mix de participación en canales",
+        glossary: "Diversificación de canales de atención y pagos fuera de agencias tradicionales",
+        metric: "Mix diversificado de canales",
+        owner: "Gerencia Productos Financieros",
+        baseline: "20%",
+        target2026: "30%",
+        frequency: "Trimestral",
+        source: "Canales y Servicios / BI",
+        m2027: "38%",
+        m2028: "45%",
+        m2029: "52%",
+        m2030: "60%"
+      },
+      {
+        num: 21,
+        code: "OEE4.5",
+        statementId: "EE4",
+        title: "Establecer alianzas o desarrollar tecnologías para la colocación de productos y servicios financieros.",
+        glossary: "Acuerdos comerciales y tecnológicos estratégicos para expansión de servicios",
+        metric: "5 alianzas tecnológicas activas",
+        owner: "Gerencia Productos Financieros",
+        baseline: "1",
+        target2026: "2",
+        frequency: "Anual",
+        source: "Gerencia de Productos / Legal",
+        m2027: "3",
+        m2028: "4",
+        m2029: "5",
+        m2030: "5"
+      },
+
+      // EE5 (22 al 24)
+      {
+        num: 22,
+        code: "OEE5.1",
+        statementId: "EE5",
+        title: "Elevar satisfacción y recomendación del asociado sobre los productos (NPS)",
+        glossary: "Medición estandarizada del Net Promoter Score institucional",
+        metric: "NPS >= 75%",
+        owner: "Gerencia de Mercadeo y Experiencia",
+        baseline: "62%",
+        target2026: "68%",
+        frequency: "Trimestral",
+        source: "Encuestas de Calidad / Mercadeo",
+        m2027: "70%",
+        m2028: "72%",
+        m2029: "74%",
+        m2030: "75%"
+      },
+      {
+        num: 23,
+        code: "OEE5.2",
+        statementId: "EE5",
+        title: "Establecer y alcanzar métrica institucional de experiencia de servicio y marca (CSAT)",
+        glossary: "Índice de satisfacción directa del cliente en puntos de contacto",
+        metric: "CSAT >= 85%",
+        owner: "Gerencia de Mercadeo y Experiencia",
+        baseline: "74%",
+        target2026: "78%",
+        frequency: "Mensual",
+        source: "Sistema de Turnos y Evaluación de Agencias",
+        m2027: "80%",
+        m2028: "82%",
+        m2029: "84%",
+        m2030: "85%"
+      },
+      {
+        num: 24,
+        code: "OEE5.3",
+        statementId: "EE5",
+        title: "Aumentar índice de solución de reclamos en procesos críticos",
+        glossary: "Resolución efectiva y oportuna de inconformidades de los asociados",
+        metric: "Resolución >= 90% dentro del SLA",
+        owner: "Gerencia Operaciones",
+        baseline: "70%",
+        target2026: "80%",
+        frequency: "Mensual",
+        source: "Sistema de Peticiones, Quejas y Reclamos",
+        m2027: "83%",
+        m2028: "86%",
+        m2029: "88%",
+        m2030: "90%"
+      },
+
+      // EE6 (25 al 32)
+      {
+        num: 25,
+        code: "OEE6.1",
+        statementId: "EE6",
+        title: "Innovar, estandarizar, y monitorear procesos críticos (end-to-end)",
+        glossary: "Modelado y homologación de procesos misionales y de apoyo",
+        metric: "100% procesos críticos estandarizados",
+        owner: "Gerencia Procesos",
+        baseline: "50%",
+        target2026: "70%",
+        frequency: "Semestral",
+        source: "Gestión de Procesos / Calidad",
+        m2027: "80%",
+        m2028: "90%",
+        m2029: "95%",
+        m2030: "100%"
+      },
+      {
+        num: 26,
+        code: "OEE6.2",
+        statementId: "EE6",
+        title: "Automatizar y optimizar procesos administrativos y operativos.",
+        glossary: "Implementación de flujos de trabajo sin papel y automatización con tecnología",
+        metric: "25 procesos clave automatizados",
+        owner: "Gerencia Procesos",
+        baseline: "6",
+        target2026: "11",
+        frequency: "Semestral",
+        source: "Matriz BPM / Tecnología",
+        m2027: "15",
+        m2028: "19",
+        m2029: "22",
+        m2030: "25"
+      },
+      {
+        num: 27,
+        code: "OEE6.3",
+        statementId: "EE6",
+        title: "Implementar plan integral de ciberseguridad con KPIs operativos",
+        glossary: "Controles y defensas frente a amenazas de seguridad informática y fuga de datos",
+        metric: "100% de cumplimiento marco de ciberseguridad",
+        owner: "Gerencia Sistemas y Tecnología",
+        baseline: "60%",
+        target2026: "75%",
+        frequency: "Trimestral",
+        source: "Auditoría de Ciberseguridad / TI",
+        m2027: "85%",
+        m2028: "90%",
+        m2029: "95%",
+        m2030: "100%"
+      },
+      {
+        num: 28,
+        code: "OEE6.4",
+        statementId: "EE6",
+        title: "Implementar plan de continuidad del negocio y pruebas de recuperación",
+        glossary: "Resiliencia tecnológica y disponibilidad de servidores centrales ante contingencias",
+        metric: "RTO y RPO en parámetros óptimos",
+        owner: "Gerencia Sistemas y Tecnología",
+        baseline: "55%",
+        target2026: "75%",
+        frequency: "Semestral",
+        source: "Bitácora DRP / TI",
+        m2027: "85%",
+        m2028: "92%",
+        m2029: "98%",
+        m2030: "100%"
+      },
+      {
+        num: 29,
+        code: "OEE6.5",
+        statementId: "EE6",
+        title: "Implementar tecnologías emergentes y certificar/auditar procesos priorizados.",
+        glossary: "Adopción de inteligencia artificial, biometría y certificaciones de calidad",
+        metric: "3 certificaciones / soluciones innovadoras",
+        owner: "Gerencia Procesos",
+        baseline: "0",
+        target2026: "1",
+        frequency: "Anual",
+        source: "Procesos y Transformación Digital",
+        m2027: "1",
+        m2028: "2",
+        m2029: "2",
+        m2030: "3"
+      },
+      {
+        num: 30,
+        code: "OEE6.6",
+        statementId: "EE6",
+        title: "Fortalecer metodologías de control, mitigación y prevención de riesgos cumplimiento de LD y FT",
+        glossary: "Prevención de Lavado de Dinero y Financiamiento del Terrorismo",
+        metric: "100% cumplimiento normativo AML/CFT",
+        owner: "Unidad de Cumplimiento",
+        baseline: "95%",
+        target2026: "98%",
+        frequency: "Mensual",
+        source: "Monitoreo Unidad de Cumplimiento / IVE",
+        m2027: "100%",
+        m2028: "100%",
+        m2029: "100%",
+        m2030: "100%"
+      },
+      {
+        num: 31,
+        code: "OEE6.7",
+        statementId: "EE6",
+        title: "Fortalecer metodologías de controles internos con enfoque a riesgos",
+        glossary: "Seguimiento y mitigación de observaciones de control interno en agencias y áreas",
+        metric: "95% solventación de observaciones en tiempo",
+        owner: "Auditoría Interna",
+        baseline: "75%",
+        target2026: "85%",
+        frequency: "Trimestral",
+        source: "Informes de Auditoría Interna",
+        m2027: "88%",
+        m2028: "90%",
+        m2029: "93%",
+        m2030: "95%"
+      },
+      {
+        num: 32,
+        code: "OEE6.8",
+        statementId: "EE6",
+        title: "Proteger el valor intangible de propiedad intelectual y activos tecnológicos",
+        glossary: "Registro de patentes, marcas institucionales, software y activos digitales",
+        metric: "100% de activos clave protegidos legalmente",
+        owner: "Gerencia Legal y Recuperación",
+        baseline: "80%",
+        target2026: "90%",
+        frequency: "Anual",
+        source: "Registro de la Propiedad Intelectual / Legal",
+        m2027: "95%",
+        m2028: "100%",
+        m2029: "100%",
+        m2030: "100%"
+      },
+
+      // EE7 (33 al 35)
+      {
+        num: 33,
+        code: "OEE7.1",
+        statementId: "EE7",
+        title: "Formalizar y operar procesos estratégicos en todas las etapas del TH",
+        glossary: "Gestión integral de talento humano desde reclutamiento hasta desarrollo y salida",
+        metric: "100% procesos de TH formalizados",
+        owner: "Gerencia Talento Humano",
+        baseline: "60%",
+        target2026: "75%",
+        frequency: "Semestral",
+        source: "Manuales y Procesos de Talento Humano",
+        m2027: "85%",
+        m2028: "92%",
+        m2029: "98%",
+        m2030: "100%"
+      },
+      {
+        num: 34,
+        code: "OEE7.2",
+        statementId: "EE7",
+        title: "Mejorar el índice de NPS del colaborador",
+        glossary: "eNPS: Satisfacción, orgullo y recomendación de los colaboradores internos",
+        metric: "eNPS >= 60%",
+        owner: "Gerencia Talento Humano",
+        baseline: "40%",
+        target2026: "48%",
+        frequency: "Semestral",
+        source: "Encuesta de Clima y Cultura",
+        m2027: "52%",
+        m2028: "55%",
+        m2029: "58%",
+        m2030: "60%"
+      },
+      {
+        num: 35,
+        code: "OEE7.3",
+        statementId: "EE7",
+        title: "Cobertura de plan de sucesión en roles críticos",
+        glossary: "Identificación y capacitación de sucesores inmediatos para puestos clave",
+        metric: "80% de cobertura de puestos clave",
+        owner: "Gerencia Talento Humano",
+        baseline: "30%",
+        target2026: "45%",
+        frequency: "Anual",
+        source: "Matriz de Sucesión / Talento Humano",
+        m2027: "55%",
+        m2028: "65%",
+        m2029: "75%",
+        m2030: "80%"
+      },
+
+      // EE8 (36 al 39)
+      {
+        num: 36,
+        code: "OEE8.1",
+        statementId: "EE8",
+        title: "Elevar el compromiso del colaborador (Engagement)",
+        glossary: "Nivel de conexión, compromiso y sentido de pertenencia de los colaboradores",
+        metric: "Engagement >= 85%",
+        owner: "Gerencia Talento Humano",
+        baseline: "70%",
+        target2026: "75%",
+        frequency: "Anual",
+        source: "Estudio de Clima Organizacional",
+        m2027: "78%",
+        m2028: "80%",
+        m2029: "83%",
+        m2030: "85%"
+      },
+      {
+        num: 37,
+        code: "OEE8.2",
+        statementId: "EE8",
+        title: "Aumentar índice de desempeño y capacidad de ejecución",
+        glossary: "Cumplimiento promedio ponderado de metas individuales y colectivas",
+        metric: "Índice de desempeño >= 90%",
+        owner: "Gerencia Talento Humano",
+        baseline: "78%",
+        target2026: "82%",
+        frequency: "Semestral",
+        source: "Evaluación del Desempeño / OKR",
+        m2027: "84%",
+        m2028: "86%",
+        m2029: "88%",
+        m2030: "90%"
+      },
+      {
+        num: 38,
+        code: "OEE8.3",
+        statementId: "EE8",
+        title: "Aumentar índice de clima laboral e integración",
+        glossary: "Ambiente de trabajo armónico, seguro, cordial y productivo",
+        metric: "Clima laboral >= 85%",
+        owner: "Gerencia Talento Humano",
+        baseline: "72%",
+        target2026: "76%",
+        frequency: "Anual",
+        source: "Diagnóstico de Clima Laboral",
+        m2027: "79%",
+        m2028: "81%",
+        m2029: "83%",
+        m2030: "85%"
+      },
+      {
+        num: 39,
+        code: "OEE8.4",
+        statementId: "EE8",
+        title: "Mantener índice aceptable de rotación de personal",
+        glossary: "Retención de talento humano y control de salidas involuntarias y voluntarias",
+        metric: "Rotación anual <= 8%",
+        owner: "Gerencia Talento Humano",
+        baseline: "12%",
+        target2026: "10%",
+        frequency: "Mensual",
+        source: "Estadísticas de Personal / Nómina",
+        m2027: "9.5%",
+        m2028: "9.0%",
+        m2029: "8.5%",
+        m2030: "8.0%"
+      },
+
+      // EE9 (40 al 43)
+      {
+        num: 40,
+        code: "OEE9.1",
+        statementId: "EE9",
+        title: "Completar diagnóstico integral de riesgos y llevar la calificación a un nivel aceptable",
+        glossary: "Evaluación y calificación de solvencia y gobernanza conforme a mejores prácticas",
+        metric: "Calificación aceptable / óptima",
+        owner: "Gerencia General",
+        baseline: "En proceso",
+        target2026: "Diagnóstico 100%",
+        frequency: "Anual",
+        source: "Evaluaciones Externas / Comité de Riesgos",
+        m2027: "Nivel Favorable",
+        m2028: "Nivel Favorable",
+        m2029: "Nivel Óptimo",
+        m2030: "Nivel Óptimo"
+      },
+      {
+        num: 41,
+        code: "OEE9.2",
+        statementId: "EE9",
+        title: "Profesionalizar órganos directivos",
+        glossary: "Formación especializada a Consejos de Administración y Vigilancia en gobierno corporativo",
+        metric: "100% directivos con plan formativo aprobado",
+        owner: "Gerencia General",
+        baseline: "50%",
+        target2026: "70%",
+        frequency: "Semestral",
+        source: "Consejo de Administración / Secretaría",
+        m2027: "80%",
+        m2028: "90%",
+        m2029: "100%",
+        m2030: "100%"
+      },
+      {
+        num: 42,
+        code: "OEE9.3",
+        statementId: "EE9",
+        title: "Implementar y ejecutar código de gobierno cooperativo adicional a estatutos y código de ética",
+        glossary: "Adopción de políticas avanzadas de rendición de cuentas, gobernanza y transparencia",
+        metric: "100% del Código implementado y divulgado",
+        owner: "Gerencia General",
+        baseline: "40%",
+        target2026: "65%",
+        frequency: "Anual",
+        source: "Gobernanza / Legal",
+        m2027: "80%",
+        m2028: "90%",
+        m2029: "100%",
+        m2030: "100%"
+      },
+      {
+        num: 43,
+        code: "OEE9.4",
+        statementId: "EE9",
+        title: "Fortalecer la estructura de gobierno cooperativo y corporativo",
+        glossary: "Claridad en roles, comités de apoyo y empoderamiento de la alta gerencia",
+        metric: "Estructura moderna consolidada",
+        owner: "Gerencia General",
+        baseline: "60%",
+        target2026: "75%",
+        frequency: "Anual",
+        source: "Consejo de Administración",
+        m2027: "85%",
+        m2028: "90%",
+        m2029: "95%",
+        m2030: "100%"
+      },
+
+      // EE10 (44 al 46)
+      {
+        num: 44,
+        code: "OEE10.1",
+        statementId: "EE10",
+        title: "Crear ecosistema cooperativo para potenciar crecimiento",
+        glossary: "Alianzas y consolidación de empresas y servicios complementarios al asociados",
+        metric: "Ecosistema formalizado y activo",
+        owner: "Gerencia General",
+        baseline: "Inicial",
+        target2026: "Estructura diseñada",
+        frequency: "Anual",
+        source: "Dirección Estratégica / Gerencia General",
+        m2027: "Fase 1 Operativa",
+        m2028: "Fase 2 Expansión",
+        m2029: "Consolidación",
+        m2030: "Madurez Plena"
+      },
+      {
+        num: 45,
+        code: "OEE10.2",
+        statementId: "EE10",
+        title: "Brindar beneficios sociales diferenciados",
+        glossary: "Servicios de salud, educación y auxilio solidario exclusivos para los asociados",
+        metric: "10 beneficios sociales vigentes",
+        owner: "Gerencia Desarrollo Sostenible",
+        baseline: "4",
+        target2026: "6",
+        frequency: "Semestral",
+        source: "Desarrollo Social / BI",
+        m2027: "7",
+        m2028: "8",
+        m2029: "9",
+        m2030: "10"
+      },
+      {
+        num: 46,
+        code: "OEE10.3",
+        statementId: "EE10",
+        title: "Aumentar adopción de beneficios sociales",
+        glossary: "Participación efectiva de la membresía en los beneficios sociales ofrecidos",
+        metric: "50% de asociados gozando beneficios",
+        owner: "Gerencia Desarrollo Sostenible",
+        baseline: "22%",
+        target2026: "30%",
+        frequency: "Semestral",
+        source: "Registros de Servicios Sociales",
+        m2027: "35%",
+        m2028: "40%",
+        m2029: "45%",
+        m2030: "50%"
+      },
+
+      // EE11 (47 al 49)
+      {
+        num: 47,
+        code: "OEE11.1",
+        statementId: "EE11",
+        title: "Aumentar madurez del plan de responsabilidad social",
+        glossary: "Programas sostenibles con enfoque en educación financiera, inclusión y medio ambiente",
+        metric: "Nivel de madurez avanzado (100%)",
+        owner: "Gerencia Desarrollo Sostenible",
+        baseline: "50%",
+        target2026: "65%",
+        frequency: "Anual",
+        source: "Comité de RSC / Desarrollo Sostenible",
+        m2027: "75%",
+        m2028: "85%",
+        m2029: "92%",
+        m2030: "100%"
+      },
+      {
+        num: 48,
+        code: "OEE11.2",
+        statementId: "EE11",
+        title: "Incrementar inversión en proyectos de innovación social y ambiental",
+        glossary: "Recursos destinados a proyectos de desarrollo comunitario y sostenibilidad verde",
+        metric: "Inversión anual incrementada",
+        owner: "Gerencia Desarrollo Sostenible",
+        baseline: "Base 2025",
+        target2026: "+15% vs base",
+        frequency: "Anual",
+        source: "Presupuesto de Responsabilidad Social",
+        m2027: "+25%",
+        m2028: "+35%",
+        m2029: "+45%",
+        m2030: "+60%"
+      },
+      {
+        num: 49,
+        code: "OEE11.3",
+        statementId: "EE11",
+        title: "Mejorar índice de percepción del valor social generado por la cooperativa en la sociedad.",
+        glossary: "Evaluación externa comunitaria del impacto positivo y solidario de INTERCOP R.L.",
+        metric: "Percepción social >= 85%",
+        owner: "Gerencia Desarrollo Sostenible",
+        baseline: "70%",
+        target2026: "75%",
+        frequency: "Anual",
+        source: "Estudio de Impacto Social / Percepción",
+        m2027: "78%",
+        m2028: "80%",
+        m2029: "83%",
+        m2030: "85%"
+      }
+    ];
+
+    // Estados de filtro: 'perspectives' | 'owners' | 'statements' | 'allObjectives'
+    let activeFilterMode = 'perspectives';
+    let currentSearch = '';
+    let selectedOwner = 'ALL';
+    let expandedStatements = new Set();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      verifyLockout();
+      verifySession();
+      buildOwnerDropdown();
+      renderMatrix();
+    });
+
+    function verifyLockout() {
+      const lockUntil = localStorage.getItem('intercop_lockout_time');
+      if (lockUntil) {
+        const remaining = parseInt(lockUntil, 10) - Date.now();
+        if (remaining > 0) {
+          applyLockoutState(remaining);
+          return true;
+        } else {
+          removeLockout();
+        }
+      }
+      return false;
+    }
+
+    function applyLockoutState(durationMs) {
+      const emailInput = document.getElementById('corporateEmail');
+      const passInput = document.getElementById('corporatePassword');
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      const banner = document.getElementById('lockoutBanner');
+      const timer = document.getElementById('countdownTimer');
+      const errorDiv = document.getElementById('authError');
+
+      errorDiv.classList.add('hidden');
+      banner.classList.remove('hidden');
+      emailInput.disabled = true;
+      passInput.disabled = true;
+      submitBtn.disabled = true;
+
+      clearInterval(lockoutTimerId);
+      const targetTime = Date.now() + durationMs;
+
+      function tick() {
+        const diff = Math.max(0, targetTime - Date.now());
+        const totalSec = Math.floor(diff / 1000);
+        const mins = String(Math.floor(totalSec / 60)).padStart(2, '0');
+        const secs = String(totalSec % 60).padStart(2, '0');
+        timer.textContent = `${mins}:${secs}`;
+
+        if (diff <= 0) {
+          clearInterval(lockoutTimerId);
+          removeLockout();
+          emailInput.disabled = false;
+          passInput.disabled = false;
+          submitBtn.disabled = false;
+          banner.classList.add('hidden');
+        }
+      }
+
+      tick();
+      lockoutTimerId = setInterval(tick, 1000);
+    }
+
+    function removeLockout() {
+      localStorage.removeItem('intercop_lockout_time');
+      localStorage.removeItem('intercop_attempts_count');
+    }
+
+    function verifySession() {
+      const savedEmail = localStorage.getItem('intercop_auth_user');
+      const gate = document.getElementById('authGate');
+      const display = document.getElementById('userDisplayEmail');
+
+      if (savedEmail && savedEmail.toLowerCase().endsWith(CORPORATE_DOMAIN)) {
+        gate.classList.add('hidden');
+        display.textContent = savedEmail.toLowerCase();
+      } else {
+        gate.classList.remove('hidden');
+        localStorage.removeItem('intercop_auth_user');
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const p = document.getElementById('corporatePassword');
+      const icon = document.getElementById('passwordEyeIcon');
+      if (p.type === 'password') {
+        p.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        p.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      if (verifyLockout()) return;
+
+      const emailInput = document.getElementById('corporateEmail');
+      const passInput = document.getElementById('corporatePassword');
+      const errorDiv = document.getElementById('authError');
+      const errorMsg = document.getElementById('authErrorMsg');
+      const warningText = document.getElementById('attemptsWarning');
+
+      const email = emailInput.value.trim().toLowerCase();
+      const pass = passInput.value;
+
+      const validEmail = email.endsWith(CORPORATE_DOMAIN) && email.length > CORPORATE_DOMAIN.length;
+      const validPass = (pass === AUTHORIZED_PASS);
+
+      if (validEmail && validPass) {
+        removeLockout();
+        errorDiv.classList.add('hidden');
+        localStorage.setItem('intercop_auth_user', email);
+        document.getElementById('authGate').classList.add('hidden');
+        document.getElementById('userDisplayEmail').textContent = email;
+        passInput.value = '';
+      } else {
+        let attempts = parseInt(localStorage.getItem('intercop_attempts_count') || '0', 10) + 1;
+        localStorage.setItem('intercop_attempts_count', attempts);
+
+        if (attempts >= MAX_ATTEMPTS) {
+          const lockTime = Date.now() + (LOCK_MINUTES * 60 * 1000);
+          localStorage.setItem('intercop_lockout_time', lockTime);
+          applyLockoutState(LOCK_MINUTES * 60 * 1000);
+          return;
+        }
+
+        const left = MAX_ATTEMPTS - attempts;
+        errorDiv.classList.remove('hidden');
+
+        if (!validEmail) {
+          errorMsg.textContent = 'El correo debe ser del dominio @intercop.gt.';
+        } else {
+          errorMsg.textContent = 'Contraseña institucional incorrecta.';
+        }
+
+        warningText.textContent = `Intento ${attempts} de ${MAX_ATTEMPTS}. Restan ${left} intento(s) antes del bloqueo de ${LOCK_MINUTES} minutos.`;
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('intercop_auth_user');
+      document.getElementById('corporatePassword').value = '';
+      document.getElementById('authGate').classList.remove('hidden');
+    }
+
+    function buildOwnerDropdown() {
+      const owners = new Set();
+      STRATEGIC_OBJECTIVES.forEach(o => {
+        if (o.owner) owners.add(o.owner);
+      });
+      const select = document.getElementById('ownerSelect');
+
+      Array.from(owners).sort().forEach(owner => {
+        const opt = document.createElement('option');
+        opt.value = owner;
+        opt.textContent = owner;
+        select.appendChild(opt);
+      });
+    }
+
+    function setMode(mode) {
+      activeFilterMode = mode;
+
+      const btnPersp = document.getElementById('btnModePerspectives');
+      const btnOwners = document.getElementById('btnModeOwners');
+      const btnStmts = document.getElementById('btnModeStatements');
+      const btnAllObj = document.getElementById('btnModeAllObjectives');
+      const quickBtns = document.getElementById('quickAccordionButtons');
+
+      // Ocultar botones de expandir/colapsar si estamos en vista de todos los objetivos
+      if (mode === 'allObjectives') {
+        quickBtns.classList.add('hidden');
+      } else {
+        quickBtns.classList.remove('hidden');
+      }
+
+      [btnPersp, btnOwners, btnStmts, btnAllObj].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-700 hover:text-[#002D59] hover:bg-[#00AEEA]/10 border border-slate-200 flex items-center gap-1.5 transition";
+      });
+
+      if (mode === 'perspectives') {
+        btnPersp.className = "px-3 py-1.5 rounded-xl font-bold bg-[#002D59] text-white border border-[#002D59] flex items-center gap-1.5 shadow-sm transition";
+      } else if (mode === 'owners') {
+        btnOwners.className = "px-3 py-1.5 rounded-xl font-bold bg-[#002D59] text-white border border-[#002D59] flex items-center gap-1.5 shadow-sm transition";
+      } else if (mode === 'statements') {
+        btnStmts.className = "px-3 py-1.5 rounded-xl font-bold bg-[#002D59] text-white border border-[#002D59] flex items-center gap-1.5 shadow-sm transition";
+      } else if (mode === 'allObjectives') {
+        btnAllObj.className = "px-3 py-1.5 rounded-xl font-bold bg-[#002D59] text-white border border-[#002D59] flex items-center gap-1.5 shadow-sm transition";
+      }
+
+      renderMatrix();
+    }
+
+    function onSearchInput() {
+      currentSearch = document.getElementById('searchInput').value.trim().toLowerCase();
+      renderMatrix();
+    }
+
+    function onOwnerSelect() {
+      selectedOwner = document.getElementById('ownerSelect').value;
+      renderMatrix();
+    }
+
+    function toggleStatement(statementId) {
+      if (expandedStatements.has(statementId)) {
+        expandedStatements.delete(statementId);
+      } else {
+        expandedStatements.add(statementId);
+      }
+      renderMatrix();
+    }
+
+    function toggleAllAccordions(open) {
+      if (open) {
+        STATEMENTS.forEach(s => expandedStatements.add(s.id));
+      } else {
+        expandedStatements.clear();
+      }
+      renderMatrix();
+    }
+
+    function renderMatrix() {
+      const container = document.getElementById('matrixContainer');
+      container.innerHTML = '';
+
+      const filtered = STRATEGIC_OBJECTIVES.filter(obj => {
+        const matchesOwner = (selectedOwner === 'ALL' || obj.owner === selectedOwner);
+        const searchCorrelative = currentSearch.replace('#', '');
+        const matchesSearch = !currentSearch ||
+          String(obj.num) === searchCorrelative ||
+          `#${obj.num}`.toLowerCase().includes(currentSearch) ||
+          obj.code.toLowerCase().includes(currentSearch) ||
+          obj.title.toLowerCase().includes(currentSearch) ||
+          obj.glossary.toLowerCase().includes(currentSearch) ||
+          obj.metric.toLowerCase().includes(currentSearch) ||
+          obj.owner.toLowerCase().includes(currentSearch);
+
+        return matchesOwner && matchesSearch;
+      });
+
+      document.getElementById('statsFeedback').textContent = 
+        `Mostrando ${filtered.length} de ${STRATEGIC_OBJECTIVES.length} Objetivos Estratégicos asignados (Correlativo #1 al #49)`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl border-2 border-dashed border-[#00AEEA]/40 p-12 text-center shadow-xs">
+            <div class="w-14 h-14 rounded-2xl bg-[#00AEEA]/10 flex items-center justify-center mx-auto text-[#002D59] mb-3">
+              <i class="fa-solid fa-magnifying-glass text-xl"></i>
+            </div>
+            <h3 class="text-sm font-black text-[#002D59]">No se encontraron objetivos coincidentes</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Pruebe buscando por correlativo (ej. #1), código o seleccionando otra gerencia responsable.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (activeFilterMode === 'perspectives') {
+        renderPerspectivesLayout(container, filtered);
+      } else if (activeFilterMode === 'owners') {
+        renderOwnersLayout(container, filtered);
+      } else if (activeFilterMode === 'statements') {
+        renderStatementsLayout(container, filtered);
+      } else if (activeFilterMode === 'allObjectives') {
+        renderAllObjectivesLayout(container, filtered);
+      }
+    }
+
+    // ================= VISTA: TODOS LOS OBJETIVOS ESTRATÉGICOS CON CORRELATIVO =================
+    function renderAllObjectivesLayout(container, objectives) {
+      const wrapper = document.createElement('div');
+      wrapper.className = "space-y-4";
+
+      objectives.forEach(obj => {
+        const stmt = STATEMENTS.find(s => s.id === obj.statementId);
+        const persp = stmt ? PERSPECTIVES[stmt.perspectiveKey] : null;
+
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-[#00AEEA] hover:shadow-md transition";
+
+        card.innerHTML = `
+          <!-- Cabecera de Tarjeta: Correlativo, Código, Nombre y Responsable -->
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-3 pb-3 border-b border-slate-100">
+            <div class="flex items-start gap-3">
+              <!-- Correlativo General + Código -->
+              <div class="flex flex-col sm:flex-row items-center gap-1.5 flex-shrink-0">
+                <span class="w-8 h-8 rounded-xl bg-[#E94591] text-white font-black text-xs flex items-center justify-center shadow-xs" title="Correlativo General #${obj.num}">
+                  #${obj.num}
+                </span>
+                <span class="px-2.5 py-1.5 rounded-xl bg-[#002D59] text-[#00AEEA] font-black text-xs tracking-wider shadow-sm">
+                  ${obj.code}
+                </span>
+              </div>
+
+              <div>
+                <h4 class="text-sm sm:text-base font-bold text-[#002D59] leading-snug">
+                  ${obj.title}
+                </h4>
+                <div class="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500 font-medium">
+                  <span class="text-[#00AEEA] font-bold">${persp ? persp.name : ''}</span>
+                  <span>•</span>
+                  <span>Enunciado: <b class="text-slate-700">${stmt ? stmt.id : ''}</b></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Responsable / Owner -->
+            <div class="flex items-center gap-2 self-start lg:self-center bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs flex-shrink-0">
+              <i class="fa-solid fa-briefcase text-[#00AEEA]"></i>
+              <span class="text-slate-500 font-medium">Owner:</span>
+              <span class="font-bold text-[#002D59]">${obj.owner}</span>
+            </div>
+          </div>
+
+          <!-- Glosario Abajo del Nombre -->
+          <div class="my-3.5 bg-[#FBFBFB] border border-slate-200 rounded-xl p-3 text-xs">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">
+              Glosario / Definición
+            </span>
+            <p class="text-slate-700 leading-relaxed font-normal">
+              ${obj.glossary || 'Sin glosario registrado.'}
+            </p>
+          </div>
+
+          <!-- Línea Base y Tabla de Metas por Año (2026 - 2030) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+            
+            <!-- Línea Base -->
+            <div class="lg:col-span-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-center lg:text-left">
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Línea Base</span>
+              <span class="text-xs font-black text-[#002D59] block mt-0.5">${obj.baseline || '-'}</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5 truncate" title="${obj.source}">Fuente: ${obj.source || '-'}</span>
+            </div>
+
+            <!-- Tabla de Metas por Año (2026 - 2030) -->
+            <div class="lg:col-span-9 overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-xs text-center">
+                <thead class="bg-[#002D59] text-white">
+                  <tr>
+                    <th class="py-2 px-2.5 font-bold bg-[#00AEEA] text-[#002D59]">Meta 2026</th>
+                    <th class="py-2 px-2.5 font-semibold">Meta 2027</th>
+                    <th class="py-2 px-2.5 font-semibold">Meta 2028</th>
+                    <th class="py-2 px-2.5 font-semibold">Meta 2029</th>
+                    <th class="py-2 px-2.5 font-bold bg-[#001D3A]">Meta 2030</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-x divide-slate-200 bg-white font-bold text-slate-700">
+                  <tr>
+                    <td class="py-2 px-2.5 bg-[#00AEEA]/15 text-[#002D59] font-black">${obj.target2026 || '-'}</td>
+                    <td class="py-2 px-2.5">${obj.m2027 || '-'}</td>
+                    <td class="py-2 px-2.5">${obj.m2028 || '-'}</td>
+                    <td class="py-2 px-2.5">${obj.m2029 || '-'}</td>
+                    <td class="py-2 px-2.5 bg-slate-50 text-[#002D59] font-black">${obj.m2030 || '-'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <!-- Pie de Tarjeta con Métrica y Botón de Ficha -->
+          <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-[11px] text-slate-400 italic">Métrica 2030: <b class="text-slate-600 not-italic">${obj.metric || '-'}</b></span>
+            <button 
+              onclick="showModal('${obj.code}')" 
+              class="text-[10px] font-bold bg-[#E94591] hover:bg-[#d0337b] text-white px-2.5 py-1 rounded-lg flex items-center gap-1 transition shadow-xs"
+            >
+              <span>Ver Ficha Completa</span>
+              <i class="fa-solid fa-angle-right text-[9px]"></i>
+            </button>
+          </div>
+        `;
+
+        wrapper.appendChild(card);
+      });
+
+      container.appendChild(wrapper);
+    }
+
+    function renderPerspectivesLayout(container, objectives) {
+      Object.keys(PERSPECTIVES).forEach(key => {
+        const persp = PERSPECTIVES[key];
+        const perspStmts = STATEMENTS.filter(s => s.perspectiveKey === key);
+        const perspObjs = objectives.filter(o => {
+          const s = STATEMENTS.find(st => st.id === o.statementId);
+          return s && s.perspectiveKey === key;
+        });
+
+        if (perspObjs.length === 0 && (currentSearch || selectedOwner !== 'ALL')) {
+          return;
+        }
+
+        const block = document.createElement('div');
+        block.className = "space-y-3 mb-6";
+
+        block.innerHTML = `
+          <div class="bg-[#002D59] rounded-2xl px-5 py-4 text-white flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md border-l-8 border-[#00AEEA]">
+            <div class="flex items-start gap-3.5">
+              <div class="w-9 h-9 rounded-xl bg-[#00AEEA] flex items-center justify-center text-xs font-black text-[#002D59] flex-shrink-0 mt-0.5 shadow-sm">
+                ${persp.id}
+              </div>
+              <div>
+                <h3 class="text-base font-black text-white tracking-wide">${persp.name}</h3>
+                <p class="text-xs text-slate-200 mt-0.5 font-normal leading-relaxed">${persp.description}</p>
+                <p class="text-[11px] text-[#00AEEA] mt-1 font-semibold">${persp.justification}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 self-end md:self-center flex-shrink-0 text-xs">
+              <span class="px-3 py-1 rounded-xl bg-[#001D3A] text-white font-bold border border-[#00AEEA]/40">
+                <b>${perspStmts.length}</b> Enunciados
+              </span>
+              <span class="px-3 py-1 rounded-xl bg-[#00AEEA] text-[#002D59] font-black shadow-xs">
+                <b>${perspObjs.length}</b> OKRs
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-3 pl-1 sm:pl-2">
+            ${perspStmts.map(stmt => {
+              const stmtObjs = objectives.filter(o => o.statementId === stmt.id);
+              if (stmtObjs.length === 0 && (currentSearch || selectedOwner !== 'ALL')) {
+                return '';
+              }
+              return renderStatementCard(stmt, stmtObjs, persp.name);
+            }).join('')}
+          </div>
+        `;
+
+        container.appendChild(block);
+      });
+    }
+
+    function renderOwnersLayout(container, objectives) {
+      const owners = new Set();
+      objectives.forEach(o => {
+        if (o.owner) owners.add(o.owner);
+      });
+
+      Array.from(owners).sort().forEach(owner => {
+        const ownerObjs = objectives.filter(o => o.owner === owner);
+
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl border-2 border-slate-200 shadow-sm overflow-hidden mb-5";
+
+        card.innerHTML = `
+          <div class="bg-[#002D59] p-4 text-white flex items-center justify-between border-b-2 border-[#00AEEA]">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-[#00AEEA] text-[#002D59] flex items-center justify-center text-xs font-black shadow-sm">
+                <i class="fa-solid fa-briefcase"></i>
+              </span>
+              <h3 class="text-sm font-black text-white">${owner}</h3>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-[#FFD000] text-xs font-black text-[#002D59]">
+              ${ownerObjs.length} Objetivos Asignados
+            </span>
+          </div>
+
+          <div class="p-4 space-y-3 bg-[#FBFBFB]">
+            ${ownerObjs.map(obj => {
+              const stmt = STATEMENTS.find(s => s.id === obj.statementId);
+              return renderObjectiveItem(obj, stmt ? stmt.title : '');
+            }).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderStatementsLayout(container, objectives) {
+      STATEMENTS.forEach(stmt => {
+        const stmtObjs = objectives.filter(o => o.statementId === stmt.id);
+        if (stmtObjs.length === 0 && (currentSearch || selectedOwner !== 'ALL')) {
+          return;
+        }
+        const persp = Object.values(PERSPECTIVES).find(p => p.key === stmt.perspectiveKey);
+        const card = document.createElement('div');
+        card.className = "mb-3";
+        card.innerHTML = renderStatementCard(stmt, stmtObjs, persp ? persp.name : '');
+        container.appendChild(card);
+      });
+    }
+
+    function renderStatementCard(stmt, stmtObjs, perspName) {
+      const isExpanded = expandedStatements.has(stmt.id) || currentSearch.length > 0;
+
+      return `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all hover:border-[#00AEEA]/60">
+          <div 
+            onclick="toggleStatement('${stmt.id}')"
+            class="p-4 cursor-pointer flex items-center justify-between gap-4 select-none hover:bg-slate-50 transition"
+          >
+            <div class="flex items-start gap-3.5 flex-1">
+              <span class="w-9 h-9 rounded-xl bg-[#002D59] text-[#00AEEA] font-black text-xs flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                ${stmt.id}
+              </span>
+
+              <div>
+                <div class="flex items-center gap-1.5 text-[11px] font-bold text-[#00AEEA] mb-0.5">
+                  <span>${perspName}</span>
+                  <span class="text-slate-300">•</span>
+                  <span class="text-slate-500 font-semibold">${stmtObjs.length} Objetivos</span>
+                </div>
+                <h4 class="text-sm font-bold text-[#002D59] leading-snug">${stmt.title}</h4>
+                <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">${stmt.description}</p>
+                <p class="text-[11px] text-slate-400 mt-0.5 italic">Enfoque: ${stmt.enfoque}</p>
+              </div>
+            </div>
+
+            <button 
+              type="button" 
+              class="w-9 h-9 rounded-full ${isExpanded ? 'bg-[#002D59] text-white' : 'bg-slate-100 text-slate-500'} flex items-center justify-center transition hover:bg-[#00AEEA] hover:text-[#002D59] flex-shrink-0 border border-slate-200 shadow-xs"
+              aria-label="Desplegar o contraer enunciado"
+            >
+              <i class="fa-solid fa-chevron-down text-xs chevron-rotate ${isExpanded ? 'rotate-180 text-white' : ''}"></i>
+            </button>
+          </div>
+
+          <div class="${isExpanded ? 'block' : 'hidden'} border-t border-slate-100 p-4 bg-[#FBFBFB] space-y-3">
+            <div class="text-[11px] font-black text-[#002D59] uppercase tracking-wider px-1">
+              Objetivos Estratégicos Asignados (${stmtObjs.length}):
+            </div>
+            ${stmtObjs.map(obj => renderObjectiveItem(obj, stmt.title)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Componente de Objetivo Estratégico individual con Correlativo visible (#1 al #49)
+    function renderObjectiveItem(obj, stmtTitle) {
+      return `
+        <div 
+          onclick="showModal('${obj.code}')" 
+          class="bg-white rounded-xl p-3.5 border border-slate-200 hover:border-[#00AEEA] hover:shadow-md cursor-pointer transition flex flex-col md:flex-row md:items-center justify-between gap-3 group"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Badge de Correlativo (#1-#49) + Badge de Código -->
+            <div class="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+              <span class="w-6 h-6 rounded-lg text-[10px] font-black bg-[#E94591] text-white flex items-center justify-center shadow-xs" title="Correlativo #${obj.num}">
+                #${obj.num}
+              </span>
+              <span class="px-2 py-1 rounded-lg text-xs font-black bg-[#002D59] text-white group-hover:bg-[#00AEEA] group-hover:text-[#002D59] transition">
+                ${obj.code}
+              </span>
+            </div>
+
+            <div>
+              <h5 class="text-xs font-bold text-[#002D59] group-hover:text-[#00AEEA] transition">${obj.title}</h5>
+              <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${obj.glossary || 'Sin glosario registrado'}</p>
+              
+              <div class="flex flex-wrap items-center gap-2.5 mt-1.5 text-[11px]">
+                <span class="flex items-center gap-1 font-bold text-slate-700">
+                  <i class="fa-solid fa-briefcase text-[#00AEEA] text-[10px]"></i>
+                  ${obj.owner}
+                </span>
+                <span class="text-slate-300">•</span>
+                <span class="text-slate-500">Línea Base: <b class="text-slate-700">${obj.baseline}</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex md:flex-col items-end justify-between md:justify-center border-t md:border-t-0 pt-2 md:pt-0 border-slate-100 flex-shrink-0 min-w-[140px] text-right">
+            <div>
+              <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Meta 2026</span>
+              <span class="text-xs font-black text-[#002D59] bg-[#00AEEA]/15 px-2 py-0.5 rounded-md border border-[#00AEEA]/40 inline-block">
+                ${obj.target2026}
+              </span>
+            </div>
+            <span class="text-[10px] bg-[#E94591] text-white px-2 py-0.5 rounded-md font-bold mt-1.5 flex items-center gap-1 group-hover:bg-[#d0337b] transition shadow-xs">
+              <span>Glosario / Ficha</span>
+              <i class="fa-solid fa-angle-right text-[9px]"></i>
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function showModal(code) {
+      const obj = STRATEGIC_OBJECTIVES.find(o => o.code === code);
+      if (!obj) return;
+
+      const stmt = STATEMENTS.find(s => s.id === obj.statementId);
+      const persp = stmt ? Object.values(PERSPECTIVES).find(p => p.key === stmt.perspectiveKey) : null;
+
+      // Actualizar correlativo e insignias
+      document.getElementById('mNumBadge').textContent = `Objetivo #${obj.num}`;
+      document.getElementById('mCodeBadge').textContent = obj.code;
+      document.getElementById('mPerspectiveBadge').textContent = persp ? persp.name : '';
+      document.getElementById('mTitle').textContent = obj.title;
+      document.getElementById('mStatement').textContent = stmt ? `${stmt.id}: ${stmt.title}` : '-';
+      document.getElementById('mGlossary').textContent = obj.glossary || 'Descripción no disponible.';
+      document.getElementById('mOwner').innerHTML = `<i class="fa-solid fa-briefcase text-[#00AEEA]"></i> <span>${obj.owner}</span>`;
+      document.getElementById('mFrequency').innerHTML = `<i class="fa-regular fa-clock text-[#FFD000]"></i> <span>${obj.frequency || 'Periódica'}</span>`;
+      document.getElementById('mBaseline').textContent = obj.baseline || '-';
+      document.getElementById('mSource').textContent = obj.source || '-';
+      document.getElementById('mMetric').textContent = obj.metric || '-';
+
+      document.getElementById('t2026').textContent = obj.target2026 || '-';
+      document.getElementById('t2027').textContent = obj.m2027 || '-';
+      document.getElementById('t2028').textContent = obj.m2028 || '-';
+      document.getElementById('t2029').textContent = obj.m2029 || '-';
+      document.getElementById('t2030').textContent = obj.m2030 || '-';
+
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+      if (e.target.id === 'detailModal') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

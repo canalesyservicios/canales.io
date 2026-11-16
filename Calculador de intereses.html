@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador y Comprobador CDP | Cooperativa INTERCOP, R.L.</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#002d59',
+                            cyan: '#00aeea',
+                            white: '#fbfbfb',
+                            yellow: '#ffd000',
+                            pink: '#e94591'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        logo: ['Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --brand-blue: #002d59;
+            --brand-cyan: #00aeea;
+            --brand-white: #fbfbfb;
+            --brand-yellow: #ffd000;
+            --brand-pink: #e94591;
+        }
+
+        body {
+            background-color: var(--brand-white);
+            color: var(--brand-blue);
+            font-family: 'Inter', Arial, sans-serif;
+            background-image: 
+                radial-gradient(rgba(0, 174, 234, 0.08) 1px, transparent 1px),
+                radial-gradient(rgba(0, 45, 89, 0.04) 1px, var(--brand-white) 1px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
+        }
+
+        .intercop-logotype {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: 0.03em;
+        }
+
+        .brand-card {
+            background-color: var(--brand-white);
+            border: 2px solid rgba(0, 45, 89, 0.14);
+            border-radius: 16px;
+            box-shadow: 0 10px 28px -6px rgba(0, 45, 89, 0.10);
+        }
+
+        .brand-editable {
+            background-color: var(--brand-white);
+            border: 2px solid var(--brand-cyan);
+            border-left: 6px solid var(--brand-yellow);
+            color: var(--brand-blue);
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .brand-editable:hover {
+            border-color: var(--brand-blue);
+            border-left-color: var(--brand-yellow);
+            background-color: rgba(255, 208, 0, 0.08);
+        }
+
+        .brand-editable:focus {
+            outline: none;
+            border-color: var(--brand-blue);
+            border-left-color: var(--brand-pink);
+            background-color: rgba(0, 174, 234, 0.07);
+            box-shadow: 0 0 0 4px rgba(0, 174, 234, 0.22);
+        }
+
+        .shadow-brand { box-shadow: 0 12px 30px -8px rgba(0, 45, 89, 0.22); }
+        .shadow-cyan-glow { box-shadow: 0 8px 22px -4px rgba(0, 174, 234, 0.35); }
+        .shadow-pink-glow { box-shadow: 0 8px 22px -4px rgba(233, 69, 145, 0.35); }
+        .toggle-dot { transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 45, 89, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 45, 89, 0.35); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand-cyan); }
+
+        /* ESTILOS DE IMPRESIÓN EJECUTIVA */
+        @media print {
+            @page { size: letter; margin: 0.5in 0.8in; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { background: white !important; }
+            
+            body.print-individual > header,
+            body.print-individual > footer,
+            body.print-individual > main,
+            body.print-individual > div:not(#printTemplateIndividual) { 
+                display: none !important; 
+            }
+            body.print-individual #printTemplateIndividual { 
+                display: block !important; 
+            }
+            
+            body.print-bitacora > header,
+            body.print-bitacora > footer,
+            body.print-bitacora > main,
+            body.print-bitacora > div:not(#printTemplateBitacora) { 
+                display: none !important; 
+            }
+            body.print-bitacora #printTemplateBitacora { 
+                display: block !important; 
+            }
+            
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-brand-yellow selection:text-brand-blue">
+
+    <!-- ==========================================================================
+         PANTALLA DE ACCESO Y SEGURIDAD CORPORATIVA
+         ========================================================================== -->
+    <div id="loginOverlay" class="fixed inset-0 z-50 bg-brand-blue hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-16 -left-16 w-72 h-72 rounded-[36px] bg-brand-cyan opacity-20 rotate-12"></div>
+            <div class="absolute top-1/4 -right-20 w-80 h-80 rounded-[40px] bg-brand-yellow opacity-15 -rotate-12"></div>
+            <div class="absolute -bottom-20 left-1/4 w-64 h-64 rounded-[32px] bg-brand-pink opacity-20 rotate-6"></div>
+        </div>
+
+        <div class="relative w-full max-w-md bg-brand-white rounded-[24px] border-4 border-brand-cyan shadow-brand overflow-hidden my-auto">
+            <div class="h-3 w-full flex">
+                <div class="w-2/5 bg-brand-blue"></div>
+                <div class="w-1/5 bg-brand-cyan"></div>
+                <div class="w-1/5 bg-brand-yellow"></div>
+                <div class="w-1/5 bg-brand-pink"></div>
+            </div>
+
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-col items-center text-center mb-6">
+                    <div class="intercop-logotype text-4xl tracking-wider text-brand-blue leading-none mb-2">
+                        INTERCOP
+                    </div>
+                    <div class="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue text-brand-white text-xs font-bold">
+                        <i class="fa-solid fa-shield-halved text-brand-yellow"></i>
+                        <span>Herramienta para pruebas de rutina</span>
+                    </div>
+                </div>
+
+                <div class="mb-4 flex items-center justify-between px-3.5 py-2 rounded-[12px] bg-brand-blue/5 border border-brand-blue/15 text-xs">
+                    <span class="font-bold text-brand-blue flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-lock text-brand-cyan"></i>
+                        Seguridad de Acceso:
+                    </span>
+                    <div class="flex items-center gap-1.5" id="indicadorPuntosIntentos"></div>
+                </div>
+
+                <div id="loginLockoutBox" class="hidden mb-5 p-4 rounded-[14px] bg-brand-pink text-brand-white border-2 border-brand-blue shadow-pink-glow text-center space-y-2">
+                    <div class="w-10 h-10 rounded-full bg-brand-blue text-brand-yellow mx-auto flex items-center justify-center text-lg font-bold"><i class="fa-solid fa-lock"></i></div>
+                    <h3 class="font-extrabold text-sm uppercase tracking-wider">Acceso Bloqueado</h3>
+                    <p class="text-xs leading-relaxed opacity-95">Se registraron <strong>4 intentos fallidos</strong>. Sistema bloqueado por <strong>5 minutos</strong>.</p>
+                    <div class="py-2 px-4 rounded-[10px] bg-brand-blue text-brand-yellow font-mono text-2xl font-extrabold tracking-widest inline-block" id="lockoutCountdown">05:00</div>
+                </div>
+
+                <div id="loginErrorBox" class="hidden mb-4 p-3.5 rounded-[12px] bg-brand-pink/15 border-2 border-brand-pink text-brand-blue text-xs space-y-1">
+                    <div class="font-extrabold text-brand-pink flex items-center gap-1.5 uppercase"><i class="fa-solid fa-circle-exclamation"></i><span id="loginErrorTitle"></span></div>
+                    <p id="loginErrorText" class="font-medium"></p>
+                </div>
+
+                <form id="loginForm" onsubmit="procesarLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-brand-blue mb-1.5">Correo Corporativo</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-brand-blue/60"><i class="fa-solid fa-envelope"></i></span>
+                            <input type="email" id="loginEmail" required placeholder="usuario@intercop.gt" class="brand-editable w-full pl-10 pr-4 py-2.5 text-sm font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase tracking-wider text-brand-blue mb-1.5">Contraseña</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-brand-blue/60"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" id="loginPassword" required placeholder="••••••••••••" class="brand-editable w-full pl-10 pr-11 py-2.5 text-sm font-mono">
+                            <button type="button" onclick="alternarVisibilidadPassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brand-blue hover:text-brand-cyan"><i id="iconoVerPassword" class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" id="btnSubmitLogin" class="w-full py-3 px-5 rounded-[14px] bg-brand-blue hover:bg-brand-cyan text-brand-white font-extrabold text-sm uppercase tracking-wider transition duration-200 flex items-center justify-center gap-2 shadow-brand">
+                        <i class="fa-solid fa-right-to-bracket"></i><span>Ingresar</span>
+                    </button>
+                </form>
+            </div>
+            <div class="bg-brand-blue px-6 py-3 text-brand-white flex items-center justify-between text-[11px] font-medium">
+                <span><i class="fa-solid fa-globe text-brand-cyan mr-1"></i>captacion@intercop.gt</span>
+                <span><i class="fa-solid fa-phone text-brand-yellow mr-1"></i>PBX 7964 3030</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+         ENCABEZADO PRINCIPAL
+         ========================================================================== -->
+    <header class="bg-brand-blue text-brand-white border-b-4 border-brand-yellow shadow-brand sticky top-0 z-30 hide-on-print-indiv hide-on-print-bitacora">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="intercop-logotype text-2xl tracking-wider text-brand-white">INTERCOP</span>
+                            <span class="bg-brand-yellow text-brand-blue text-[11px] font-extrabold px-2.5 py-0.5 rounded-[6px] uppercase tracking-wider">
+                                Captación · Productos Financieros
+                            </span>
+                        </div>
+                        <p class="text-xs text-brand-cyan font-medium">
+                            Calculador Diario de Intereses de Certificados de Depósito a Plazo Fijo (03)
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center justify-between lg:justify-end gap-3 no-print">
+                    <!-- Usuario Activo + Verificado -->
+                    <div class="flex items-center gap-2 bg-brand-white/10 border border-brand-cyan/40 px-3 py-1.5 rounded-[10px]">
+                        <div class="flex flex-col">
+                            <span class="font-mono font-bold text-brand-white text-xs" id="headerUserEmail">auditoria@intercop.gt</span>
+                            <span class="text-[10px] text-green-400 font-bold flex items-center gap-1 mt-0.5 leading-none">
+                                <i class="fa-solid fa-circle-check"></i> Verificado
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="cerrarSesion()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs px-4 py-2 rounded-[10px] transition flex items-center gap-1.5 cursor-pointer shadow-md">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Salir</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-brand-blue/5 border-b-2 border-brand-cyan/30 hide-on-print-indiv hide-on-print-bitacora">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 text-brand-blue font-medium">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-[6px] bg-brand-yellow text-brand-blue font-extrabold text-[11px]">
+                    <i class="fa-solid fa-pen-to-square mr-1"></i>CAMPOS EDITABLES
+                </span>
+            </div>
+            <div class="font-mono font-bold text-brand-blue flex items-center gap-2">
+                <i class="fa-regular fa-clock text-brand-pink"></i>
+                <span id="fechaHoraAuditoria">Comprobación de Rutina Diaria</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUERPO PRINCIPAL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- FILA 1: DATOS ASOCIADO Y BOTONES DINÁMICOS -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <div class="lg:col-span-6 brand-card overflow-hidden flex flex-col justify-between">
+                <div class="bg-brand-blue text-brand-white px-5 py-3.5 border-b-4 border-brand-cyan flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-[8px] bg-brand-yellow text-brand-blue flex items-center justify-center font-extrabold">
+                            <i class="fa-solid fa-id-card-clip"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-sm uppercase tracking-wider">Datos del asociado</h2>
+                            <p class="text-[11px] text-brand-cyan">Cálculo individual y registro</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="crearNuevoCalculo()" class="text-[11px] bg-brand-yellow hover:bg-brand-cyan text-brand-blue font-bold px-3 py-1.5 rounded-[8px] transition cursor-pointer no-print flex items-center shadow-sm">
+                        <i class="fa-solid fa-plus-circle mr-1.5"></i>Nuevo
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-4 flex-grow flex flex-col justify-center">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="inputAsociado" class="text-xs font-extrabold uppercase tracking-wider text-brand-blue">ASOCIADO:</label>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-brand-blue/60"><i class="fa-solid fa-user-tie"></i></span>
+                            <input type="text" id="inputAsociado" value="" placeholder="Ingrese nombre del asociado" oninput="recalcularPlantilla()" class="brand-editable w-full pl-10 pr-4 py-2.5 text-sm sm:text-base uppercase tracking-wide">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-7">
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="inputCuenta" class="text-xs font-extrabold uppercase tracking-wider text-brand-blue">NÚMERO DE CUENTA:</label>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-brand-blue/60"><i class="fa-solid fa-hashtag"></i></span>
+                                <!-- CAMBIO: Campo libre y sin restricciones, que sincroniza la primera fila en tiempo real -->
+                                <input type="text" id="inputCuenta" value="" placeholder="Ingrese el número de cuenta" oninput="sincronizarCuenta(this.value); recalcularPlantilla()" class="brand-editable w-full pl-9 pr-4 py-2.5 text-base font-mono">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-5">
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="selectBaseDias" class="text-xs font-extrabold uppercase tracking-wider text-brand-blue">BASE FÓRMULA:</label>
+                            </div>
+                            <select id="selectBaseDias" onchange="recalcularPlantilla()" class="brand-editable w-full px-3 py-2.5 text-sm font-mono cursor-pointer">
+                                <option value="365" selected>/ 365 días</option>
+                                <option value="366">/ 366 días</option>
+                                <option value="360">/ 360 días</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA B: REGLAS Y PENALIZACIONES (Dividido en dos) -->
+            <div id="cardAccionDinamica" class="lg:col-span-6 brand-card overflow-hidden flex flex-col justify-between border-2 border-brand-cyan hide-on-print-indiv">
+                <div id="headerAccionDinamica" class="bg-brand-blue text-brand-white px-5 py-3.5 border-b-4 border-brand-yellow flex items-center justify-between transition-colors duration-300">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-[8px] bg-brand-cyan text-brand-blue flex items-center justify-center font-extrabold">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-sm uppercase tracking-wider">Reglas de Cálculo</h2>
+                            <p class="text-[11px] text-brand-yellow">Controles dinámicos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 flex-grow flex flex-col justify-center">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                        
+                        <!-- Columna 1: Criterio Días -->
+                        <div class="flex flex-col p-3 rounded-[12px] bg-brand-blue/5 border border-brand-blue/20">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[11px] font-extrabold text-brand-blue uppercase">Criterio de Días</span>
+                                <i class="fa-solid fa-calendar-day text-brand-cyan"></i>
+                            </div>
+                            <button type="button" id="btnSwitchDinamico" onclick="alternarBotonAccionDinamica()" class="w-full p-2.5 rounded-[10px] border-2 border-brand-blue bg-brand-cyan/20 hover:bg-brand-cyan/30 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full shadow-cyan-glow">
+                                <span id="labelEstadoSwitch" class="inline-block text-[10px] font-bold uppercase bg-brand-blue text-brand-yellow px-2 py-0.5 rounded mb-1">
+                                    Mes Completo
+                                </span>
+                                <div id="tituloSwitch" class="text-xs font-extrabold text-brand-blue leading-tight mb-2">
+                                    Cuenta hasta el día final (incluido)
+                                </div>
+                                <div id="trackSwitch" class="w-12 h-6 rounded-full bg-brand-blue p-0.5 flex items-center transition-colors shrink-0 mx-auto">
+                                    <div id="dotSwitch" class="w-5 h-5 rounded-full bg-brand-yellow text-brand-blue flex items-center justify-center shadow toggle-dot translate-x-6">
+                                        <i id="iconSwitch" class="fa-solid fa-check text-[10px]"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Columna 2: Penalización -->
+                        <div class="flex flex-col p-3 rounded-[12px] bg-brand-pink/5 border border-brand-pink/30">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[11px] font-extrabold text-brand-pink uppercase">Retiro Anticipado</span>
+                                <i class="fa-solid fa-circle-exclamation text-brand-pink"></i>
+                            </div>
+                            <button type="button" id="btnSwitchPenalizacion" onclick="alternarPenalizacion()" class="w-full p-2.5 rounded-[10px] border-2 border-brand-pink/50 bg-white hover:bg-brand-pink/10 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full">
+                                <span id="labelPenalizacion" class="inline-block text-[10px] font-bold uppercase bg-gray-200 text-gray-500 px-2 py-0.5 rounded mb-1">
+                                    Sin Penalizar
+                                </span>
+                                <div id="tituloPenalizacion" class="text-xs font-extrabold text-gray-500 leading-tight mb-2">
+                                    Tasa íntegra aplicada
+                                </div>
+                                <div id="trackPenalizacion" class="w-12 h-6 rounded-full bg-gray-300 p-0.5 flex items-center transition-colors shrink-0 mx-auto">
+                                    <div id="dotPenalizacion" class="w-5 h-5 rounded-full bg-white text-gray-400 flex items-center justify-center shadow toggle-dot translate-x-0">
+                                        <i id="iconPenalizacion" class="fa-solid fa-minus text-[10px]"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILA 2: ATAJOS DE MESES -->
+        <div class="brand-card p-4 no-print hide-on-print-indiv">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-[4px] bg-brand-cyan inline-block"></span>
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-brand-blue">Selector Rápido de Meses:</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-brand-blue">Año:</span>
+                    <select id="selectAnioCalendario" onchange="renderizarBotonesMesesAnio()" class="brand-editable px-2.5 py-1 text-xs font-mono cursor-pointer">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+            </div>
+            <div id="gridBotonesMeses" class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2"></div>
+        </div>
+
+        <!-- FILA 3: CÁLCULOS DE COMPROBACIÓN -->
+        <div class="brand-card overflow-hidden">
+            <div class="bg-brand-blue text-brand-white px-6 py-4 border-b-4 border-brand-yellow flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-[10px] bg-brand-yellow text-brand-blue flex items-center justify-center font-extrabold text-lg">
+                        <i class="fa-solid fa-table-cells"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-extrabold tracking-tight">CÁLCULOS DE COMPROBACIÓN</h2>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="px-3.5 py-2 rounded-[10px] bg-brand-white text-brand-blue border-2 border-brand-cyan font-mono text-xs font-extrabold">
+                        <span class="text-brand-pink">FÓRMULA =</span> CAPITAL * DÍAS * TASA / <span id="spanDivisorFormula">365</span>
+                    </div>
+                    <button type="button" onclick="agregarTramoAdicional()" class="px-3.5 py-2 rounded-[10px] bg-brand-cyan hover:bg-brand-yellow text-brand-blue font-extrabold text-xs transition flex items-center gap-1.5 cursor-pointer no-print">
+                        <i class="fa-solid fa-plus"></i><span>Fila</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 space-y-6">
+                <div class="overflow-x-auto rounded-[14px] border-2 border-brand-blue">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-brand-blue text-brand-white text-xs font-extrabold uppercase tracking-wider border-b-2 border-brand-cyan">
+                                <th class="py-3.5 px-3 text-center w-12">#</th>
+                                <th class="py-3.5 px-4 min-w-[150px]">CUENTA</th>
+                                <th class="py-3.5 px-4 min-w-[260px]">FECHAS</th>
+                                <th class="py-3.5 px-4 min-w-[190px]">CAPITAL (Q)</th>
+                                <th class="py-3.5 px-4 text-center min-w-[140px]">DÍAS</th>
+                                <th class="py-3.5 px-4 min-w-[140px]">TASA (%)</th>
+                                <th class="py-3.5 px-4 text-right min-w-[190px]">BRUTO (Q)</th>
+                                <th class="py-3.5 px-3 text-center w-14 no-print">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyTramosPlantilla" class="divide-y-2 divide-brand-blue/15 text-sm"></tbody>
+                    </table>
+                </div>
+
+                <!-- RESUMEN EJECUTIVO -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <div class="lg:col-span-6 space-y-4 hide-on-print-indiv">
+                        <div class="p-4 rounded-[14px] bg-brand-blue/5 border-2 border-brand-blue/20 space-y-3">
+                            <div class="flex items-center justify-between border-b border-brand-blue/15 pb-2">
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-blue flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calendar-check text-brand-cyan"></i>Dictamen Fechas
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                <div class="p-3 rounded-[10px] bg-brand-white border border-brand-blue/20">
+                                    <span class="text-[10px] font-bold uppercase text-brand-blue/70 block">1er Día</span>
+                                    <span id="dictamenPrimerDia" class="font-mono font-extrabold text-sm text-brand-blue block mt-0.5">--</span>
+                                </div>
+                                <div class="p-3 rounded-[10px] bg-brand-white border border-brand-blue/20">
+                                    <span class="text-[10px] font-bold uppercase text-brand-blue/70 block">Último Día</span>
+                                    <span id="dictamenUltimoDia" class="font-mono font-extrabold text-sm text-brand-blue block mt-0.5">--</span>
+                                </div>
+                                <div class="p-3 rounded-[10px] bg-brand-blue text-brand-white flex flex-col justify-between">
+                                    <span class="text-[10px] font-bold uppercase text-brand-yellow block">Total Días</span>
+                                    <div class="flex items-baseline gap-1.5 mt-0.5">
+                                        <span id="dictamenTotalDias" class="font-mono font-extrabold text-2xl text-brand-white">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liquidación -->
+                    <div class="lg:col-span-6">
+                        <div class="rounded-[16px] border-3 border-brand-blue overflow-hidden shadow-brand">
+                            <table class="w-full text-left border-collapse">
+                                <tbody class="divide-y-2 divide-brand-blue/15">
+                                    <tr class="bg-brand-white">
+                                        <td class="py-3.5 px-5">
+                                            <span class="font-extrabold text-brand-blue text-sm uppercase">Interés Original Bruto</span>
+                                        </td>
+                                        <td class="py-3.5 px-5 text-right font-mono text-lg font-extrabold text-brand-blue" id="celdaE13Bruto">Q 0.00</td>
+                                    </tr>
+                                    <tr class="bg-brand-pink/10 hidden" id="filaPenalizacion">
+                                        <td class="py-3.5 px-5">
+                                            <span class="font-extrabold text-brand-pink text-sm uppercase">(-) Penalización (3%)</span>
+                                        </td>
+                                        <td class="py-3.5 px-5 text-right font-mono text-lg font-extrabold text-brand-pink" id="celdaPenalizacion">- Q 0.00</td>
+                                    </tr>
+                                    <tr class="bg-brand-pink/5">
+                                        <td class="py-3.5 px-5">
+                                            <span class="font-extrabold text-brand-pink text-sm uppercase">(-) ISR Real (10%)</span>
+                                        </td>
+                                        <td class="py-3.5 px-5 text-right font-mono text-lg font-extrabold text-brand-pink" id="celdaE14ISR">- Q 0.00</td>
+                                    </tr>
+                                    <tr class="bg-brand-blue text-brand-white border-t-4 border-brand-yellow">
+                                        <td class="py-4 px-5">
+                                            <span class="font-extrabold text-brand-yellow text-base sm:text-lg uppercase tracking-wide">TOTAL A RECIBIR</span>
+                                        </td>
+                                        <td class="py-4 px-5 text-right font-mono text-2xl sm:text-3xl font-extrabold text-brand-yellow" id="celdaE15TotalRecibir">Q 0.00</td>
+                                    </tr>
+                                    <tr class="bg-brand-cyan/10 hide-on-print-indiv">
+                                        <td colspan="2" class="p-4">
+                                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                <div>
+                                                    <label for="inputMontoSistemaCore" class="text-xs font-extrabold uppercase text-brand-blue">Comprobar Monto Sistema:</label>
+                                                </div>
+                                                <div class="w-full sm:w-52">
+                                                    <input type="number" id="inputMontoSistemaCore" step="0.01" oninput="verificarDiferenciaFila16()" class="brand-editable w-full px-3 py-2 text-sm font-mono text-right">
+                                                </div>
+                                            </div>
+                                            <div id="boxResultadoFila16" class="mt-3 p-3 rounded-[10px] bg-brand-white border-2 border-brand-cyan flex items-center justify-between text-xs">
+                                                <span class="font-bold text-brand-blue">Diferencia:</span>
+                                                <span id="valorDiferenciaFila16" class="font-mono font-extrabold text-sm text-brand-blue">Q 0.00</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Botón de Guardado -->
+                        <div class="mt-4 flex justify-end no-print hide-on-print-indiv">
+                            <button type="button" onclick="registrarEnBitacoraDiaria()"
+                                class="w-full py-3 px-4 rounded-[12px] bg-brand-blue hover:bg-brand-cyan text-brand-white hover:text-brand-blue font-extrabold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-brand cursor-pointer">
+                                <i class="fa-solid fa-floppy-disk text-brand-yellow"></i>
+                                <span>Guardar en Bitácora</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE DICTAMEN Y FIRMANTES -->
+                <div class="mt-8 border-t-2 border-brand-blue/15 pt-6 pb-2 hide-on-print-indiv">
+                    
+                    <div class="mb-8">
+                        <label class="text-xs font-extrabold uppercase text-brand-blue flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-comment-dots text-brand-cyan text-base"></i>
+                            Dictamen (Máx 200 caracteres)
+                        </label>
+                        <textarea id="inputDictamen" maxlength="200" rows="3" placeholder="Ingrese texto descriptivo, dictamen, o cualquier observación del cálculo..." class="brand-editable w-full px-4 py-3 text-sm resize-none"></textarea>
+                    </div>
+
+                    <h3 class="text-xs font-extrabold uppercase text-brand-blue mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-signature text-brand-cyan text-base"></i>
+                        Firmas de Autorización
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 px-4">
+                        <!-- Firmante 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-3/4 border-b-2 border-brand-blue mb-1"></div>
+                            <div class="text-[10px] font-extrabold text-brand-blue uppercase tracking-widest leading-none mb-1">Realizado y revisado por</div>
+                            <input type="text" id="firmaNombre1" class="brand-editable w-full px-2 py-1 text-sm font-bold text-center border-none bg-transparent h-6 focus:ring-0 leading-none mb-0" placeholder="">
+                            <input type="text" id="firmaPuesto1" class="brand-editable w-full px-2 py-0 text-xs text-center border-none bg-transparent h-5 focus:ring-0 leading-none" placeholder="">
+                        </div>
+                        <!-- Firmante 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-3/4 border-b-2 border-brand-blue mb-1"></div>
+                            <div class="text-[10px] font-extrabold text-brand-blue uppercase tracking-widest leading-none mb-1">Autorizado por</div>
+                            <input type="text" id="firmaNombre2" class="brand-editable w-full px-2 py-1 text-sm font-bold text-center border-none bg-transparent h-6 focus:ring-0 leading-none mb-0" placeholder="">
+                            <input type="text" id="firmaPuesto2" class="brand-editable w-full px-2 py-0 text-xs text-center border-none bg-transparent h-5 focus:ring-0 leading-none" placeholder="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FILA 5: BITÁCORA DE COMPROBACIONES -->
+        <div class="brand-card overflow-hidden bitacora-container hide-on-print-indiv">
+            <div class="bg-brand-blue text-brand-white px-6 py-3.5 border-b-4 border-brand-pink flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-list-check text-brand-yellow text-lg"></i>
+                    <div>
+                        <h3 class="font-extrabold text-sm uppercase tracking-wider">Bitácora de Pruebas de Rutina (Máx 10)</h3>
+                        <p class="text-[11px] text-brand-cyan">Clic en imprimir de la fila para emitir el reporte individual</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 no-print">
+                    <button type="button" onclick="imprimirBitacoraResumida()" class="px-3 py-1.5 rounded-[8px] bg-brand-white text-brand-blue font-extrabold text-xs hover:bg-brand-cyan transition cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-print mr-1"></i>Imprimir Resumen
+                    </button>
+                    <button type="button" onclick="vaciarBitacoraDiaria()" class="px-3 py-1.5 rounded-[8px] bg-brand-pink text-brand-white font-extrabold text-xs hover:opacity-90 transition cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-trash-can mr-1"></i>Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-5">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <span class="text-xs font-bold text-brand-blue">Uso: <span id="lblCapacidadBitacora">0</span>/10 cálculos registrados</span>
+                </div>
+                <div class="overflow-x-auto rounded-[12px] border-2 border-brand-blue/20">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-brand-blue text-brand-white uppercase font-extrabold tracking-wide">
+                                <th class="py-3 px-3 w-10">#</th>
+                                <th class="py-3 px-3 min-w-[150px]">Asociado / Cuentas</th>
+                                <th class="py-3 px-3 text-right">Capital</th>
+                                <th class="py-3 px-3 text-center">Días</th>
+                                <th class="py-3 px-3 text-center">Tasa (%)</th>
+                                <th class="py-3 px-3 text-right text-brand-pink">Penalización</th>
+                                <th class="py-3 px-3 text-right text-brand-yellow">A Recibir (Q)</th>
+                                <th class="py-3 px-3 text-center no-print w-28">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyBitacora" class="divide-y divide-brand-blue/15 font-mono">
+                            <!-- Filas de bitácora -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================================================
+         PLANTILLA DE IMPRESIÓN INDIVIDUAL EJECUTIVA
+         ========================================================================== -->
+    <div id="printTemplateIndividual" class="hidden print:block w-full bg-white text-black p-4 font-sans max-w-4xl mx-auto">
+        
+        <div class="flex justify-between items-center mb-8 border-b-2 border-brand-blue pb-4">
+            <div>
+                <h1 class="intercop-logotype text-3xl font-bold text-brand-blue tracking-wider">INTERCOP</h1>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-brand-cyan mt-1">Reporte de Auditoría y Comprobación</p>
+            </div>
+            <div class="text-right text-xs">
+                <p><strong>Fecha Emisión:</strong> <span id="printEmisionFecha" class="font-mono text-gray-700"></span></p>
+                <p><strong>Operador:</strong> <span id="printEmisionUsuario" class="font-mono text-gray-700"></span></p>
+            </div>
+        </div>
+
+        <h2 class="text-center font-extrabold text-lg uppercase tracking-wide text-brand-blue mb-6">
+            Dictamen Individual de Intereses CDP
+        </h2>
+        
+        <div class="bg-gray-50 border border-gray-300 p-4 rounded-lg mb-6">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Nombre del Asociado</span>
+                    <span id="printAsociado" class="font-bold text-base text-brand-blue uppercase"></span>
+                </div>
+                <div>
+                    <span class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Criterio de Días</span>
+                    <span id="printEmisionModo" class="font-bold text-gray-700"></span>
+                </div>
+                <div>
+                    <span class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Fórmula Divisor</span>
+                    <span id="printEmisionBase" class="font-mono font-bold text-gray-700"></span> días
+                </div>
+            </div>
+        </div>
+
+        <h3 class="font-bold text-xs uppercase text-brand-blue border-b border-gray-300 pb-1 mb-3">Detalle Técnico de Devengo</h3>
+        <table class="w-full text-left border-collapse mb-8 text-xs">
+            <thead>
+                <tr class="bg-brand-blue text-white uppercase text-[10px] tracking-wider">
+                    <th class="py-2 px-3 border border-gray-400">Cuenta</th>
+                    <th class="py-2 px-3 border border-gray-400">Fecha Inicial</th>
+                    <th class="py-2 px-3 border border-gray-400">Fecha Final</th>
+                    <th class="py-2 px-3 border border-gray-400 text-right">Capital (Q)</th>
+                    <th class="py-2 px-3 border border-gray-400 text-center">Días</th>
+                    <th class="py-2 px-3 border border-gray-400 text-center">Tasa (%)</th>
+                    <th class="py-2 px-3 border border-gray-400 text-right">Interés Bruto (Q)</th>
+                </tr>
+            </thead>
+            <tbody id="printTbodyTramos" class="font-mono text-gray-800"></tbody>
+        </table>
+
+        <!-- Liquidación Ejecutiva y Dictamen -->
+        <div class="flex justify-between items-start gap-8 mb-16">
+            <div class="w-1/2">
+                <h3 class="font-bold text-xs uppercase text-brand-blue border-b border-gray-300 pb-1 mb-2">Dictamen de Comprobación</h3>
+                <div id="printDictamenTexto" class="text-xs text-gray-700 italic border border-dashed border-gray-400 p-3 rounded bg-gray-50 min-h-[80px]">
+                </div>
+            </div>
+
+            <div class="w-1/2">
+                <table class="w-full text-left border-collapse text-sm">
+                    <tbody class="font-mono">
+                        <tr class="border-b border-gray-300">
+                            <td class="py-2 font-bold uppercase text-gray-600">Interés Original Bruto</td>
+                            <td class="py-2 text-right font-bold text-gray-800" id="printBruto"></td>
+                        </tr>
+                        <tr class="border-b border-gray-300 bg-red-50/30" id="printRowPenalizacion">
+                            <td class="py-2 font-bold uppercase text-red-600">(-) Penalización (3%)</td>
+                            <td class="py-2 text-right font-bold text-red-600" id="printPenalizacion"></td>
+                        </tr>
+                        <tr class="border-b border-gray-300 bg-red-50/10">
+                            <td class="py-2 font-bold uppercase text-red-600">(-) ISR Real (10%)</td>
+                            <td class="py-2 text-right font-bold text-red-600" id="printISR"></td>
+                        </tr>
+                        <tr class="border-b-2 border-brand-blue bg-brand-blue/5">
+                            <td class="py-3 font-extrabold uppercase text-brand-blue">Total a Recibir</td>
+                            <td class="py-3 text-right font-extrabold text-brand-blue text-lg" id="printNeto"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Firmas Alineadas sin espacios -->
+        <div class="flex justify-between items-end mt-12 px-4 text-center text-xs">
+            <div class="w-2/5 flex flex-col items-center">
+                <div class="w-full border-b border-black mb-1"></div>
+                <div class="font-bold text-[10px] uppercase text-gray-800 leading-none">Realizado y revisado por</div>
+                <div class="font-bold text-brand-blue text-sm leading-none mt-1" id="printFirmaNombre1"></div>
+                <div class="text-xs text-gray-600 italic leading-none mt-1" id="printFirmaPuesto1"></div>
+            </div>
+            <div class="w-2/5 flex flex-col items-center">
+                <div class="w-full border-b border-black mb-1"></div>
+                <div class="font-bold text-[10px] uppercase text-gray-800 leading-none">Autorizado por</div>
+                <div class="font-bold text-brand-blue text-sm leading-none mt-1" id="printFirmaNombre2"></div>
+                <div class="text-xs text-gray-600 italic leading-none mt-1" id="printFirmaPuesto2"></div>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center text-[9px] text-gray-400 uppercase tracking-widest border-t border-gray-200 pt-2">
+            Documento de uso interno - Cooperativa INTERCOP, R.L.
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         PLANTILLA DE IMPRESIÓN BITÁCORA RESUMIDA
+         ========================================================================== -->
+    <div id="printTemplateBitacora" class="hidden print-bitacora-only w-full bg-white text-black p-4 font-sans max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8 border-b-2 border-brand-blue pb-4">
+            <div>
+                <h1 class="intercop-logotype text-3xl font-bold text-brand-blue tracking-wider">INTERCOP</h1>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-brand-cyan mt-1">Resumen de Bitácora de Pruebas de Rutina</p>
+            </div>
+            <div class="text-right text-xs">
+                <p><strong>Fecha Emisión:</strong> <span id="printBitacoraFecha" class="font-mono text-gray-700"></span></p>
+                <p><strong>Operador:</strong> <span id="printBitacoraUsuario" class="font-mono text-gray-700"></span></p>
+            </div>
+        </div>
+
+        <h2 class="text-center font-extrabold text-lg uppercase tracking-wide text-brand-blue mb-6">
+            Registros de Auditoría Ejecutados
+        </h2>
+
+        <table class="w-full text-left border-collapse mb-16 text-xs">
+            <thead>
+                <tr class="bg-brand-blue text-white uppercase text-[10px] tracking-wider">
+                    <th class="py-2 px-3 border border-gray-400">#</th>
+                    <th class="py-2 px-3 border border-gray-400">Asociado / Cuentas</th>
+                    <th class="py-2 px-3 border border-gray-400 text-right">Capital (Q)</th>
+                    <th class="py-2 px-3 border border-gray-400 text-center">Días</th>
+                    <th class="py-2 px-3 border border-gray-400 text-center">Tasa (%)</th>
+                    <th class="py-2 px-3 border border-gray-400 text-right text-brand-pink">Penalización</th>
+                    <th class="py-2 px-3 border border-gray-400 text-right">A Recibir (Q)</th>
+                </tr>
+            </thead>
+            <tbody id="printTbodyBitacora" class="font-mono text-gray-800"></tbody>
+        </table>
+
+        <!-- Firmas Alineadas sin espacios (Bitácora) -->
+        <div class="flex justify-between items-end mt-12 px-4 text-center text-xs">
+            <div class="w-2/5 flex flex-col items-center">
+                <div class="w-full border-b border-black mb-1"></div>
+                <div class="font-bold text-[10px] uppercase text-gray-800 leading-none">Realizado y revisado por</div>
+                <div class="font-bold text-brand-blue text-sm leading-none mt-1" id="printBitacoraFirmaNombre1"></div>
+                <div class="text-xs text-gray-600 italic leading-none mt-1" id="printBitacoraFirmaPuesto1"></div>
+            </div>
+            <div class="w-2/5 flex flex-col items-center">
+                <div class="w-full border-b border-black mb-1"></div>
+                <div class="font-bold text-[10px] uppercase text-gray-800 leading-none">Autorizado por</div>
+                <div class="font-bold text-brand-blue text-sm leading-none mt-1" id="printBitacoraFirmaNombre2"></div>
+                <div class="text-xs text-gray-600 italic leading-none mt-1" id="printBitacoraFirmaPuesto2"></div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center text-[9px] text-gray-400 uppercase tracking-widest border-t border-gray-200 pt-2">
+            Documento de uso interno - Cooperativa INTERCOP, R.L.
+        </div>
+    </div>
+
+
+    <!-- TOAST -->
+    <div id="brandToast" class="fixed bottom-5 right-5 z-50 bg-brand-blue text-brand-white px-5 py-3.5 rounded-[14px] border-2 border-brand-yellow shadow-brand transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3">
+        <div class="w-7 h-7 rounded-[8px] bg-brand-yellow text-brand-blue flex items-center justify-center font-extrabold shrink-0"><i class="fa-solid fa-bell"></i></div>
+        <span id="brandToastText" class="text-xs sm:text-sm font-bold"></span>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // ==========================================
+        // SEGURIDAD Y LOGIN
+        // ==========================================
+        const DOMINIO_AUTORIZADO = "@intercop.gt";
+        const PASSWORD_PREDEFINIDA = "Captacion2026.";
+        const MAX_INTENTOS_FALLIDOS = 4;
+        const TIEMPO_BLOQUEO_MS = 5 * 60 * 1000;
+        const STORAGE_KEY_INTENTOS = "intercop_cdp_fails";
+        const STORAGE_KEY_LOCKOUT_UNTIL = "intercop_cdp_lockout";
+        const STORAGE_KEY_SESSION_USER = "intercop_cdp_user";
+        let intervaloBloqueo = null;
+
+        function obtenerIntentosFallidos() { return parseInt(localStorage.getItem(STORAGE_KEY_INTENTOS) || "0", 10); }
+        function guardarIntentosFallidos(c) { localStorage.setItem(STORAGE_KEY_INTENTOS, String(c)); actualizarIndicadorIntentosUI(); }
+        function obtenerTimestampDesbloqueo() { return parseInt(localStorage.getItem(STORAGE_KEY_LOCKOUT_UNTIL) || "0", 10); }
+
+        function verificarEstadoAutenticacion() {
+            const usuarioActivo = sessionStorage.getItem(STORAGE_KEY_SESSION_USER);
+            if (usuarioActivo && usuarioActivo.toLowerCase().endsWith(DOMINIO_AUTORIZADO)) {
+                mostrarAplicacionAutenticada(usuarioActivo);
+            } else {
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                document.getElementById('loginOverlay').classList.add('flex');
+                actualizarIndicadorIntentosUI();
+                verificarSiEstaBloqueado();
+            }
+        }
+
+        function actualizarIndicadorIntentosUI() {
+            const contenedor = document.getElementById('indicadorPuntosIntentos');
+            const fallidos = obtenerIntentosFallidos();
+            const restantes = Math.max(0, MAX_INTENTOS_FALLIDOS - fallidos);
+            let html = `<span class="font-mono font-extrabold text-brand-blue mr-1">${restantes}/${MAX_INTENTOS_FALLIDOS}</span>`;
+            for (let i = 1; i <= MAX_INTENTOS_FALLIDOS; i++) {
+                html += `<span class="w-3 h-3 rounded-full inline-block ${i <= fallidos ? 'bg-brand-pink' : 'bg-brand-cyan'} border border-brand-blue"></span>`;
+            }
+            contenedor.innerHTML = html;
+        }
+
+        function verificarSiEstaBloqueado() {
+            const lockoutUntil = obtenerTimestampDesbloqueo();
+            const ahora = Date.now();
+            const box = document.getElementById('loginLockoutBox');
+            const btn = document.getElementById('btnSubmitLogin');
+            if (lockoutUntil > ahora) {
+                box.classList.remove('hidden');
+                btn.disabled = true; btn.classList.add('opacity-50');
+                actualizarContadorRegresivo();
+                if (intervaloBloqueo) clearInterval(intervaloBloqueo);
+                intervaloBloqueo = setInterval(actualizarContadorRegresivo, 1000);
+                return true;
+            } else {
+                if (lockoutUntil !== 0) { localStorage.removeItem(STORAGE_KEY_LOCKOUT_UNTIL); guardarIntentosFallidos(0); }
+                if (intervaloBloqueo) clearInterval(intervaloBloqueo);
+                box.classList.add('hidden');
+                btn.disabled = false; btn.classList.remove('opacity-50');
+                return false;
+            }
+        }
+
+        function actualizarContadorRegresivo() {
+            const restanteMs = obtenerTimestampDesbloqueo() - Date.now();
+            if (restanteMs <= 0) { verificarSiEstaBloqueado(); return; }
+            const segs = Math.ceil(restanteMs / 1000);
+            document.getElementById('lockoutCountdown').textContent = `${String(Math.floor(segs / 60)).padStart(2, '0')}:${String(segs % 60).padStart(2, '0')}`;
+        }
+
+        function procesarLogin(e) {
+            e.preventDefault();
+            if (verificarSiEstaBloqueado()) return;
+            const email = (document.getElementById('loginEmail').value || "").trim().toLowerCase();
+            const pass = document.getElementById('loginPassword').value || "";
+            
+            const partes = email.split('@');
+            const validoEmail = (partes.length === 2 && partes[0].length > 0 && ("@" + partes[1]) === DOMINIO_AUTORIZADO);
+            const validoPass = (pass === PASSWORD_PREDEFINIDA);
+
+            if (validoEmail && validoPass) {
+                localStorage.removeItem(STORAGE_KEY_LOCKOUT_UNTIL);
+                guardarIntentosFallidos(0);
+                sessionStorage.setItem(STORAGE_KEY_SESSION_USER, email);
+                document.getElementById('loginErrorBox').classList.add('hidden');
+                mostrarAplicacionAutenticada(email);
+            } else {
+                const nuevosFails = obtenerIntentosFallidos() + 1;
+                guardarIntentosFallidos(nuevosFails);
+                if (nuevosFails >= MAX_INTENTOS_FALLIDOS) {
+                    localStorage.setItem(STORAGE_KEY_LOCKOUT_UNTIL, String(Date.now() + TIEMPO_BLOQUEO_MS));
+                    verificarSiEstaBloqueado();
+                } else {
+                    document.getElementById('loginErrorBox').classList.remove('hidden');
+                    document.getElementById('loginErrorTitle').textContent = `Intento #${nuevosFails}`;
+                    document.getElementById('loginErrorText').textContent = "Credenciales incorrectas o dominio inválido.";
+                }
+            }
+        }
+
+        function mostrarAplicacionAutenticada(correo) {
+            document.getElementById('headerUserEmail').textContent = correo;
+            document.getElementById('printEmisionUsuario').textContent = correo;
+            document.getElementById('printBitacoraUsuario').textContent = correo;
+            document.getElementById('loginOverlay').classList.remove('flex');
+            document.getElementById('loginOverlay').classList.add('hidden');
+        }
+
+        function alternarVisibilidadPassword() {
+            const i = document.getElementById('loginPassword');
+            const icon = document.getElementById('iconoVerPassword');
+            if (i.type === "password") { i.type = "text"; icon.className = "fa-solid fa-eye-slash"; }
+            else { i.type = "password"; icon.className = "fa-solid fa-eye"; }
+        }
+
+        function cerrarSesion() {
+            mostrarToastInstitucional("Cerrando sesión...");
+            setTimeout(() => {
+                sessionStorage.removeItem(STORAGE_KEY_SESSION_USER);
+                location.reload();
+            }, 800);
+        }
+
+        // ==========================================
+        // LÓGICA DE APLICACIÓN Y FORMATOS
+        // ==========================================
+        let modoMesCompleto = true;
+        let penalizacionActiva = false;
+        let tramosCalculo = [];
+        let bitacoraSesion = [];
+        let mesActivoSeleccionado = null;
+        
+        const MESES_NOMBRES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+        const MESES_CORTOS = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+        window.onload = function () {
+            document.getElementById('fechaHoraAuditoria').textContent = "Prueba de Rutina: " + new Date().toLocaleDateString('es-GT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const hoy = new Date().toISOString().split('T')[0];
+            tramosCalculo = [{ id: Date.now(), cuentaTramo: "", fechaInicial: hoy, fechaFinal: hoy, capital: 0.00, tasa: 0.00 }];
+            
+            renderizarBotonesMesesAnio();
+            actualizarVisualBotonDinamico();
+            actualizarVisualPenalizacion();
+            renderizarTablaTramos();
+            recalcularPlantilla();
+            renderizarBitacora();
+
+            verificarEstadoAutenticacion();
+        };
+
+        function formatearVistaMoneda(val) {
+            return Number(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        // Sincroniza la primera fila en vivo con la cuenta principal si se está modificando
+        function sincronizarCuenta(val) {
+            if (tramosCalculo.length > 0) {
+                tramosCalculo[0].cuentaTramo = val;
+                const inputCelda = document.getElementById(`cuentaTramo_${tramosCalculo[0].id}`);
+                if (inputCelda) inputCelda.value = val;
+            }
+        }
+
+        // ========== BOTÓN NUEVO Y LÍMITE ==========
+        function crearNuevoCalculo() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('inputAsociado').value = "";
+            document.getElementById('inputCuenta').value = "";
+            document.getElementById('inputMontoSistemaCore').value = "";
+            document.getElementById('inputDictamen').value = "";
+            
+            document.getElementById('firmaNombre1').value = "";
+            document.getElementById('firmaPuesto1').value = "";
+            document.getElementById('firmaNombre2').value = "";
+            document.getElementById('firmaPuesto2').value = "";
+            
+            tramosCalculo = [{ id: Date.now(), cuentaTramo: "", fechaInicial: hoy, fechaFinal: hoy, capital: 0.00, tasa: 0.00 }];
+            
+            mesActivoSeleccionado = null;
+            penalizacionActiva = false;
+            
+            renderizarBotonesMesesAnio();
+            actualizarVisualPenalizacion();
+            
+            // Restablece el botón de días a modoMesCompleto = true
+            modoMesCompleto = true;
+            actualizarVisualBotonDinamico();
+
+            renderizarTablaTramos();
+            recalcularPlantilla();
+            document.getElementById('inputAsociado').focus();
+        }
+
+        function alternarBotonAccionDinamica() {
+            modoMesCompleto = !modoMesCompleto;
+            actualizarVisualBotonDinamico();
+            recalcularPlantilla();
+        }
+
+        function actualizarVisualBotonDinamico() {
+            const switchBtn = document.getElementById('btnSwitchDinamico');
+            const dot = document.getElementById('dotSwitch');
+            const icon = document.getElementById('iconSwitch');
+            const label = document.getElementById('labelEstadoSwitch');
+            const tit = document.getElementById('tituloSwitch');
+            
+            if (modoMesCompleto) {
+                switchBtn.className = "w-full p-2.5 rounded-[10px] border-2 border-brand-blue bg-brand-cyan/20 hover:bg-brand-cyan/30 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full shadow-cyan-glow";
+                dot.className = "w-5 h-5 rounded-full bg-brand-yellow text-brand-blue flex items-center justify-center shadow toggle-dot translate-x-6";
+                icon.className = "fa-solid fa-check text-[10px]";
+                label.textContent = "Mes Completo"; label.className = "inline-block text-[10px] font-bold uppercase bg-brand-blue text-brand-yellow px-2 py-0.5 rounded mb-1";
+                tit.textContent = "Cuenta hasta el día final (incluido)";
+            } else {
+                switchBtn.className = "w-full p-2.5 rounded-[10px] border-2 border-gray-300 bg-gray-50 hover:bg-gray-100 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full";
+                dot.className = "w-5 h-5 rounded-full bg-white text-gray-400 flex items-center justify-center shadow toggle-dot translate-x-0";
+                icon.className = "fa-solid fa-minus text-[10px]";
+                label.textContent = "Rango Estándar"; label.className = "inline-block text-[10px] font-bold uppercase bg-gray-200 text-gray-500 px-2 py-0.5 rounded mb-1";
+                tit.textContent = "No devenga intereses el día final";
+            }
+        }
+
+        function alternarPenalizacion() {
+            penalizacionActiva = !penalizacionActiva;
+            if (penalizacionActiva) {
+                modoMesCompleto = false; // Forza a Rango Estándar
+                actualizarVisualBotonDinamico();
+            }
+            actualizarVisualPenalizacion();
+            renderizarTablaTramos();
+            recalcularPlantilla();
+        }
+
+        function actualizarVisualPenalizacion() {
+            const switchBtn = document.getElementById('btnSwitchPenalizacion');
+            const dot = document.getElementById('dotPenalizacion');
+            const icon = document.getElementById('iconPenalizacion');
+            const label = document.getElementById('labelPenalizacion');
+            const tit = document.getElementById('tituloPenalizacion');
+            
+            if (penalizacionActiva) {
+                switchBtn.className = "w-full p-2.5 rounded-[10px] border-2 border-brand-pink bg-brand-pink/20 hover:bg-brand-pink/30 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full shadow-pink-glow";
+                dot.className = "w-5 h-5 rounded-full bg-brand-pink text-white flex items-center justify-center shadow toggle-dot translate-x-6";
+                icon.className = "fa-solid fa-check text-[10px]";
+                label.textContent = "Penalizar 3%"; label.className = "inline-block text-[10px] font-bold uppercase bg-brand-pink text-white px-2 py-0.5 rounded mb-1";
+                tit.textContent = "Resta 3% a la tasa para el cálculo bruto";
+                document.getElementById('filaPenalizacion').classList.remove('hidden');
+            } else {
+                switchBtn.className = "w-full p-2.5 rounded-[10px] border-2 border-brand-pink/50 bg-white hover:bg-brand-pink/10 transition-all flex flex-col items-center justify-center text-center cursor-pointer h-full";
+                dot.className = "w-5 h-5 rounded-full bg-white text-gray-400 flex items-center justify-center shadow toggle-dot translate-x-0";
+                icon.className = "fa-solid fa-minus text-[10px]";
+                label.textContent = "Sin Penalizar"; label.className = "inline-block text-[10px] font-bold uppercase bg-gray-200 text-gray-500 px-2 py-0.5 rounded mb-1";
+                tit.textContent = "Tasa íntegra aplicada";
+                document.getElementById('filaPenalizacion').classList.add('hidden');
+            }
+        }
+
+        function renderizarTablaTramos() {
+            const tbody = document.getElementById('tbodyTramosPlantilla');
+            const base = parseInt(document.getElementById('selectBaseDias').value, 10) || 365;
+            tbody.innerHTML = "";
+            tramosCalculo.forEach((t, i) => {
+                
+                let tasaUI = `<input type="number" step="0.01" value="${t.tasa}" oninput="actualizarCampoTramo(${t.id}, 'tasa', this.value)" class="brand-editable px-2 py-1 text-xs w-full">`;
+                let brutoUI = `<div id="celdaInteresFila_${t.id}">Q 0.00</div>`;
+                
+                if(penalizacionActiva) {
+                    tasaUI += `<div class="text-[9px] text-brand-pink font-bold mt-1 text-center">-3.00% castigo</div>`;
+                    brutoUI += `<div class="text-[9px] text-brand-pink font-bold mt-1" id="celdaPenFila_${t.id}">- Q 0.00</div>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-brand-white border-b border-brand-blue/10";
+                tr.innerHTML = `
+                    <td class="py-2 px-3 text-center text-xs font-bold">${i + 1}</td>
+                    <td class="py-2 px-3">
+                        <input type="text" id="cuentaTramo_${t.id}" value="${t.cuentaTramo || ''}" placeholder="No. Cuenta" oninput="actualizarCampoTramo(${t.id}, 'cuentaTramo', this.value)" class="brand-editable px-2 py-1 text-xs w-full font-mono">
+                    </td>
+                    <td class="py-2 px-3"><div class="flex gap-2">
+                        <input type="date" value="${t.fechaInicial}" onchange="actualizarCampoTramo(${t.id}, 'fechaInicial', this.value)" class="brand-editable px-2 py-1 text-xs w-full">
+                        <input type="date" value="${t.fechaFinal}" onchange="actualizarCampoTramo(${t.id}, 'fechaFinal', this.value)" class="brand-editable px-2 py-1 text-xs w-full">
+                    </div></td>
+                    <td class="py-2 px-3">
+                        <div class="relative w-full">
+                            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center font-extrabold text-brand-blue text-xs">Q</span>
+                            <input type="text" inputmode="decimal" 
+                                value="${t.capital > 0 ? formatearVistaMoneda(t.capital) : ''}" 
+                                data-raw="${t.capital}"
+                                placeholder="0.00"
+                                onfocus="this.value = this.dataset.raw > 0 ? this.dataset.raw : ''"
+                                onblur="let v = parseFloat(this.value.replace(/[^0-9.]/g,''))||0; this.dataset.raw=v; this.value=formatearVistaMoneda(v); actualizarCampoTramo(${t.id}, 'capital', v)"
+                                class="brand-editable w-full pl-7 pr-2.5 py-1.5 text-sm font-mono">
+                        </div>
+                    </td>
+                    <td class="py-2 px-3 text-center font-bold text-brand-blue" id="celdaDias_${t.id}">0</td>
+                    <td class="py-2 px-3">${tasaUI}</td>
+                    <td class="py-2 px-3 text-right font-bold text-brand-blue">${brutoUI}</td>
+                    <td class="py-2 px-3 text-center no-print">
+                        ${tramosCalculo.length > 1 ? `<button onclick="eliminarTramo(${t.id})" class="text-brand-pink"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function agregarTramoAdicional() {
+            const ultimo = tramosCalculo[tramosCalculo.length - 1];
+            // Heredar la cuenta general, permitiendo edición libre en la tabla
+            const accBase = document.getElementById('inputCuenta').value;
+            
+            tramosCalculo.push({
+                id: Date.now(),
+                cuentaTramo: accBase,
+                fechaInicial: ultimo ? ultimo.fechaInicial : "",
+                fechaFinal: ultimo ? ultimo.fechaFinal : "",
+                capital: ultimo ? ultimo.capital : 0,
+                tasa: ultimo ? ultimo.tasa : 0
+            });
+            renderizarTablaTramos();
+            recalcularPlantilla();
+        }
+
+        function eliminarTramo(id) {
+            if (tramosCalculo.length <= 1) return;
+            tramosCalculo = tramosCalculo.filter(t => t.id !== id);
+            renderizarTablaTramos();
+            recalcularPlantilla();
+        }
+
+        function actualizarCampoTramo(id, cmp, val) {
+            const tramo = tramosCalculo.find(x => x.id === id);
+            if (cmp === 'capital' || cmp === 'tasa') tramo[cmp] = parseFloat(val) || 0;
+            else tramo[cmp] = val;
+            
+            if(cmp === 'fechaInicial' || cmp === 'fechaFinal'){
+                if(mesActivoSeleccionado !== null){
+                    mesActivoSeleccionado = null;
+                    renderizarBotonesMesesAnio();
+                }
+            }
+            recalcularPlantilla();
+        }
+
+        function recalcularPlantilla() {
+            const base = parseInt(document.getElementById('selectBaseDias').value, 10) || 365;
+            document.getElementById('spanDivisorFormula').textContent = base;
+            
+            let brutoTotalOriginal = 0, penalizacionTotal = 0, diasTotal = 0;
+            
+            tramosCalculo.forEach((t, i) => {
+                const fi = new Date(t.fechaInicial + "T12:00:00");
+                const ff = new Date(t.fechaFinal + "T12:00:00");
+                let dias = 0;
+                if (!isNaN(fi) && !isNaN(ff)) {
+                    dias = Math.round((ff - fi) / 86400000);
+                    if (modoMesCompleto) dias += 1;
+                    if (dias < 0) dias = 0;
+                }
+                
+                const interesOriginal = (t.capital * dias * (t.tasa / 100)) / base;
+                let penaFila = 0;
+                if(penalizacionActiva) {
+                    penaFila = (t.capital * dias * (3 / 100)) / base;
+                }
+
+                brutoTotalOriginal += interesOriginal;
+                penalizacionTotal += penaFila;
+                diasTotal += dias;
+                
+                if (document.getElementById(`celdaDias_${t.id}`)) {
+                    document.getElementById(`celdaDias_${t.id}`).textContent = dias;
+                    document.getElementById(`celdaInteresFila_${t.id}`).textContent = "Q " + interesOriginal.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+                    if(penalizacionActiva && document.getElementById(`celdaPenFila_${t.id}`)) {
+                        document.getElementById(`celdaPenFila_${t.id}`).textContent = "- Q " + penaFila.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+                    }
+                }
+                
+                if(i === 0 && document.getElementById('dictamenTotalDias')) {
+                    document.getElementById('dictamenTotalDias').textContent = dias;
+                    document.getElementById('dictamenPrimerDia').textContent = !isNaN(fi) ? fi.toLocaleDateString('es-GT') : '--';
+                    const uf = new Date(ff); 
+                    if(!modoMesCompleto && dias>0) uf.setDate(uf.getDate() - 1);
+                    document.getElementById('dictamenUltimoDia').textContent = !isNaN(uf) ? uf.toLocaleDateString('es-GT') : '--';
+                }
+            });
+
+            // ISR Real es sobre el remanente (Bruto - Penalización)
+            let baseISR = brutoTotalOriginal - penalizacionTotal;
+            if(baseISR < 0) baseISR = 0;
+            const isrReal = baseISR * 0.10;
+            const netoTotalEx = baseISR - isrReal;
+
+            document.getElementById('celdaE13Bruto').textContent = "Q " + brutoTotalOriginal.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('celdaPenalizacion').textContent = "- Q " + penalizacionTotal.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('celdaE14ISR').textContent = "- Q " + isrReal.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('celdaE15TotalRecibir').textContent = "Q " + netoTotalEx.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+            window.estadoActualPlantilla = {
+                asociado: document.getElementById('inputAsociado').value || "",
+                cuenta: document.getElementById('inputCuenta').value || "",
+                capital: tramosCalculo[0].capital,
+                diasTotales: diasTotal,
+                tasa: tramosCalculo[0].tasa,
+                bruto: brutoTotalOriginal,
+                penalizacion: penalizacionTotal,
+                penalizacionActiva: penalizacionActiva,
+                isr: isrReal,
+                totalRecibir: netoTotalEx,
+                estadoData: JSON.stringify(tramosCalculo),
+                base: base,
+                modoTexto: modoMesCompleto ? "Mes Completo" : "Estándar (-1 día)",
+                dictamen: document.getElementById('inputDictamen').value || "",
+                firma1: { name: document.getElementById('firmaNombre1').value, job: document.getElementById('firmaPuesto1').value },
+                firma2: { name: document.getElementById('firmaNombre2').value, job: document.getElementById('firmaPuesto2').value }
+            };
+            verificarDiferenciaFila16();
+        }
+
+        function verificarDiferenciaFila16() {
+            const inputVal = parseFloat(document.getElementById('inputMontoSistemaCore').value) || 0;
+            const diff = (window.estadoActualPlantilla.totalRecibir - inputVal);
+            const box = document.getElementById('valorDiferenciaFila16');
+            if(inputVal === 0) { box.textContent = "Q 0.00"; box.className = "font-mono font-bold text-brand-blue"; }
+            else if (Math.abs(diff) < 0.01) { box.textContent = "Q 0.00 (EXACTO)"; box.className = "font-mono font-bold text-brand-cyan"; }
+            else { box.textContent = diff > 0 ? "+ Q " + diff.toLocaleString('en', {minimumFractionDigits:2}) : "- Q " + Math.abs(diff).toLocaleString('en', {minimumFractionDigits:2}); box.className = "font-mono font-bold text-brand-pink"; }
+        }
+
+        // ========== SELECCIÓN DE MES TOGGLE ==========
+        function renderizarBotonesMesesAnio() {
+            const container = document.getElementById('gridBotonesMeses');
+            container.innerHTML = "";
+            for(let m=0; m<12; m++){
+                const esActivo = (mesActivoSeleccionado === m);
+                const classActivo = esActivo 
+                    ? "bg-brand-blue text-brand-white border-brand-blue font-extrabold shadow-md scale-105" 
+                    : "bg-brand-blue/5 hover:bg-brand-blue text-brand-blue hover:text-brand-white border-brand-blue/20";
+                
+                container.innerHTML += `<button onclick="seleccionarMes(${m})" class="p-2 border rounded-[8px] text-xs transition-all duration-200 cursor-pointer ${classActivo}">${MESES_CORTOS[m]}</button>`;
+            }
+        }
+
+        function seleccionarMes(mIdx) {
+            if (mesActivoSeleccionado === mIdx) {
+                mesActivoSeleccionado = null;
+                renderizarBotonesMesesAnio();
+                mostrarToastInstitucional("Mes deseleccionado. Permite ingreso manual.");
+                return;
+            }
+
+            mesActivoSeleccionado = mIdx;
+            const anio = parseInt(document.getElementById('selectAnioCalendario').value, 10);
+            const fIni = new Date(anio, mIdx, 1, 12, 0, 0);
+            const fFin = new Date(anio, mIdx + 1, 0, 12, 0, 0);
+
+            if (tramosCalculo.length > 0) {
+                tramosCalculo[0].fechaInicial = fIni.toISOString().split('T')[0];
+                tramosCalculo[0].fechaFinal = fFin.toISOString().split('T')[0];
+            }
+            
+            renderizarBotonesMesesAnio(); 
+            renderizarTablaTramos();
+            recalcularPlantilla();
+            mostrarToastInstitucional(`${MESES_NOMBRES[mIdx]} ${anio} seleccionado.`);
+        }
+
+        // ========== BITÁCORA Y GUARDADO SEGURO ==========
+        function registrarEnBitacoraDiaria(silencioso = false) {
+            if(bitacoraSesion.length >= 10) {
+                if(!silencioso) mostrarToastInstitucional("Límite de 10 pruebas alcanzado. Elimina un registro.");
+                return false;
+            }
+            
+            recalcularPlantilla(); 
+            const d = window.estadoActualPlantilla;
+            
+            let cuentaValidar = d.cuenta.trim();
+            if (cuentaValidar === "") {
+                cuentaValidar = (tramosCalculo[0]?.cuentaTramo || "").trim();
+            }
+            
+            if(d.asociado.trim() === "") {
+                if(!silencioso) mostrarToastInstitucional("Error: Falta el NOMBRE DEL ASOCIADO.");
+                return false;
+            }
+            if(cuentaValidar === "") {
+                if(!silencioso) mostrarToastInstitucional("Error: Falta el NÚMERO DE CUENTA.");
+                return false;
+            }
+            
+            d.cuenta = cuentaValidar; 
+            
+            // push agrega cronológicamente al final
+            bitacoraSesion.push({ id: Date.now(), ...d });
+            renderizarBitacora();
+            
+            if(!silencioso) {
+                mostrarToastInstitucional("Registro guardado con éxito.");
+                setTimeout(() => {
+                    crearNuevoCalculo();
+                }, 300);
+            }
+            return true;
+        }
+
+        function cargarDesdeBitacora(id) {
+            const item = bitacoraSesion.find(x => x.id === id);
+            if(!item) return;
+            document.getElementById('inputAsociado').value = item.asociado;
+            document.getElementById('inputCuenta').value = item.cuenta;
+            document.getElementById('selectBaseDias').value = item.base;
+            document.getElementById('inputDictamen').value = item.dictamen || "";
+            document.getElementById('firmaNombre1').value = item.firma1?.name || "";
+            document.getElementById('firmaPuesto1').value = item.firma1?.job || "";
+            document.getElementById('firmaNombre2').value = item.firma2?.name || "";
+            document.getElementById('firmaPuesto2').value = item.firma2?.job || "";
+
+            penalizacionActiva = item.penalizacionActiva || false;
+            actualizarVisualPenalizacion();
+
+            tramosCalculo = JSON.parse(item.estadoData);
+            
+            mesActivoSeleccionado = null; 
+            renderizarBotonesMesesAnio();
+            renderizarTablaTramos();
+            recalcularPlantilla();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            mostrarToastInstitucional("Datos del historial cargados en pantalla.");
+        }
+
+        function eliminarItemBitacora(id) {
+            bitacoraSesion = bitacoraSesion.filter(x => x.id !== id);
+            renderizarBitacora();
+        }
+
+        function vaciarBitacoraDiaria() {
+            bitacoraSesion = [];
+            renderizarBitacora();
+            mostrarToastInstitucional("Bitácora limpiada.");
+        }
+
+        function renderizarBitacora() {
+            document.getElementById('lblCapacidadBitacora').textContent = bitacoraSesion.length;
+            const tbody = document.getElementById('tbodyBitacora');
+            tbody.innerHTML = "";
+            if (bitacoraSesion.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-brand-blue/50 font-sans">Bitácora vacía. Clic en "Guardar en Bitácora" tras realizar un cálculo.</td></tr>`;
+                return;
+            }
+            bitacoraSesion.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-brand-white hover:bg-brand-cyan/10 transition";
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-bold cursor-pointer" onclick="cargarDesdeBitacora(${item.id})">${index + 1}</td>
+                    <td class="py-2.5 px-3 cursor-pointer min-w-[150px]" onclick="cargarDesdeBitacora(${item.id})">
+                        <span class="block font-bold">${item.asociado}</span>
+                        <span class="text-[10px] text-brand-blue/70">CTA Ppal: ${item.cuenta}</span>
+                    </td>
+                    <td class="py-2.5 px-3 text-right cursor-pointer" onclick="cargarDesdeBitacora(${item.id})">Q ${item.capital.toLocaleString('en', {minimumFractionDigits:2})}</td>
+                    <td class="py-2.5 px-3 text-center cursor-pointer font-bold" onclick="cargarDesdeBitacora(${item.id})">${item.diasTotales}</td>
+                    <td class="py-2.5 px-3 text-center cursor-pointer" onclick="cargarDesdeBitacora(${item.id})">${item.tasa.toFixed(2)}</td>
+                    <td class="py-2.5 px-3 text-right cursor-pointer text-brand-pink" onclick="cargarDesdeBitacora(${item.id})">${item.penalizacionActiva ? '-Q ' + item.penalizacion.toLocaleString('en', {minimumFractionDigits:2}) : 'Q 0.00'}</td>
+                    <td class="py-2.5 px-3 text-right font-bold text-brand-yellow bg-brand-blue cursor-pointer" onclick="cargarDesdeBitacora(${item.id})">Q ${item.totalRecibir.toLocaleString('en', {minimumFractionDigits:2})}</td>
+                    <td class="py-2.5 px-3 text-center no-print">
+                        <button onclick="cargarDesdeBitacora(${item.id})" class="text-brand-cyan hover:text-brand-blue px-2 transition" title="Cargar a Pantalla"><i class="fa-solid fa-folder-open"></i></button>
+                        <button onclick="imprimirRegistroEspecifico(${item.id})" class="text-brand-blue hover:text-brand-yellow px-2 transition" title="Imprimir Dictamen Individual"><i class="fa-solid fa-print"></i></button>
+                        <button onclick="eliminarItemBitacora(${item.id})" class="text-brand-pink hover:text-brand-blue px-2 transition" title="Quitar"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ========== IMPRESIÓN REPORTE INDIVIDUAL ==========
+        function imprimirRegistroEspecifico(id) {
+            const item = bitacoraSesion.find(x => x.id === id);
+            if(!item) return;
+
+            document.getElementById('printEmisionFecha').textContent = new Date().toLocaleString('es-GT');
+            document.getElementById('printEmisionBase').textContent = item.base;
+            document.getElementById('printEmisionModo').textContent = item.modoTexto;
+            document.getElementById('printAsociado').textContent = item.asociado;
+            
+            const textoDictamen = item.dictamen ? item.dictamen : "Sin observaciones ingresadas.";
+            document.getElementById('printDictamenTexto').textContent = textoDictamen;
+
+            const pTbody = document.getElementById('printTbodyTramos');
+            pTbody.innerHTML = "";
+            const tramos = JSON.parse(item.estadoData);
+            tramos.forEach(t => {
+                const tr = document.createElement('tr');
+                const pFi = new Date(t.fechaInicial + "T12:00:00").toLocaleDateString('es-GT');
+                const pFf = new Date(t.fechaFinal + "T12:00:00").toLocaleDateString('es-GT');
+                
+                let diasR = Math.round((new Date(t.fechaFinal + "T12:00:00") - new Date(t.fechaInicial + "T12:00:00")) / 86400000);
+                if (item.modoTexto.includes("Mes Completo")) diasR += 1;
+                if (diasR < 0) diasR = 0;
+                
+                const interesR = (t.capital * diasR * (t.tasa/100)) / item.base;
+
+                tr.innerHTML = `
+                    <td class="py-2 px-3 border border-gray-400">${t.cuentaTramo || item.cuenta}</td>
+                    <td class="py-2 px-3 border border-gray-400">${pFi}</td>
+                    <td class="py-2 px-3 border border-gray-400">${pFf}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-right">${t.capital.toLocaleString('en', {minimumFractionDigits:2})}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-center">${diasR}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-center">${t.tasa.toFixed(2)}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-right">${interesR.toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                `;
+                pTbody.appendChild(tr);
+            });
+
+            document.getElementById('printBruto').textContent = "Q " + item.bruto.toLocaleString('en', {minimumFractionDigits:2});
+            
+            const pRowPenal = document.getElementById('printRowPenalizacion');
+            if (item.penalizacionActiva) {
+                pRowPenal.classList.remove('hidden');
+                document.getElementById('printPenalizacion').textContent = "- Q " + item.penalizacion.toLocaleString('en', {minimumFractionDigits:2});
+            } else {
+                pRowPenal.classList.add('hidden');
+            }
+
+            document.getElementById('printISR').textContent = "- Q " + item.isr.toLocaleString('en', {minimumFractionDigits:2});
+            document.getElementById('printNeto').textContent = "Q " + item.totalRecibir.toLocaleString('en', {minimumFractionDigits:2});
+
+            document.getElementById('printFirmaNombre1').textContent = item.firma1?.name || "";
+            document.getElementById('printFirmaPuesto1').textContent = item.firma1?.job || "";
+            document.getElementById('printFirmaNombre2').textContent = item.firma2?.name || "";
+            document.getElementById('printFirmaPuesto2').textContent = item.firma2?.job || "";
+
+            document.body.classList.add('print-individual');
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('print-individual');
+            }, 300);
+        }
+
+        // ========== IMPRESIÓN REPORTE BITÁCORA ==========
+        function imprimirBitacoraResumida() {
+            if(bitacoraSesion.length === 0) {
+                mostrarToastInstitucional("La bitácora está vacía.");
+                return;
+            }
+
+            document.getElementById('printBitacoraFecha').textContent = new Date().toLocaleString('es-GT');
+            
+            const pTbody = document.getElementById('printTbodyBitacora');
+            pTbody.innerHTML = "";
+
+            bitacoraSesion.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-2 px-3 border border-gray-400 text-center">${index + 1}</td>
+                    <td class="py-2 px-3 border border-gray-400 font-sans">
+                        <div class="font-bold text-[11px] uppercase">${item.asociado}</div>
+                        <div class="text-[10px] text-gray-600">CTA: ${item.cuenta}</div>
+                    </td>
+                    <td class="py-2 px-3 border border-gray-400 text-right">${item.capital.toLocaleString('en', {minimumFractionDigits:2})}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-center">${item.diasTotales}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-center">${item.tasa.toFixed(2)}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-right text-brand-pink">${item.penalizacionActiva ? '-Q ' + item.penalizacion.toLocaleString('en', {minimumFractionDigits:2}) : 'Q 0.00'}</td>
+                    <td class="py-2 px-3 border border-gray-400 text-right font-bold text-brand-blue">Q ${item.totalRecibir.toLocaleString('en', {minimumFractionDigits:2})}</td>
+                `;
+                pTbody.appendChild(tr);
+            });
+
+            document.getElementById('printBitacoraFirmaNombre1').textContent = document.getElementById('firmaNombre1').value;
+            document.getElementById('printBitacoraFirmaPuesto1').textContent = document.getElementById('firmaPuesto1').value;
+            document.getElementById('printBitacoraFirmaNombre2').textContent = document.getElementById('firmaNombre2').value;
+            document.getElementById('printBitacoraFirmaPuesto2').textContent = document.getElementById('firmaPuesto2').value;
+
+            document.body.classList.add('print-bitacora');
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('print-bitacora');
+            }, 300);
+        }
+
+        // Extras visuales
+        let toastTimer;
+        function mostrarToastInstitucional(texto) {
+            const toast = document.getElementById('brandToast');
+            document.getElementById('brandToastText').textContent = texto;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
