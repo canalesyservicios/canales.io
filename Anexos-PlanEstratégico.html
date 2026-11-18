@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo Planificación Estratégica 2027-2030 | INTERCOP</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        intercop: {
+                            navy: '#002855',
+                            dark: '#001B3A',
+                            deep: '#001E42',
+                            cyan: '#00AEEF',
+                            yellow: '#FFD100',
+                            magenta: '#EC008C',
+                            bg: '#F4F7FA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ExcelJS 4.4.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+    <!-- jsPDF & jsPDF-AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #F4F7FA;
+        }
+        /* Wordmark tipográfico oficial INTERCOP (sin logotipo gráfico) */
+        .intercop-wordmark {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 0.06em;
+            user-select: none;
+        }
+        /* Scrollbars estilizados */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #EDF2F7;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+        /* Inputs de login con borde izquierdo amarillo y contorno celeste */
+        .login-input-wrap {
+            position: relative;
+            border: 2px solid #00AEEF;
+            border-radius: 0.75rem;
+            background: #FFFFFF;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .login-input-wrap::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background-color: #FFD100;
+        }
+        .login-input-wrap:focus-within {
+            box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.22);
+            border-color: #002855;
+        }
+        /* Animación suave para modales y notificaciones */
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: modalFadeIn 0.2s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- ===================================================================== -->
+    <!-- 1. PANTALLA DE SEGURIDAD / LOGIN (BLOQUEO POR 3 INTENTOS / 5 MIN)     -->
+    <!-- ===================================================================== -->
+    <section id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-[#001E42] via-[#002855] to-[#001B3A] overflow-y-auto">
+        <div class="w-full max-w-md bg-white rounded-2xl border-[3px] border-[#00AEEF] shadow-2xl overflow-hidden flex flex-col animate-modal">
+            
+            <!-- Franja superior multicolor de 4 segmentos iguales -->
+            <div class="grid grid-cols-4 h-2.5 w-full">
+                <div class="bg-[#002855]"></div>
+                <div class="bg-[#00AEEF]"></div>
+                <div class="bg-[#FFD100]"></div>
+                <div class="bg-[#EC008C]"></div>
+            </div>
+
+            <!-- Contenido de la tarjeta -->
+            <div class="px-6 sm:px-8 pt-7 pb-6 flex flex-col items-center">
+                
+                <!-- Nombre INTERCOP en Azul Marino (#002855) sobre fondo blanco -->
+                <div class="intercop-wordmark text-4xl sm:text-[2.6rem] text-[#002855] leading-none mb-4">
+                    INTERCOP
+                </div>
+
+                <!-- Píldora institucional con escudo amarillo -->
+                <div class="inline-flex items-center gap-2 bg-[#002855] text-white text-xs sm:text-[13px] font-semibold px-4 py-1.5 rounded-full shadow-sm mb-6 text-center">
+                    <i class="fas fa-shield-halved text-[#FFD100] text-sm"></i>
+                    <span>Anexo Planificación Estratégica 2027-2030</span>
+                </div>
+
+                <!-- Barra de Seguridad de Acceso (3/3 intentos) -->
+                <div class="w-full bg-[#F4F7FA] border border-slate-200 rounded-xl px-4 py-2.5 flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#002855]">
+                        <i class="fas fa-user-lock text-[#00AEEF] text-base"></i>
+                        <span>Seguridad de Acceso:</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="attemptsCounterText" class="text-sm font-bold text-[#002855]">3/3</span>
+                        <div id="attemptsDots" class="flex items-center gap-1.5">
+                            <span class="attempt-dot w-3.5 h-3.5 rounded-full bg-[#00AEEF] border-2 border-[#002855] transition-colors"></span>
+                            <span class="attempt-dot w-3.5 h-3.5 rounded-full bg-[#00AEEF] border-2 border-[#002855] transition-colors"></span>
+                            <span class="attempt-dot w-3.5 h-3.5 rounded-full bg-[#00AEEF] border-2 border-[#002855] transition-colors"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta de Error / Bloqueo -->
+                <div id="loginAlert" class="hidden w-full mb-5 rounded-xl p-3.5 text-xs sm:text-sm font-medium border">
+                    <div class="flex items-start gap-2.5">
+                        <i id="loginAlertIcon" class="fas fa-circle-exclamation mt-0.5 text-base"></i>
+                        <div id="loginAlertText" class="flex-1"></div>
+                    </div>
+                </div>
+
+                <!-- Formulario de Acceso -->
+                <form id="loginForm" class="w-full space-y-4" novalidate>
+                    <!-- Correo Corporativo -->
+                    <div>
+                        <label for="loginEmail" class="block text-xs font-extrabold tracking-wider text-[#002855] uppercase mb-1.5">
+                            CORREO CORPORATIVO
+                        </label>
+                        <div class="login-input-wrap flex items-center pl-4 pr-3">
+                            <i class="fas fa-envelope text-slate-400 mr-2.5 text-sm"></i>
+                            <input type="email" id="loginEmail" autocomplete="email" placeholder="usuario@intercop.gt"
+                                class="w-full py-3 text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none">
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1 pl-1">Ingrese su correo institucional (ej. nombre@intercop.gt)</p>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div>
+                        <label for="loginPassword" class="block text-xs font-extrabold tracking-wider text-[#002855] uppercase mb-1.5">
+                            CONTRASEÑA
+                        </label>
+                        <div class="login-input-wrap flex items-center pl-4 pr-2">
+                            <i class="fas fa-key text-slate-400 mr-2.5 text-sm"></i>
+                            <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••••••"
+                                class="w-full py-3 text-sm text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none">
+                            <button type="button" id="togglePasswordBtn" aria-label="Mostrar u ocultar contraseña"
+                                class="p-2 text-slate-500 hover:text-[#002855] transition-colors focus:outline-none">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botón Ingresar -->
+                    <button type="submit" id="loginSubmitBtn"
+                        class="w-full mt-2 bg-[#002855] hover:bg-[#001B3A] active:scale-[0.99] text-white font-bold text-sm tracking-wider py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-right-to-bracket"></i>
+                        <span>INGRESAR</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Franja inferior limpia en Azul Marino (sin PBX ni correo de contacto) -->
+            <div class="h-5 w-full bg-[#002855]"></div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 2. APLICACIÓN PRINCIPAL (OCULTA HASTA AUTENTICAR)                     -->
+    <!-- ===================================================================== -->
+    <div id="appShell" class="hidden flex-col min-h-screen">
+
+        <!-- ENCABEZADO PRINCIPAL CORPORATIVO -->
+        <header class="bg-[#002855] text-white shadow-lg sticky top-0 z-30">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                
+                <!-- Izquierda: Wordmark INTERCOP en BLANCO (#FFFFFF) sobre Azul Marino + Subtítulo -->
+                <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span class="intercop-wordmark text-2xl sm:text-3xl text-white tracking-wider">INTERCOP</span>
+                    <span class="hidden sm:inline-block h-8 w-px bg-white/25"></span>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-bold leading-tight text-white">
+                            Anexo Planificación Estratégica 2027-2030
+                        </h1>
+                        <p id="headerModuleSubtitle" class="text-xs text-[#00AEEF] font-medium">
+                            Formulación Estratégica &bull; Matriz BCG &amp; Análisis PESTEL
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Derecha: Badge de Usuario Verificado + Guía de Usuario + Cerrar Sesión -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <!-- Badge de Usuario Activo con Check Verde Verificado -->
+                    <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-1.5 flex flex-col justify-center leading-tight">
+                        <span id="headerUserEmail" class="text-xs sm:text-sm font-bold text-white tracking-tight">usuario@intercop.gt</span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#22c55e] text-[#002855] text-[9px]">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <span class="text-[11px] font-bold text-[#22c55e]">Verificado</span>
+                        </div>
+                    </div>
+
+                    <button id="btnOpenGuide" class="bg-[#FFD100] hover:bg-[#e6bc00] text-[#002855] font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                        <i class="fas fa-book-open"></i>
+                        <span>Guía de Usuario</span>
+                    </button>
+
+                    <button id="btnLogout" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium text-xs sm:text-sm px-3.5 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i class="fas fa-right-from-bracket"></i>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra inferior multicolor de marca -->
+            <div class="grid grid-cols-3 h-1.5 w-full">
+                <div class="bg-[#00AEEF]"></div>
+                <div class="bg-[#FFD100]"></div>
+                <div class="bg-[#EC008C]"></div>
+            </div>
+        </header>
+
+        <!-- BARRA DE NAVEGACIÓN DE MÓDULOS Y ACCIONES GLOBALES -->
+        <section class="bg-white border-b border-slate-200 shadow-sm">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+                
+                <!-- Selector Principal de Módulos (Píldora: Matriz BCG / PESTEL) -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="inline-flex items-center bg-[#F4F7FA] p-1.5 rounded-2xl border border-slate-200 shadow-inner">
+                        <button type="button" id="navModuleBCG"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#002855] text-white shadow-sm transition-all flex items-center gap-2">
+                            <i class="fas fa-th-large"></i>
+                            <span>Matriz BCG</span>
+                        </button>
+                        <button type="button" id="navModulePESTEL"
+                            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-[#002855] transition-all flex items-center gap-2">
+                            <i class="fas fa-globe"></i>
+                            <span>PESTEL</span>
+                        </button>
+                    </div>
+
+                    <!-- Selector de Vista Interna (Cuadrantes/Factores vs Tabla Consolidada) -->
+                    <div class="inline-flex items-center bg-[#F4F7FA] p-1 rounded-xl border border-slate-200">
+                        <button type="button" id="btnViewCards"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#002855] shadow-xs border border-slate-200 transition flex items-center gap-1.5">
+                            <i class="fas fa-grip"></i>
+                            <span id="lblViewCards">Vista Cuadrantes</span>
+                        </button>
+                        <button type="button" id="btnViewTable"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#002855] transition flex items-center gap-1.5">
+                            <i class="fas fa-table"></i>
+                            <span>Tabla Consolidada</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción: + Nuevo, Descargar Excel, Descargar PDF -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" id="btnNewItem"
+                        class="bg-[#00AEEF] hover:bg-[#0095cc] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        <span id="lblBtnNew">Nuevo</span>
+                    </button>
+
+                    <button type="button" id="btnExportExcel"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Descargar Excel</span>
+                    </button>
+
+                    <button type="button" id="btnExportPDF"
+                        class="bg-[#EC008C] hover:bg-[#c90077] text-white font-semibold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Descargar PDF</span>
+                    </button>
+
+                    <button type="button" id="btnClearAll" title="Reiniciar plantilla en blanco"
+                        class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-[#EC008C] border border-slate-200 hover:border-[#EC008C]/40 font-semibold text-xs sm:text-sm px-3 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                        <i class="fas fa-rotate-left"></i>
+                        <span>Limpiar todo</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- MÓDULO 1: MATRIZ BCG                                              -->
+        <!-- ================================================================= -->
+        <div id="moduleBCG" class="flex-1 flex flex-col">
+            
+            <!-- Filtros y KPIs BCG -->
+            <section class="bg-white/80 border-b border-slate-200">
+                <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 space-y-3.5">
+                    
+                    <!-- Filtros BCG -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Periodo Estratégico</label>
+                            <div class="relative">
+                                <i class="fas fa-calendar-alt absolute left-3 top-1/2 -translate-y-1/2 text-[#00AEEF] text-xs"></i>
+                                <input type="text" value="PE 2027-2030" readonly
+                                    class="w-full pl-8 pr-3 py-2 text-sm font-semibold text-[#002855] bg-[#F4F7FA] border border-slate-200 rounded-xl cursor-default focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="bcgFilterCategory" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Clasificación</label>
+                            <select id="bcgFilterCategory"
+                                class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEF] focus:border-[#00AEEF] outline-none transition">
+                                <option value="Todas">Todas las clasificaciones</option>
+                                <option value="Ahorros">Ahorros</option>
+                                <option value="Créditos">Créditos</option>
+                                <option value="Canales y Servicios">Canales y Servicios</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="bcgFilterSearch" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Buscar Producto</label>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="bcgFilterSearch" placeholder="Nombre del producto..."
+                                    class="w-full pl-8 pr-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEF] focus:border-[#00AEEF] outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjetas KPI BCG -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+                        <div class="bg-[#F4F7FA] border border-slate-200 rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-slate-500">Ahorros</span>
+                                <span id="statAhorrosSaldo" class="text-xs sm:text-sm font-bold text-[#002855]">Q 0.00</span>
+                            </div>
+                            <span id="statAhorrosCount" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[#00AEEF]/15 text-[#002855]">0/10</span>
+                        </div>
+
+                        <div class="bg-[#F4F7FA] border border-slate-200 rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-slate-500">Créditos</span>
+                                <span id="statCreditosSaldo" class="text-xs sm:text-sm font-bold text-[#002855]">Q 0.00</span>
+                            </div>
+                            <span id="statCreditosCount" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[#FFD100]/25 text-[#002855]">0/10</span>
+                        </div>
+
+                        <div class="bg-[#F4F7FA] border border-slate-200 rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-slate-500">Canales y Servicios</span>
+                                <span id="statCanalesSaldo" class="text-xs sm:text-sm font-bold text-[#002855]">Q 0.00</span>
+                            </div>
+                            <span id="statCanalesCount" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[#EC008C]/15 text-[#002855]">0/10</span>
+                        </div>
+
+                        <div class="bg-[#002855] text-white rounded-xl px-3.5 py-2.5 flex items-center justify-between shadow-sm">
+                            <div>
+                                <span class="block text-[11px] font-semibold uppercase text-[#00AEEF]">Saldo Total (Q)</span>
+                                <span id="statTotalSaldo" class="text-sm sm:text-base font-extrabold text-white">Q 0.00</span>
+                            </div>
+                            <span id="statTotalCount" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/15 text-[#FFD100]">0 prod.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contenido Principal BCG -->
+            <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-5">
+                
+                <!-- Vista 2x2 Cuadrantes BCG -->
+                <div id="bcgViewCards" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <!-- Estrella -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-gradient-to-r from-[#002855] to-[#003a75] px-4 py-3 border-b-4 border-[#FFD100] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#FFD100]/20 flex items-center justify-center text-xl">⭐</span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-base tracking-wide">ESTRELLA</h2>
+                                    <p class="text-[11px] text-[#FFD100] font-medium">Alto Crecimiento &bull; Alta Participación</p>
+                                </div>
+                            </div>
+                            <span id="badge-Estrella" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="quad-Estrella" class="p-3.5 space-y-3 flex-1 bg-[#FFFDF5]/50 min-h-[240px] max-h-[520px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Interrogante -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-gradient-to-r from-[#002855] to-[#003a75] px-4 py-3 border-b-4 border-[#EC008C] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#EC008C]/20 flex items-center justify-center text-xl">❓</span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-base tracking-wide">INTERROGANTE</h2>
+                                    <p class="text-[11px] text-pink-200 font-medium">Alto Crecimiento &bull; Baja Participación</p>
+                                </div>
+                            </div>
+                            <span id="badge-Interrogante" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="quad-Interrogante" class="p-3.5 space-y-3 flex-1 bg-[#FFF7FB]/50 min-h-[240px] max-h-[520px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Vaca -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-gradient-to-r from-[#002855] to-[#003a75] px-4 py-3 border-b-4 border-[#00AEEF] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#00AEEF]/20 flex items-center justify-center text-xl">🐄</span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-base tracking-wide">VACA</h2>
+                                    <p class="text-[11px] text-[#80D8FF] font-medium">Bajo Crecimiento &bull; Alta Participación</p>
+                                </div>
+                            </div>
+                            <span id="badge-Vaca" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="quad-Vaca" class="p-3.5 space-y-3 flex-1 bg-[#F5FCFF]/50 min-h-[240px] max-h-[520px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Perro -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-gradient-to-r from-[#002855] to-[#1E3A5F] px-4 py-3 border-b-4 border-slate-400 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-slate-400/20 flex items-center justify-center text-xl">🐕</span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-base tracking-wide">PERRO</h2>
+                                    <p class="text-[11px] text-slate-300 font-medium">Bajo Crecimiento &bull; Baja Participación</p>
+                                </div>
+                            </div>
+                            <span id="badge-Perro" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="quad-Perro" class="p-3.5 space-y-3 flex-1 bg-slate-50/70 min-h-[240px] max-h-[520px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Vista Tabla Consolidada BCG -->
+                <div id="bcgViewTable" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-[#002855] px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-white font-bold text-sm sm:text-base flex items-center gap-2">
+                            <i class="fas fa-table-list text-[#00AEEF]"></i>
+                            <span>Tabla Consolidada — Matriz BCG</span>
+                        </h2>
+                        <span class="text-xs text-slate-300">Ordenada por Clasificación y Cuadrante BCG</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1080px]">
+                            <thead>
+                                <tr class="bg-[#EBF5FB] text-[#002855] text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-3 font-extrabold">Clasificación</th>
+                                    <th class="py-3 px-3 font-extrabold">BCG</th>
+                                    <th class="py-3 px-3 font-extrabold">Nombre del Producto</th>
+                                    <th class="py-3 px-3 font-extrabold text-right">Saldo (Q)</th>
+                                    <th class="py-3 px-3 font-extrabold text-right">Part. %</th>
+                                    <th class="py-3 px-3 font-extrabold">Interpretación / Lectura</th>
+                                    <th class="py-3 px-3 font-extrabold">Enfoque Comercial</th>
+                                    <th class="py-3 px-3 font-extrabold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bcgTableBody" class="divide-y divide-slate-200 text-xs sm:text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- MÓDULO 2: ANÁLISIS PESTEL                                         -->
+        <!-- ================================================================= -->
+        <div id="modulePESTEL" class="hidden flex-1 flex-col">
+            
+            <!-- Filtros y KPIs PESTEL -->
+            <section class="bg-white/80 border-b border-slate-200">
+                <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 space-y-3.5">
+                    
+                    <!-- Filtros PESTEL -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label for="pestelFilterFactor" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Factor PESTEL</label>
+                            <select id="pestelFilterFactor"
+                                class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEF] focus:border-[#00AEEF] outline-none transition">
+                                <option value="Todos">Todos los factores</option>
+                                <option value="Político">Político</option>
+                                <option value="Económico">Económico</option>
+                                <option value="Social">Social</option>
+                                <option value="Tecnológico">Tecnológico</option>
+                                <option value="Ecológico">Ecológico</option>
+                                <option value="Legal">Legal</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="pestelFilterImpact" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo de Impacto</label>
+                            <select id="pestelFilterImpact"
+                                class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEF] focus:border-[#00AEEF] outline-none transition">
+                                <option value="Todos">Todos los impactos</option>
+                                <option value="Oportunidad">Oportunidad</option>
+                                <option value="Amenaza">Amenaza</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="pestelFilterSearch" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Búsqueda Rápida</label>
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="pestelFilterSearch" placeholder="Buscar criterio o descripción..."
+                                    class="w-full pl-8 pr-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00AEEF] focus:border-[#00AEEF] outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjetas KPI PESTEL -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+                        <div class="bg-[#002855] text-white rounded-xl px-4 py-2.5 flex items-center justify-between shadow-sm">
+                            <div>
+                                <span class="block text-[11px] font-semibold uppercase text-[#00AEEF]">Total Criterios PESTEL</span>
+                                <span id="kpiPestelTotal" class="text-lg font-extrabold text-white">0</span>
+                            </div>
+                            <span class="w-9 h-9 rounded-xl bg-white/10 text-[#FFD100] flex items-center justify-center">
+                                <i class="fas fa-globe"></i>
+                            </span>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-emerald-700">Oportunidades</span>
+                                <span id="kpiPestelOportunidades" class="text-lg font-extrabold text-emerald-900">0</span>
+                            </div>
+                            <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                <i class="fas fa-arrow-trend-up"></i>
+                            </span>
+                        </div>
+
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-rose-700">Amenazas</span>
+                                <span id="kpiPestelAmenazas" class="text-lg font-extrabold text-rose-900">0</span>
+                            </div>
+                            <span class="w-9 h-9 rounded-xl bg-rose-100 text-[#EC008C] flex items-center justify-center">
+                                <i class="fas fa-shield-virus"></i>
+                            </span>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[11px] font-bold uppercase text-amber-800">Impacto Alto</span>
+                                <span id="kpiPestelAlto" class="text-lg font-extrabold text-[#002855]">0</span>
+                            </div>
+                            <span class="w-9 h-9 rounded-xl bg-[#FFD100]/30 text-[#002855] flex items-center justify-center">
+                                <i class="fas fa-bolt"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contenido Principal PESTEL -->
+            <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-5">
+                
+                <!-- Vista 6 Bloques por Factor PESTEL -->
+                <div id="pestelViewCards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    
+                    <!-- Político -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-[#00AEEF] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#00AEEF]/20 text-[#00AEEF] flex items-center justify-center text-base">
+                                    <i class="fas fa-landmark"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">POLÍTICO</h2>
+                                    <p class="text-[11px] text-sky-200">Políticas públicas y estabilidad</p>
+                                </div>
+                            </div>
+                            <span id="badge-Politico" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Politico" class="p-3.5 space-y-3 flex-1 bg-[#F5FAFF]/60 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Económico -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-[#FFD100] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#FFD100]/20 text-[#FFD100] flex items-center justify-center text-base">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">ECONÓMICO</h2>
+                                    <p class="text-[11px] text-amber-200">Tasas, inflación, remesas y PIB</p>
+                                </div>
+                            </div>
+                            <span id="badge-Economico" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Economico" class="p-3.5 space-y-3 flex-1 bg-[#FFFDF4]/60 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Social -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-[#EC008C] flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#EC008C]/20 text-pink-300 flex items-center justify-center text-base">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">SOCIAL</h2>
+                                    <p class="text-[11px] text-pink-200">Demografía e inclusión financiera</p>
+                                </div>
+                            </div>
+                            <span id="badge-Social" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Social" class="p-3.5 space-y-3 flex-1 bg-[#FFF7FB]/60 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Tecnológico -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-cyan-400 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-cyan-400/20 text-cyan-300 flex items-center justify-center text-base">
+                                    <i class="fas fa-microchip"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">TECNOLÓGICO</h2>
+                                    <p class="text-[11px] text-cyan-200">Digitalización, IA y ciberseguridad</p>
+                                </div>
+                            </div>
+                            <span id="badge-Tecnologico" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Tecnologico" class="p-3.5 space-y-3 flex-1 bg-cyan-50/40 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Ecológico -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-emerald-500 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-base">
+                                    <i class="fas fa-leaf"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">ECOLÓGICO</h2>
+                                    <p class="text-[11px] text-emerald-200">Finanzas verdes y sostenibilidad</p>
+                                </div>
+                            </div>
+                            <span id="badge-Ecologico" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Ecologico" class="p-3.5 space-y-3 flex-1 bg-emerald-50/40 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Legal -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="bg-[#002855] px-4 py-3 border-b-4 border-indigo-400 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-indigo-400/20 text-indigo-200 flex items-center justify-center text-base">
+                                    <i class="fas fa-balance-scale"></i>
+                                </span>
+                                <div>
+                                    <h2 class="text-white font-extrabold text-sm sm:text-base tracking-wide">LEGAL</h2>
+                                    <p class="text-[11px] text-indigo-200">Normativa INACOP, INGECOP, SIB/IVE</p>
+                                </div>
+                            </div>
+                            <span id="badge-Legal" class="px-2.5 py-1 rounded-full bg-white/15 text-white text-xs font-bold">0</span>
+                        </div>
+                        <div id="factor-Legal" class="p-3.5 space-y-3 flex-1 bg-indigo-50/40 min-h-[220px] max-h-[460px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Vista Tabla Consolidada PESTEL -->
+                <div id="pestelViewTable" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-[#002855] px-5 py-3.5 flex flex-wrap items-center justify-between gap-2">
+                        <h2 class="text-white font-bold text-sm sm:text-base flex items-center gap-2">
+                            <i class="fas fa-table-list text-[#00AEEF]"></i>
+                            <span>Tabla Consolidada — Análisis PESTEL</span>
+                        </h2>
+                        <span class="text-xs text-slate-300">Ordenada por Factor y Nivel de Impacto</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1120px]">
+                            <thead>
+                                <tr class="bg-[#EBF5FB] text-[#002855] text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-3 font-extrabold">Factor</th>
+                                    <th class="py-3 px-3 font-extrabold">Criterio</th>
+                                    <th class="py-3 px-3 font-extrabold">Descripción - Glosario</th>
+                                    <th class="py-3 px-3 font-extrabold text-center">Tipo Impacto</th>
+                                    <th class="py-3 px-3 font-extrabold text-center">Nivel</th>
+                                    <th class="py-3 px-3 font-extrabold">Horizonte</th>
+                                    <th class="py-3 px-3 font-extrabold">Tendencia</th>
+                                    <th class="py-3 px-3 font-extrabold text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pestelTableBody" class="divide-y divide-slate-200 text-xs sm:text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Pie de página institucional -->
+        <footer class="bg-white border-t border-slate-200 py-3 px-4 text-center text-xs text-slate-500">
+            <span class="intercop-wordmark text-[#002855] text-sm mr-1">INTERCOP</span> &bull; Anexo Planificación Estratégica 2027-2030 &bull; Matriz BCG &amp; Análisis PESTEL
+        </footer>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 3. MODAL FORMULARIO BCG (9 PASOS)                                     -->
+    <!-- ===================================================================== -->
+    <div id="bcgModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#001B3A]/70 p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[94vh] flex flex-col overflow-hidden animate-modal">
+            <div class="bg-[#002855] px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-[#00AEEF]/20 flex items-center justify-center text-[#FFD100]">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <div>
+                        <h3 id="bcgModalTitle" class="text-white font-bold text-lg leading-tight">Nuevo Criterio BCG</h3>
+                        <p class="text-xs text-[#00AEEF]">Complete los 9 pasos de formulación estratégica</p>
+                    </div>
+                </div>
+                <button type="button" id="btnCloseBcgModal" class="text-white/75 hover:text-white text-2xl leading-none p-1">&times;</button>
+            </div>
+
+            <div id="bcgFormAlert" class="hidden mx-6 mt-4 bg-red-50 border-l-4 border-[#EC008C] text-red-800 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2.5">
+                <i class="fas fa-triangle-exclamation text-[#EC008C]"></i>
+                <span id="bcgFormAlertMsg"></span>
+            </div>
+
+            <form id="bcgForm" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <input type="hidden" id="editBcgId">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="fCuadrante" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            1. Cuadrante BCG <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="fCuadrante" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione un cuadrante...</option>
+                            <option value="Estrella">⭐ Estrella</option>
+                            <option value="Vaca">🐄 Vaca</option>
+                            <option value="Interrogante">❓ Interrogante</option>
+                            <option value="Perro">🐕 Perro</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="fClasificacion" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            2. Clasificación <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="fClasificacion" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione clasificación...</option>
+                            <option value="Ahorros">Ahorros</option>
+                            <option value="Créditos">Créditos</option>
+                            <option value="Canales y Servicios">Canales y Servicios</option>
+                        </select>
+                        <p id="categoryLimitHint" class="text-[11px] text-slate-500 mt-1">Máximo 10 productos por clasificación.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="fNombre" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            3. Nombre del Producto <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <input type="text" id="fNombre" required placeholder="Ej. Ahorro Corriente / Crédito Hipotecario"
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                    </div>
+
+                    <div>
+                        <label for="fSaldo" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            4. Saldo del Producto (Q) <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <input type="number" id="fSaldo" required min="0" step="0.01" placeholder="0.00"
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="fInterpretacion" class="text-xs font-bold text-[#002855] uppercase">5. Interpretación / Lectura</label>
+                        <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-fInterpretacion">0</span> / 200</span>
+                    </div>
+                    <textarea id="fInterpretacion" maxlength="200" rows="2" placeholder="Diagnóstico breve del desempeño actual..."
+                        class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="fEnfoque" class="text-xs font-bold text-[#002855] uppercase">6. Enfoque Comercial</label>
+                        <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-fEnfoque">0</span> / 200</span>
+                    </div>
+                    <textarea id="fEnfoque" maxlength="200" rows="2" placeholder="Orientación comercial y mercado objetivo..."
+                        class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="fDesventajas" class="text-xs font-bold text-[#002855] uppercase">7. Desventajas</label>
+                            <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-fDesventajas">0</span> / 200</span>
+                        </div>
+                        <textarea id="fDesventajas" maxlength="200" rows="3" placeholder="Limitaciones internas, costos o brechas..."
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="fVentajas" class="text-xs font-bold text-[#002855] uppercase">8. Ventajas sobre Competidores</label>
+                            <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-fVentajas">0</span> / 200</span>
+                        </div>
+                        <textarea id="fVentajas" maxlength="200" rows="3" placeholder="Factores diferenciadores frente a la competencia..."
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="fEstrategias" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                        9. Estrategias a Implementar <span class="text-[11px] font-normal text-slate-400 normal-case">(Campo libre)</span>
+                    </label>
+                    <textarea id="fEstrategias" rows="4" placeholder="- Acción estratégica 1&#10;- Acción estratégica 2"
+                        class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition"></textarea>
+                </div>
+            </form>
+
+            <div class="bg-[#F4F7FA] px-6 py-3.5 border-t border-slate-200 flex items-center justify-end gap-3">
+                <button type="button" id="btnCancelBcgModal" class="px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-sm transition">
+                    Cerrar
+                </button>
+                <button type="submit" form="bcgForm" id="btnSaveBcg" class="px-6 py-2.5 rounded-xl bg-[#002855] hover:bg-[#001B3A] text-white font-bold text-sm shadow-sm transition flex items-center gap-2">
+                    <i class="fas fa-floppy-disk text-[#00AEEF]"></i>
+                    <span>Guardar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 4. MODAL FORMULARIO CRITERIO PESTEL (8 CAMPOS COMPLETOS)              -->
+    <!-- ===================================================================== -->
+    <div id="pestelModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#001B3A]/70 p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[94vh] flex flex-col overflow-hidden animate-modal">
+            <div class="bg-[#002855] px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-[#00AEEF]/20 flex items-center justify-center text-[#00AEEF]">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h3 id="pestelModalTitle" class="text-white font-bold text-lg leading-tight">Formulario Criterio PESTEL</h3>
+                        <p class="text-xs text-[#00AEEF]">Análisis del Macroentorno &bull; PE 2027-2030</p>
+                    </div>
+                </div>
+                <button type="button" id="btnClosePestelModal" class="text-white/75 hover:text-white text-2xl leading-none p-1">&times;</button>
+            </div>
+
+            <div id="pestelFormAlert" class="hidden mx-6 mt-4 bg-red-50 border-l-4 border-[#EC008C] text-red-800 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2.5">
+                <i class="fas fa-triangle-exclamation text-[#EC008C]"></i>
+                <span id="pestelFormAlertMsg"></span>
+            </div>
+
+            <form id="pestelForm" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <input type="hidden" id="editPestelId">
+
+                <!-- Paso 1 y 2: Factor y Criterio (máx 50) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="pFactor" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            1. Factor <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="pFactor" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione un factor...</option>
+                            <option value="Político">Político</option>
+                            <option value="Económico">Económico</option>
+                            <option value="Social">Social</option>
+                            <option value="Tecnológico">Tecnológico</option>
+                            <option value="Ecológico">Ecológico</option>
+                            <option value="Legal">Legal</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="pCriterio" class="text-xs font-bold text-[#002855] uppercase">
+                                2. Criterio <span class="text-[#EC008C]">*</span>
+                            </label>
+                            <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-pCriterio">0</span>/50</span>
+                        </div>
+                        <input type="text" id="pCriterio" maxlength="50" required placeholder="Nombre corto del criterio..."
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Paso 3: Descripción - Glosario (máx 200) -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="pDescripcion" class="text-xs font-bold text-[#002855] uppercase">
+                            3. Descripción - Glosario <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-pDescripcion">0</span>/200</span>
+                    </div>
+                    <textarea id="pDescripcion" maxlength="200" rows="3" required placeholder="Defina con claridad el criterio y su alcance en el entorno cooperativo..."
+                        class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Pasos 4 y 5: Tipo de Impacto y Nivel de Impacto -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="pTipoImpacto" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            4. Tipo de Impacto <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="pTipoImpacto" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione tipo de impacto...</option>
+                            <option value="Oportunidad">Oportunidad</option>
+                            <option value="Amenaza">Amenaza</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="pNivelImpacto" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            5. Nivel de Impacto <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="pNivelImpacto" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione nivel...</option>
+                            <option value="Alto">Alto</option>
+                            <option value="Medio">Medio</option>
+                            <option value="Bajo">Bajo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Pasos 6 y 7: Horizonte Temporal y Tendencia -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="pHorizonte" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            6. Horizonte Temporal <span class="text-[#EC008C]">*</span>
+                        </label>
+                        <select id="pHorizonte" required
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="">Seleccione horizonte...</option>
+                            <option value="Corto Plazo 2027">Corto Plazo 2027</option>
+                            <option value="Mediano Plazo 2028-2029">Mediano Plazo 2028-2029</option>
+                            <option value="Largo Plazo 2030+">Largo Plazo 2030+</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="pTendencia" class="block text-xs font-bold text-[#002855] uppercase mb-1.5">
+                            7. Tendencia
+                        </label>
+                        <select id="pTendencia"
+                            class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition">
+                            <option value="Estable">Estable</option>
+                            <option value="Creciente">Creciente</option>
+                            <option value="Decreciente">Decreciente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Paso 8: Respuesta / Acción Estratégica (máx 250) -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="pAccion" class="text-xs font-bold text-[#002855] uppercase">
+                            8. Respuesta / Acción Estratégica <span class="text-[11px] font-normal text-slate-400 normal-case">(Opcional)</span>
+                        </label>
+                        <span class="text-[11px] font-semibold text-slate-500"><span id="cnt-pAccion">0</span>/250</span>
+                    </div>
+                    <textarea id="pAccion" maxlength="250" rows="3" placeholder="Acción sugerida para aprovechar la oportunidad o mitigar la amenaza..."
+                        class="w-full px-3.5 py-2.5 text-sm bg-[#F4F7FA] border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00AEEF] outline-none transition resize-none"></textarea>
+                </div>
+            </form>
+
+            <div class="bg-[#F4F7FA] px-6 py-3.5 border-t border-slate-200 flex items-center justify-end gap-3">
+                <button type="button" id="btnCancelPestelModal" class="px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-sm transition">
+                    Cerrar
+                </button>
+                <button type="submit" form="pestelForm" id="btnSavePestel" class="px-6 py-2.5 rounded-xl bg-[#002855] hover:bg-[#001B3A] text-white font-bold text-sm shadow-sm transition flex items-center gap-2">
+                    <i class="fas fa-floppy-disk text-[#00AEEF]"></i>
+                    <span>Guardar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 5. MODAL DE VISUALIZACIÓN DETALLADA (REUTILIZABLE BCG / PESTEL)       -->
+    <!-- ===================================================================== -->
+    <div id="detailModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#001B3A]/70 p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden animate-modal">
+            <div class="bg-[#002855] px-6 py-4 flex items-center justify-between">
+                <div>
+                    <span id="detailBadge" class="inline-block text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-white/15 text-[#FFD100] mb-1"></span>
+                    <h3 id="detailTitle" class="text-white font-bold text-lg leading-snug"></h3>
+                </div>
+                <button type="button" id="btnCloseDetailModal" class="text-white/75 hover:text-white text-2xl leading-none p-1">&times;</button>
+            </div>
+            <div id="detailBody" class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700"></div>
+            <div class="bg-[#F4F7FA] px-6 py-3.5 border-t border-slate-200 flex items-center justify-end gap-3">
+                <button type="button" id="btnCloseDetailBottom" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-sm transition">
+                    Cerrar
+                </button>
+                <button type="button" id="btnEditFromDetail" class="px-5 py-2 rounded-xl bg-[#00AEEF] hover:bg-[#0095cc] text-white font-bold text-sm shadow-sm transition flex items-center gap-2">
+                    <i class="fas fa-pen-to-square"></i>
+                    <span>Editar registro</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 6. MODAL GUÍA DE USUARIO INTEGRAL (PESTAÑAS BCG Y PESTEL)             -->
+    <!-- ===================================================================== -->
+    <div id="guideModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-[#001B3A]/75 p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-modal">
+            
+            <!-- Header Guía -->
+            <div class="bg-[#002855] px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#FFD100] text-[#002855] flex items-center justify-center text-lg shadow-sm">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-extrabold text-lg">Guía de Usuario — Herramientas Estratégicas</h3>
+                        <p class="text-xs text-[#00AEEF]">Anexo Planificación Estratégica 2027-2030 &bull; <span class="intercop-wordmark text-white">INTERCOP</span></p>
+                    </div>
+                </div>
+                <button type="button" id="btnCloseGuide" class="text-white/75 hover:text-white text-2xl leading-none p-1">&times;</button>
+            </div>
+
+            <!-- Pestañas Principales de la Guía (Matriz BCG vs Análisis PESTEL) -->
+            <div class="bg-[#F4F7FA] border-b border-slate-200 px-6 pt-3 flex flex-wrap gap-2">
+                <button type="button" data-guide-tab="bcg"
+                    class="guide-tab-btn px-5 py-2.5 text-xs sm:text-sm font-bold rounded-t-xl border-b-2 border-[#002855] bg-white text-[#002855] flex items-center gap-2">
+                    <i class="fas fa-th-large text-[#00AEEF]"></i>
+                    <span>Matriz BCG</span>
+                </button>
+                <button type="button" data-guide-tab="pestel"
+                    class="guide-tab-btn px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-b-2 border-transparent text-slate-600 hover:text-[#002855] flex items-center gap-2">
+                    <i class="fas fa-globe text-[#EC008C]"></i>
+                    <span>Análisis PESTEL</span>
+                </button>
+            </div>
+
+            <!-- Contenido de la Guía -->
+            <div class="p-6 overflow-y-auto flex-1 space-y-5 text-sm text-slate-700 leading-relaxed">
+                
+                <!-- PESTAÑA 1: MATRIZ BCG -->
+                <div id="guide-bcg" class="guide-panel space-y-5">
+                    <div class="bg-[#EBF5FB] border-l-4 border-[#00AEEF] rounded-xl p-4">
+                        <h4 class="font-extrabold text-[#002855] text-base mb-1.5">¿Qué es y para qué sirve la Matriz BCG?</h4>
+                        <p class="text-xs sm:text-sm">
+                            La <strong>Matriz de Crecimiento–Participación (BCG)</strong> clasifica el portafolio de productos de la Cooperativa (<em>Ahorros, Créditos y Canales/Servicios</em>) en cuatro cuadrantes según la <strong>tasa de crecimiento del mercado</strong> y la <strong>participación relativa</strong>. Sirve para asignar recursos con criterio estratégico, equilibrar la generación de liquidez con la innovación y formular planes comerciales concretos para el periodo <strong>2027-2030</strong>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-extrabold text-[#002855] text-sm uppercase tracking-wider mb-3">Enfoque Comercial de cada Cuadrante</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div class="rounded-xl border-2 border-[#FFD100] bg-[#FFFDF2] p-3.5">
+                                <div class="font-extrabold text-[#002855] mb-1">⭐ ESTRELLA <span class="text-[11px] font-semibold text-amber-700">(Alto Crecimiento / Alta Participación)</span></div>
+                                <p class="text-xs text-slate-700">Productos líderes en expansión. <strong>Enfoque:</strong> Invertir para sostener el liderazgo, reforzar diferenciación y preparar su transición a productos Vaca.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-[#00AEEF] bg-[#F2FBFF] p-3.5">
+                                <div class="font-extrabold text-[#002855] mb-1">🐄 VACA <span class="text-[11px] font-semibold text-sky-700">(Bajo Crecimiento / Alta Participación)</span></div>
+                                <p class="text-xs text-slate-700">Base financiera estable y generadora de excedentes. <strong>Enfoque:</strong> Maximizar rentabilidad, fidelizar asociados y fondear nuevos productos.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-[#EC008C] bg-[#FFF5FA] p-3.5">
+                                <div class="font-extrabold text-[#002855] mb-1">❓ INTERROGANTE <span class="text-[11px] font-semibold text-pink-700">(Alto Crecimiento / Baja Participación)</span></div>
+                                <p class="text-xs text-slate-700">Productos emergentes con potencial. <strong>Enfoque:</strong> Impulsar selectivamente los de mayor demanda para convertirlos en Estrellas, o rediseñar.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-slate-300 bg-slate-50 p-3.5">
+                                <div class="font-extrabold text-[#002855] mb-1">🐕 PERRO <span class="text-[11px] font-semibold text-slate-600">(Bajo Crecimiento / Baja Participación)</span></div>
+                                <p class="text-xs text-slate-700">Productos estancados o de nicho reducido. <strong>Enfoque:</strong> Evaluar su rol social, empaquetar con productos líderes o reestructurar costos.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-[#F4F7FA] p-4 rounded-xl border border-slate-200">
+                            <h4 class="font-extrabold text-[#002855] text-sm mb-2"><i class="fas fa-arrows-spin text-[#00AEEF] mr-1.5"></i>Ciclo de Vida del Portafolio</h4>
+                            <p class="text-xs text-slate-600 mb-2">
+                                <strong>❓ Interrogante &rarr; ⭐ Estrella &rarr; 🐄 Vaca &rarr; 🐕 Perro</strong>
+                            </p>
+                            <p class="text-xs text-slate-600">
+                                Los excedentes de las <strong>Vacas</strong> financian a las <strong>Interrogantes</strong> prometedoras y consolidan las <strong>Estrellas</strong>, manteniendo un portafolio cooperativo sostenible.
+                            </p>
+                        </div>
+
+                        <div class="bg-[#F4F7FA] p-4 rounded-xl border border-slate-200">
+                            <h4 class="font-extrabold text-[#002855] text-sm mb-2"><i class="fas fa-list-check text-[#EC008C] mr-1.5"></i>Reglas de Ingreso BCG</h4>
+                            <ul class="list-disc pl-4 space-y-1 text-xs text-slate-600">
+                                <li>Máximo <strong>10 productos por clasificación</strong> (Ahorros, Créditos, Canales y Servicios).</li>
+                                <li>Los campos analíticos admiten hasta <strong>200 caracteres</strong> para fomentar síntesis ejecutiva.</li>
+                                <li>El campo <strong>Estrategias a Implementar</strong> es de texto libre.</li>
+                                <li>La participación porcentual (<strong>Part. %</strong>) se calcula automáticamente según el saldo de la clasificación.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PESTAÑA 2: ANÁLISIS PESTEL -->
+                <div id="guide-pestel" class="guide-panel hidden space-y-5">
+                    <div class="bg-[#FFF5FA] border-l-4 border-[#EC008C] rounded-xl p-4">
+                        <h4 class="font-extrabold text-[#002855] text-base mb-1.5">¿Qué es y para qué sirve el Análisis PESTEL?</h4>
+                        <p class="text-xs sm:text-sm">
+                            El <strong>Análisis PESTEL</strong> es una herramienta de diagnóstico estratégico del <strong>macroentorno externo</strong>. Permite a la Cooperativa anticipar oportunidades y amenazas fuera de su control directo en seis dimensiones clave, fundamentando las decisiones del Plan Estratégico <strong>2027-2030</strong>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-extrabold text-[#002855] text-sm uppercase tracking-wider mb-3">Significado y Ejemplos en el Entorno Cooperativo</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-landmark text-[#00AEEF] mr-1.5"></i>P — Político</div>
+                                <p class="text-xs text-slate-600">Políticas públicas, estabilidad gubernamental, programas de fomento al cooperativismo, desarrollo rural y políticas fiscales.</p>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-chart-line text-amber-500 mr-1.5"></i>E — Económico</div>
+                                <p class="text-xs text-slate-600">Inflación, tasa líder de interés, flujo de remesas familiares, tipo de cambio, crecimiento del PIB, empleo y poder adquisitivo.</p>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-users text-[#EC008C] mr-1.5"></i>S — Social</div>
+                                <p class="text-xs text-slate-600">Cambios demográficos, inclusión financiera, nivel de educación financiera, migración, hábitos de consumo y confianza en cooperativas.</p>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-microchip text-cyan-600 mr-1.5"></i>T — Tecnológico</div>
+                                <p class="text-xs text-slate-600">Transformación digital, banca móvil, pagos electrónicos instantáneos, ciberseguridad, inteligencia artificial y automatización.</p>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-leaf text-emerald-600 mr-1.5"></i>E — Ecológico</div>
+                                <p class="text-xs text-slate-600">Sostenibilidad ambiental, créditos y finanzas verdes, impacto del cambio climático en asociados agrícolas y eficiencia energética.</p>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <div class="font-extrabold text-[#002855] text-xs sm:text-sm mb-1"><i class="fas fa-balance-scale text-indigo-600 mr-1.5"></i>L — Legal</div>
+                                <p class="text-xs text-slate-600">Normativa de INACOP e INGECOP, regulación y prevención de lavado (SIB/IVE), reformas tributarias y leyes de protección de datos.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#EBF5FB] p-4 rounded-xl border border-[#00AEEF]/30 space-y-2">
+                        <h4 class="font-extrabold text-[#002855] text-sm"><i class="fas fa-diagram-project text-[#00AEEF] mr-1.5"></i>Campos Complementarios e Integración con la Matriz BCG</h4>
+                        <ul class="list-disc pl-4 space-y-1 text-xs text-slate-700">
+                            <li><strong>Tipo de Impacto:</strong> Clasifica el criterio como <em>Oportunidad</em> (favorable), <em>Amenaza</em> (riesgo) o <em>Mixto/Neutro</em>.</li>
+                            <li><strong>Nivel de Impacto:</strong> Prioriza la magnitud del efecto sobre INTERCOP (<em>Alto, Medio o Bajo</em>).</li>
+                            <li><strong>Horizonte Temporal y Tendencia:</strong> Indican cuándo se materializará el efecto (<em>Corto, Mediano o Largo Plazo</em>) y si su intensidad va en aumento, estable o en descenso.</li>
+                            <li><strong>Sinergia PESTEL + BCG:</strong> El PESTEL explica <em>qué ocurre afuera</em> (entorno), mientras que la Matriz BCG muestra <em>cómo rinden nuestros productos adentro</em>. Cruzar ambos análisis permite ajustar estrategias comerciales y mitigar riesgos antes de 2027-2030.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#F4F7FA] px-6 py-3.5 border-t border-slate-200 flex justify-end">
+                <button type="button" id="btnCloseGuideBottom" class="px-6 py-2 rounded-xl bg-[#002855] hover:bg-[#001B3A] text-white font-bold text-sm transition">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 7. MODAL DE CONFIRMACIÓN DE ELIMINACIÓN (SIN confirm())               -->
+    <!-- ===================================================================== -->
+    <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#001B3A]/70 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center animate-modal">
+            <div class="w-12 h-12 rounded-full bg-[#EC008C]/15 text-[#EC008C] flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fas fa-trash-can"></i>
+            </div>
+            <h4 id="confirmModalTitle" class="text-base font-extrabold text-[#002855] mb-1.5">¿Eliminar registro?</h4>
+            <p id="confirmModalText" class="text-xs sm:text-sm text-slate-600 mb-5"></p>
+            <div class="flex items-center justify-center gap-3">
+                <button type="button" id="btnCancelDelete" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-100 transition">
+                    Cancelar
+                </button>
+                <button type="button" id="btnConfirmDelete" class="px-5 py-2 rounded-xl bg-[#EC008C] hover:bg-[#c90077] text-white font-bold text-sm transition">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de Notificaciones Toast -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] pointer-events-none"></div>
+
+    <!-- ===================================================================== -->
+    <!-- 8. LÓGICA JAVASCRIPT COMPLETA                                         -->
+    <!-- ===================================================================== -->
+    <script>
+        (function () {
+            'use strict';
+
+            /* ------------------------------------------------------------------
+               CONSTANTES Y CONFIGURACIÓN
+            ------------------------------------------------------------------ */
+            const VALID_PASS = 'INTERCOP2027.';
+            const MAX_ATTEMPTS = 3;
+            const LOCKOUT_MS = 5 * 60 * 1000; // 5 minutos (300 segundos)
+            const MAX_PER_CATEGORY = 10;
+
+            const STORAGE_KEYS = {
+                BCG_PRODUCTS: 'intercop_bcg_clean_v3',
+                PESTEL_ITEMS: 'intercop_pestel_clean_v3',
+                FAILED_ATTEMPTS: 'intercop_bcg_2027_failed_attempts',
+                LOCK_UNTIL: 'intercop_bcg_2027_lock_until',
+                SESSION_USER: 'intercop_bcg_2027_session_user'
+            };
+
+            const CATEGORIES_ORDER = ['Ahorros', 'Créditos', 'Canales y Servicios'];
+            const BCG_ORDER = ['Estrella', 'Vaca', 'Interrogante', 'Perro'];
+
+            const BCG_META = {
+                Estrella:     { label: '⭐ Estrella',     excelFill: 'FFF9DB', badgeClass: 'bg-[#FFF9DB] text-[#002855] border-[#FFD100]' },
+                Vaca:         { label: '🐄 Vaca',         excelFill: 'E3F6FD', badgeClass: 'bg-[#E3F6FD] text-[#002855] border-[#00AEEF]' },
+                Interrogante: { label: '❓ Interrogante', excelFill: 'FDE8F3', badgeClass: 'bg-[#FDE8F3] text-[#002855] border-[#EC008C]' },
+                Perro:        { label: '🐕 Perro',        excelFill: 'F1F5F9', badgeClass: 'bg-slate-100 text-[#002855] border-slate-300' }
+            };
+
+            const PESTEL_FACTORS = ['Político', 'Económico', 'Social', 'Tecnológico', 'Ecológico', 'Legal'];
+            const PESTEL_FACTOR_DOM = {
+                'Político':    'Politico',
+                'Económico':   'Economico',
+                'Social':      'Social',
+                'Tecnológico': 'Tecnologico',
+                'Ecológico':   'Ecologico',
+                'Legal':       'Legal'
+            };
+            const PESTEL_IMPACT_RANK = { 'Alto': 1, 'Medio': 2, 'Bajo': 3 };
+
+            /* ------------------------------------------------------------------
+               ESTADO DE LA APLICACIÓN
+            ------------------------------------------------------------------ */
+            let bcgProducts = [];
+            let pestelItems = [];
+            let activeModule = 'bcg'; // 'bcg' | 'pestel'
+            let activeView = 'cards'; // 'cards' | 'table'
+            let pendingDelete = null; // { module: 'bcg'|'pestel', id: number }
+            let detailTarget = null;  // { module: 'bcg'|'pestel', item: object }
+            let lockoutInterval = null;
+
+            /* ------------------------------------------------------------------
+               UTILIDADES
+            ------------------------------------------------------------------ */
+            const $ = (id) => document.getElementById(id);
+
+            function escapeHTML(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function formatQ(num) {
+                const n = Number(num) || 0;
+                return 'Q ' + n.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function showToast(message, type = 'success') {
+                const container = $('toastContainer');
+                const toast = document.createElement('div');
+                const palette = {
+                    success: 'bg-[#002855] text-white border-l-4 border-[#00AEEF]',
+                    error:   'bg-red-700 text-white border-l-4 border-[#FFD100]',
+                    warning: 'bg-[#002855] text-white border-l-4 border-[#FFD100]',
+                    info:    'bg-[#002855] text-white border-l-4 border-[#EC008C]'
+                };
+                const icon = {
+                    success: 'fa-circle-check text-[#00AEEF]',
+                    error:   'fa-circle-exclamation text-[#FFD100]',
+                    warning: 'fa-triangle-exclamation text-[#FFD100]',
+                    info:    'fa-circle-info text-[#EC008C]'
+                };
+                toast.className = `pointer-events-auto rounded-xl shadow-xl px-4 py-3 text-xs sm:text-sm font-medium flex items-center gap-2.5 animate-modal ${palette[type] || palette.info}`;
+                toast.innerHTML = `<i class="fas ${icon[type] || icon.info} text-base"></i><span class="flex-1">${escapeHTML(message)}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            /* ------------------------------------------------------------------
+               PERSISTENCIA EN localStorage
+            ------------------------------------------------------------------ */
+            function loadAllData() {
+                try {
+                    const rawBcg = localStorage.getItem(STORAGE_KEYS.BCG_PRODUCTS);
+                    bcgProducts = rawBcg ? JSON.parse(rawBcg) : [];
+                    if (!Array.isArray(bcgProducts)) bcgProducts = [];
+                } catch (e) {
+                    bcgProducts = [];
+                }
+                try {
+                    const rawPestel = localStorage.getItem(STORAGE_KEYS.PESTEL_ITEMS);
+                    pestelItems = rawPestel ? JSON.parse(rawPestel) : [];
+                    if (!Array.isArray(pestelItems)) pestelItems = [];
+                } catch (e) {
+                    pestelItems = [];
+                }
+            }
+
+            function saveBcgData() {
+                try {
+                    localStorage.setItem(STORAGE_KEYS.BCG_PRODUCTS, JSON.stringify(bcgProducts));
+                } catch (e) {
+                    showToast('Error al guardar los datos BCG en el navegador.', 'error');
+                }
+            }
+
+            function savePestelData() {
+                try {
+                    localStorage.setItem(STORAGE_KEYS.PESTEL_ITEMS, JSON.stringify(pestelItems));
+                } catch (e) {
+                    showToast('Error al guardar los datos PESTEL en el navegador.', 'error');
+                }
+            }
+
+            /* ------------------------------------------------------------------
+               MÓDULO DE SEGURIDAD / LOGIN (3 INTENTOS / 5 MINUTOS)
+            ------------------------------------------------------------------ */
+            function getFailedAttempts() {
+                return parseInt(localStorage.getItem(STORAGE_KEYS.FAILED_ATTEMPTS) || '0', 10);
+            }
+
+            function setFailedAttempts(count) {
+                localStorage.setItem(STORAGE_KEYS.FAILED_ATTEMPTS, String(count));
+            }
+
+            function getLockUntil() {
+                return parseInt(localStorage.getItem(STORAGE_KEYS.LOCK_UNTIL) || '0', 10);
+            }
+
+            function setLockUntil(ts) {
+                if (ts > 0) localStorage.setItem(STORAGE_KEYS.LOCK_UNTIL, String(ts));
+                else localStorage.removeItem(STORAGE_KEYS.LOCK_UNTIL);
+            }
+
+            function updateAttemptsUI() {
+                const failed = Math.min(MAX_ATTEMPTS, Math.max(0, getFailedAttempts()));
+                const remaining = MAX_ATTEMPTS - failed;
+                $('attemptsCounterText').textContent = `${remaining}/${MAX_ATTEMPTS}`;
+
+                const dots = document.querySelectorAll('#attemptsDots .attempt-dot');
+                dots.forEach((dot, idx) => {
+                    dot.className = 'attempt-dot w-3.5 h-3.5 rounded-full border-2 transition-colors ';
+                    if (idx < remaining) {
+                        dot.className += 'bg-[#00AEEF] border-[#002855]';
+                    } else {
+                        dot.className += 'bg-red-500 border-red-700';
+                    }
+                });
+            }
+
+            function showLoginAlert(htmlMsg, isLock = false) {
+                const box = $('loginAlert');
+                const icon = $('loginAlertIcon');
+                box.classList.remove('hidden', 'bg-red-50', 'border-red-300', 'text-red-800', 'bg-amber-50', 'border-amber-300', 'text-amber-900');
+                if (isLock) {
+                    box.classList.add('bg-red-50', 'border-red-300', 'text-red-800');
+                    icon.className = 'fas fa-lock mt-0.5 text-base text-red-600';
+                } else {
+                    box.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
+                    icon.className = 'fas fa-circle-exclamation mt-0.5 text-base text-amber-600';
+                }
+                $('loginAlertText').innerHTML = htmlMsg;
+            }
+
+            function hideLoginAlert() {
+                $('loginAlert').classList.add('hidden');
+            }
+
+            function setLoginDisabled(disabled) {
+                $('loginEmail').disabled = disabled;
+                $('loginPassword').disabled = disabled;
+                $('loginSubmitBtn').disabled = disabled;
+                $('togglePasswordBtn').disabled = disabled;
+            }
+
+            function checkLockoutState() {
+                if (lockoutInterval) {
+                    clearInterval(lockoutInterval);
+                    lockoutInterval = null;
+                }
+
+                const lockUntil = getLockUntil();
+                const now = Date.now();
+
+                if (lockUntil > now) {
+                    setFailedAttempts(MAX_ATTEMPTS);
+                    updateAttemptsUI();
+                    setLoginDisabled(true);
+
+                    const tick = () => {
+                        const diff = getLockUntil() - Date.now();
+                        if (diff <= 0) {
+                            clearInterval(lockoutInterval);
+                            lockoutInterval = null;
+                            setLockUntil(0);
+                            setFailedAttempts(0);
+                            updateAttemptsUI();
+                            setLoginDisabled(false);
+                            hideLoginAlert();
+                            showToast('Restricción finalizada. Puede intentar ingresar nuevamente.', 'info');
+                            return;
+                        }
+                        const totalSec = Math.ceil(diff / 1000);
+                        const mins = String(Math.floor(totalSec / 60)).padStart(2, '0');
+                        const secs = String(totalSec % 60).padStart(2, '0');
+                        showLoginAlert(
+                            `<strong>Acceso bloqueado temporalmente.</strong> Ha excedido los 3 intentos fallidos.<br>Tiempo restante: <span class="font-extrabold text-red-700 text-sm">${mins}:${secs}</span>`,
+                            true
+                        );
+                    };
+
+                    tick();
+                    lockoutInterval = setInterval(tick, 1000);
+                    return true;
+                } else if (lockUntil > 0) {
+                    setLockUntil(0);
+                    setFailedAttempts(0);
+                    updateAttemptsUI();
+                    setLoginDisabled(false);
+                    hideLoginAlert();
+                } else {
+                    updateAttemptsUI();
+                    setLoginDisabled(false);
+                }
+                return false;
+            }
+
+            function enterApplication(email) {
+                sessionStorage.setItem(STORAGE_KEYS.SESSION_USER, email);
+                $('headerUserEmail').textContent = email;
+                $('loginScreen').classList.add('hidden');
+                $('appShell').classList.remove('hidden');
+                $('appShell').classList.add('flex');
+                loadAllData();
+                switchModule('bcg');
+                renderBcgAll();
+                renderPestelAll();
+            }
+
+            function logoutApplication() {
+                sessionStorage.removeItem(STORAGE_KEYS.SESSION_USER);
+                $('appShell').classList.add('hidden');
+                $('appShell').classList.remove('flex');
+                $('loginScreen').classList.remove('hidden');
+                $('loginPassword').value = '';
+                hideLoginAlert();
+                checkLockoutState();
+            }
+
+            $('togglePasswordBtn').addEventListener('click', () => {
+                const pwd = $('loginPassword');
+                const icon = $('togglePasswordBtn').querySelector('i');
+                if (pwd.type === 'password') {
+                    pwd.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    pwd.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+
+            $('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (checkLockoutState()) return;
+
+                const email = $('loginEmail').value.trim();
+                const password = $('loginPassword').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!email || !emailRegex.test(email)) {
+                    showLoginAlert('Ingrese un <strong>correo corporativo válido</strong> (ejemplo: usuario@intercop.gt).', false);
+                    $('loginEmail').focus();
+                    return;
+                }
+
+                if (password === VALID_PASS) {
+                    setFailedAttempts(0);
+                    setLockUntil(0);
+                    updateAttemptsUI();
+                    hideLoginAlert();
+                    enterApplication(email);
+                    showToast('Acceso verificado. Bienvenido a INTERCOP.', 'success');
+                } else {
+                    const newFailed = getFailedAttempts() + 1;
+                    setFailedAttempts(newFailed);
+                    updateAttemptsUI();
+
+                    if (newFailed >= MAX_ATTEMPTS) {
+                        setLockUntil(Date.now() + LOCKOUT_MS);
+                        checkLockoutState();
+                    } else {
+                        const left = MAX_ATTEMPTS - newFailed;
+                        showLoginAlert(
+                            `Contraseña incorrecta. Le ${left === 1 ? 'queda' : 'quedan'} <strong>${left} ${left === 1 ? 'intento' : 'intentos'}</strong> antes del bloqueo de 5 minutos.`,
+                            false
+                        );
+                        $('loginPassword').value = '';
+                        $('loginPassword').focus();
+                    }
+                }
+            });
+
+            $('btnLogout').addEventListener('click', () => {
+                logoutApplication();
+                showToast('Sesión cerrada correctamente.', 'info');
+            });
+
+            /* ------------------------------------------------------------------
+               NAVEGACIÓN DE MÓDULOS (BCG / PESTEL) Y VISTAS (CARDS / TABLA)
+            ------------------------------------------------------------------ */
+            function updateViewButtonsUI() {
+                $('lblViewCards').textContent = activeModule === 'bcg' ? 'Vista Cuadrantes' : 'Vista Factores';
+                $('lblBtnNew').textContent = activeModule === 'bcg' ? 'Nuevo Criterio' : 'Nuevo Criterio';
+
+                if (activeView === 'cards') {
+                    $('btnViewCards').className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#002855] shadow-xs border border-slate-200 transition flex items-center gap-1.5';
+                    $('btnViewTable').className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#002855] transition flex items-center gap-1.5';
+                } else {
+                    $('btnViewTable').className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#002855] shadow-xs border border-slate-200 transition flex items-center gap-1.5';
+                    $('btnViewCards').className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#002855] transition flex items-center gap-1.5';
+                }
+
+                // Mostrar/ocultar vistas del módulo activo
+                if (activeModule === 'bcg') {
+                    $('bcgViewCards').classList.toggle('hidden', activeView !== 'cards');
+                    $('bcgViewTable').classList.toggle('hidden', activeView !== 'table');
+                } else {
+                    $('pestelViewCards').classList.toggle('hidden', activeView !== 'cards');
+                    $('pestelViewTable').classList.toggle('hidden', activeView !== 'table');
+                }
+            }
+
+            function switchModule(mod) {
+                activeModule = mod;
+                if (mod === 'bcg') {
+                    $('navModuleBCG').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#002855] text-white shadow-sm transition-all flex items-center gap-2';
+                    $('navModulePESTEL').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-[#002855] transition-all flex items-center gap-2';
+                    $('moduleBCG').classList.remove('hidden');
+                    $('moduleBCG').classList.add('flex');
+                    $('modulePESTEL').classList.add('hidden');
+                    $('modulePESTEL').classList.remove('flex');
+                } else {
+                    $('navModulePESTEL').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#002855] text-white shadow-sm transition-all flex items-center gap-2';
+                    $('navModuleBCG').className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-[#002855] transition-all flex items-center gap-2';
+                    $('modulePESTEL').classList.remove('hidden');
+                    $('modulePESTEL').classList.add('flex');
+                    $('moduleBCG').classList.add('hidden');
+                    $('moduleBCG').classList.remove('flex');
+                }
+                updateViewButtonsUI();
+            }
+
+            $('navModuleBCG').addEventListener('click', () => switchModule('bcg'));
+            $('navModulePESTEL').addEventListener('click', () => switchModule('pestel'));
+
+            $('btnViewCards').addEventListener('click', () => {
+                activeView = 'cards';
+                updateViewButtonsUI();
+            });
+            $('btnViewTable').addEventListener('click', () => {
+                activeView = 'table';
+                updateViewButtonsUI();
+            });
+
+            $('btnNewItem').addEventListener('click', () => {
+                if (activeModule === 'bcg') openBcgModal(null);
+                else openPestelModal(null);
+            });
+
+            /* ------------------------------------------------------------------
+               LÓGICA Y RENDERIZADO: MÓDULO 1 (MATRIZ BCG)
+            ------------------------------------------------------------------ */
+            function getBcgCategoryTotals(list) {
+                const totals = { 'Ahorros': 0, 'Créditos': 0, 'Canales y Servicios': 0 };
+                list.forEach(p => {
+                    if (totals[p.clasificacion] !== undefined) totals[p.clasificacion] += Number(p.saldo) || 0;
+                });
+                return totals;
+            }
+
+            function getSortedBcg(list) {
+                return [...list].sort((a, b) => {
+                    const cDiff = CATEGORIES_ORDER.indexOf(a.clasificacion) - CATEGORIES_ORDER.indexOf(b.clasificacion);
+                    if (cDiff !== 0) return cDiff;
+                    const qDiff = BCG_ORDER.indexOf(a.cuadrante) - BCG_ORDER.indexOf(b.cuadrante);
+                    if (qDiff !== 0) return qDiff;
+                    return (Number(b.saldo) || 0) - (Number(a.saldo) || 0);
+                });
+            }
+
+            function getCategoryBadgeClass(cat) {
+                if (cat === 'Ahorros') return 'bg-[#00AEEF]/15 text-[#002855] border-[#00AEEF]/30';
+                if (cat === 'Créditos') return 'bg-[#FFD100]/25 text-[#002855] border-[#FFD100]/60';
+                return 'bg-[#EC008C]/15 text-[#002855] border-[#EC008C]/30';
+            }
+
+            function renderBcgAll() {
+                // KPIs
+                const counts = { 'Ahorros': 0, 'Créditos': 0, 'Canales y Servicios': 0 };
+                const saldos = getBcgCategoryTotals(bcgProducts);
+                let totalSaldo = 0;
+
+                bcgProducts.forEach(p => {
+                    if (counts[p.clasificacion] !== undefined) counts[p.clasificacion]++;
+                    totalSaldo += Number(p.saldo) || 0;
+                });
+
+                $('statAhorrosCount').textContent = `${counts['Ahorros']}/${MAX_PER_CATEGORY}`;
+                $('statCreditosCount').textContent = `${counts['Créditos']}/${MAX_PER_CATEGORY}`;
+                $('statCanalesCount').textContent = `${counts['Canales y Servicios']}/${MAX_PER_CATEGORY}`;
+                $('statAhorrosSaldo').textContent = formatQ(saldos['Ahorros']);
+                $('statCreditosSaldo').textContent = formatQ(saldos['Créditos']);
+                $('statCanalesSaldo').textContent = formatQ(saldos['Canales y Servicios']);
+                $('statTotalSaldo').textContent = formatQ(totalSaldo);
+                $('statTotalCount').textContent = `${bcgProducts.length} prod.`;
+
+                // Filtros
+                const cat = $('bcgFilterCategory').value;
+                const search = $('bcgFilterSearch').value.trim().toLowerCase();
+                const filtered = bcgProducts.filter(p => {
+                    const matchCat = (cat === 'Todas') || (p.clasificacion === cat);
+                    const matchSearch = !search || p.nombre.toLowerCase().includes(search);
+                    return matchCat && matchSearch;
+                });
+
+                // Render Cuadrantes
+                BCG_ORDER.forEach(quad => {
+                    const container = $(`quad-${quad}`);
+                    const items = filtered.filter(p => p.cuadrante === quad);
+                    $(`badge-${quad}`).textContent = items.length;
+
+                    if (items.length === 0) {
+                        container.innerHTML = `
+                            <div class="h-full min-h-[170px] flex flex-col items-center justify-center text-slate-400 text-xs text-center py-6">
+                                <i class="fas fa-folder-open text-2xl mb-2 opacity-40"></i>
+                                <p>Sin registros aún. Haz clic en + Nuevo para agregar.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    container.innerHTML = items.map(p => {
+                        const catTotal = saldos[p.clasificacion] || 0;
+                        const pct = catTotal > 0 ? ((Number(p.saldo) / catTotal) * 100).toFixed(2) : '0.00';
+                        const preview = p.interpretacion || p.enfoque || p.estrategias || 'Sin descripción adicional.';
+                        return `
+                            <article class="bg-white border border-slate-200 hover:border-[#00AEEF] rounded-xl p-3.5 shadow-xs hover:shadow-md transition-all">
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <div class="min-w-0">
+                                        <h3 class="font-bold text-[#002855] text-sm leading-snug truncate" title="${escapeHTML(p.nombre)}">
+                                            ${escapeHTML(p.nombre)}
+                                        </h3>
+                                        <span class="inline-block mt-1 px-2 py-0.5 text-[11px] font-bold rounded-md border ${getCategoryBadgeClass(p.clasificacion)}">
+                                            ${escapeHTML(p.clasificacion)}
+                                        </span>
+                                    </div>
+                                    <div class="text-right flex-shrink-0">
+                                        <div class="text-sm font-extrabold text-[#002855]">${formatQ(p.saldo)}</div>
+                                        <div class="text-[11px] font-semibold text-[#00AEEF]">${pct}% cat.</div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 line-clamp-2 mb-3">${escapeHTML(preview)}</p>
+                                <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
+                                    <button type="button" data-module="bcg" data-action="view" data-id="${p.id}"
+                                        class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#002855] bg-[#F4F7FA] hover:bg-[#00AEEF] hover:text-white transition flex items-center gap-1">
+                                        <i class="fas fa-eye"></i><span>Ver</span>
+                                    </button>
+                                    <button type="button" data-module="bcg" data-action="edit" data-id="${p.id}"
+                                        class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#002855] bg-[#FFD100]/25 hover:bg-[#FFD100] transition flex items-center gap-1">
+                                        <i class="fas fa-pen"></i><span>Editar</span>
+                                    </button>
+                                    <button type="button" data-module="bcg" data-action="delete" data-id="${p.id}"
+                                        class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#EC008C] bg-[#EC008C]/10 hover:bg-[#EC008C] hover:text-white transition flex items-center gap-1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </article>
+                        `;
+                    }).join('');
+                });
+
+                // Render Tabla Consolidada BCG
+                const tbody = $('bcgTableBody');
+                const sorted = getSortedBcg(filtered);
+                if (sorted.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-400 text-sm">No hay productos BCG registrados para mostrar.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = sorted.map(p => {
+                    const catTotal = saldos[p.clasificacion] || 0;
+                    const pct = catTotal > 0 ? ((Number(p.saldo) / catTotal) * 100).toFixed(2) + '%' : '0.00%';
+                    const meta = BCG_META[p.cuadrante] || { label: p.cuadrante, badgeClass: 'bg-slate-100 text-slate-700' };
+                    return `
+                        <tr class="hover:bg-[#F4F7FA] transition-colors">
+                            <td class="py-3 px-3 font-bold text-[#002855] whitespace-nowrap">${escapeHTML(p.clasificacion)}</td>
+                            <td class="py-3 px-3 whitespace-nowrap">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${meta.badgeClass}">${meta.label}</span>
+                            </td>
+                            <td class="py-3 px-3 font-semibold text-slate-800">${escapeHTML(p.nombre)}</td>
+                            <td class="py-3 px-3 text-right font-bold text-[#002855] whitespace-nowrap">${formatQ(p.saldo)}</td>
+                            <td class="py-3 px-3 text-right font-semibold text-[#00AEEF] whitespace-nowrap">${pct}</td>
+                            <td class="py-3 px-3 text-slate-600 max-w-xs">${escapeHTML(p.interpretacion || '—')}</td>
+                            <td class="py-3 px-3 text-slate-600 max-w-xs">${escapeHTML(p.enfoque || '—')}</td>
+                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1">
+                                    <button type="button" data-module="bcg" data-action="view" data-id="${p.id}" class="p-1.5 rounded-lg text-[#002855] hover:bg-[#00AEEF] hover:text-white transition" title="Ver"><i class="fas fa-eye"></i></button>
+                                    <button type="button" data-module="bcg" data-action="edit" data-id="${p.id}" class="p-1.5 rounded-lg text-[#002855] hover:bg-[#FFD100] transition" title="Editar"><i class="fas fa-pen"></i></button>
+                                    <button type="button" data-module="bcg" data-action="delete" data-id="${p.id}" class="p-1.5 rounded-lg text-[#EC008C] hover:bg-[#EC008C] hover:text-white transition" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            $('bcgFilterCategory').addEventListener('change', renderBcgAll);
+            $('bcgFilterSearch').addEventListener('input', renderBcgAll);
+
+            /* ------------------------------------------------------------------
+               LÓGICA Y RENDERIZADO: MÓDULO 2 (ANÁLISIS PESTEL)
+            ------------------------------------------------------------------ */
+            function getSortedPestel(list) {
+                return [...list].sort((a, b) => {
+                    const fDiff = PESTEL_FACTORS.indexOf(a.factor) - PESTEL_FACTORS.indexOf(b.factor);
+                    if (fDiff !== 0) return fDiff;
+                    const rDiff = (PESTEL_IMPACT_RANK[a.nivelImpacto] || 9) - (PESTEL_IMPACT_RANK[b.nivelImpacto] || 9);
+                    if (rDiff !== 0) return rDiff;
+                    return a.criterio.localeCompare(b.criterio);
+                });
+            }
+
+            function getImpactTypeBadge(tipo) {
+                if (tipo === 'Oportunidad') return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                if (tipo === 'Amenaza') return 'bg-rose-100 text-rose-800 border-rose-200';
+                return 'bg-slate-100 text-slate-700 border-slate-200';
+            }
+
+            function getImpactLevelBadge(nivel) {
+                if (nivel === 'Alto') return 'bg-[#EC008C]/15 text-[#EC008C] border-[#EC008C]/30';
+                if (nivel === 'Medio') return 'bg-[#FFD100]/30 text-[#002855] border-[#FFD100]/70';
+                return 'bg-[#00AEEF]/15 text-[#002855] border-[#00AEEF]/30';
+            }
+
+            function renderPestelAll() {
+                // KPIs
+                $('kpiPestelTotal').textContent = pestelItems.length;
+                $('kpiPestelOportunidades').textContent = pestelItems.filter(i => i.tipoImpacto === 'Oportunidad').length;
+                $('kpiPestelAmenazas').textContent = pestelItems.filter(i => i.tipoImpacto === 'Amenaza').length;
+                $('kpiPestelAlto').textContent = pestelItems.filter(i => i.nivelImpacto === 'Alto').length;
+
+                // Filtros
+                const fFactor = $('pestelFilterFactor').value;
+                const fImpact = $('pestelFilterImpact').value;
+                const fSearch = $('pestelFilterSearch').value.trim().toLowerCase();
+
+                const filtered = pestelItems.filter(i => {
+                    const mFactor = (fFactor === 'Todos') || (i.factor === fFactor);
+                    const mImpact = (fImpact === 'Todos') || (i.tipoImpacto === fImpact);
+                    const mSearch = !fSearch ||
+                        i.criterio.toLowerCase().includes(fSearch) ||
+                        i.descripcion.toLowerCase().includes(fSearch) ||
+                        (i.accion && i.accion.toLowerCase().includes(fSearch));
+                    return mFactor && mImpact && mSearch;
+                });
+
+                // Render 6 bloques de factores
+                PESTEL_FACTORS.forEach(factor => {
+                    const domKey = PESTEL_FACTOR_DOM[factor];
+                    const container = $(`factor-${domKey}`);
+                    const items = filtered.filter(i => i.factor === factor);
+                    $(`badge-${domKey}`).textContent = items.length;
+
+                    if (items.length === 0) {
+                        container.innerHTML = `
+                            <div class="h-full min-h-[160px] flex flex-col items-center justify-center text-slate-400 text-xs text-center py-6">
+                                <i class="fas fa-clipboard-list text-2xl mb-2 opacity-40"></i>
+                                <p>Sin registros aún. Haz clic en + Nuevo para agregar.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    container.innerHTML = items.map(item => `
+                        <article class="bg-white border border-slate-200 hover:border-[#00AEEF] rounded-xl p-3.5 shadow-xs hover:shadow-md transition-all">
+                            <div class="flex items-start justify-between gap-2 mb-1.5">
+                                <h3 class="font-bold text-[#002855] text-sm leading-snug">${escapeHTML(item.criterio)}</h3>
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-md border flex-shrink-0 ${getImpactLevelBadge(item.nivelImpacto)}">
+                                    ${escapeHTML(item.nivelImpacto)}
+                                </span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-1.5 mb-2">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md border ${getImpactTypeBadge(item.tipoImpacto)}">
+                                    ${escapeHTML(item.tipoImpacto)}
+                                </span>
+                                <span class="px-2 py-0.5 text-[10px] font-medium rounded-md bg-slate-100 text-slate-600">
+                                    <i class="far fa-clock mr-1"></i>${escapeHTML(item.horizonte)}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 line-clamp-2 mb-3">${escapeHTML(item.descripcion)}</p>
+                            <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
+                                <button type="button" data-module="pestel" data-action="view" data-id="${item.id}"
+                                    class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#002855] bg-[#F4F7FA] hover:bg-[#00AEEF] hover:text-white transition flex items-center gap-1">
+                                    <i class="fas fa-eye"></i><span>Ver</span>
+                                </button>
+                                <button type="button" data-module="pestel" data-action="edit" data-id="${item.id}"
+                                    class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#002855] bg-[#FFD100]/25 hover:bg-[#FFD100] transition flex items-center gap-1">
+                                    <i class="fas fa-pen"></i><span>Editar</span>
+                                </button>
+                                <button type="button" data-module="pestel" data-action="delete" data-id="${item.id}"
+                                    class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#EC008C] bg-[#EC008C]/10 hover:bg-[#EC008C] hover:text-white transition flex items-center gap-1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </article>
+                    `).join('');
+                });
+
+                // Render Tabla Consolidada PESTEL
+                const tbody = $('pestelTableBody');
+                const sorted = getSortedPestel(filtered);
+                if (sorted.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-400 text-sm">No hay criterios PESTEL registrados para mostrar.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = sorted.map(item => `
+                    <tr class="hover:bg-[#F4F7FA] transition-colors">
+                        <td class="py-3 px-3 font-bold text-[#002855] whitespace-nowrap">${escapeHTML(item.factor)}</td>
+                        <td class="py-3 px-3 font-bold text-slate-800">${escapeHTML(item.criterio)}</td>
+                        <td class="py-3 px-3 text-slate-600 max-w-sm">${escapeHTML(item.descripcion)}</td>
+                        <td class="py-3 px-3 text-center whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${getImpactTypeBadge(item.tipoImpacto)}">${escapeHTML(item.tipoImpacto)}</span>
+                        </td>
+                        <td class="py-3 px-3 text-center whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-extrabold border ${getImpactLevelBadge(item.nivelImpacto)}">${escapeHTML(item.nivelImpacto)}</span>
+                        </td>
+                        <td class="py-3 px-3 text-slate-600 whitespace-nowrap">${escapeHTML(item.horizonte)}</td>
+                        <td class="py-3 px-3 text-slate-600 whitespace-nowrap">${escapeHTML(item.tendencia || 'Estable')}</td>
+                        <td class="py-3 px-3 text-center whitespace-nowrap">
+                            <div class="inline-flex items-center gap-1">
+                                <button type="button" data-module="pestel" data-action="view" data-id="${item.id}" class="p-1.5 rounded-lg text-[#002855] hover:bg-[#00AEEF] hover:text-white transition" title="Ver"><i class="fas fa-eye"></i></button>
+                                <button type="button" data-module="pestel" data-action="edit" data-id="${item.id}" class="p-1.5 rounded-lg text-[#002855] hover:bg-[#FFD100] transition" title="Editar"><i class="fas fa-pen"></i></button>
+                                <button type="button" data-module="pestel" data-action="delete" data-id="${item.id}" class="p-1.5 rounded-lg text-[#EC008C] hover:bg-[#EC008C] hover:text-white transition" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            $('pestelFilterFactor').addEventListener('change', renderPestelAll);
+            $('pestelFilterImpact').addEventListener('change', renderPestelAll);
+            $('pestelFilterSearch').addEventListener('input', renderPestelAll);
+
+            /* ------------------------------------------------------------------
+               DELEGACIÓN DE EVENTOS VER / EDITAR / ELIMINAR (BCG Y PESTEL)
+            ------------------------------------------------------------------ */
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action][data-module]');
+                if (!btn) return;
+                const mod = btn.getAttribute('data-module');
+                const action = btn.getAttribute('data-action');
+                const id = btn.getAttribute('data-id');
+
+                if (mod === 'bcg') {
+                    const prod = bcgProducts.find(p => String(p.id) === String(id));
+                    if (!prod) return;
+                    if (action === 'view') openDetailModal('bcg', prod);
+                    else if (action === 'edit') openBcgModal(prod);
+                    else if (action === 'delete') openDeleteConfirm('bcg', prod);
+                } else if (mod === 'pestel') {
+                    const item = pestelItems.find(i => String(i.id) === String(id));
+                    if (!item) return;
+                    if (action === 'view') openDetailModal('pestel', item);
+                    else if (action === 'edit') openPestelModal(item);
+                    else if (action === 'delete') openDeleteConfirm('pestel', item);
+                }
+            });
+
+            /* ------------------------------------------------------------------
+               CONTADORES DE CARACTERES EN VIVO
+            ------------------------------------------------------------------ */
+            const counterFields = ['fInterpretacion', 'fEnfoque', 'fDesventajas', 'fVentajas', 'pCriterio', 'pDescripcion', 'pAccion'];
+            counterFields.forEach(id => {
+                const el = $(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        $(`cnt-${id}`).textContent = el.value.length;
+                    });
+                }
+            });
+
+            /* ------------------------------------------------------------------
+               MODAL FORMULARIO BCG
+            ------------------------------------------------------------------ */
+            function updateCategoryLimitHint() {
+                const selectedCat = $('fClasificacion').value;
+                const editId = $('editBcgId').value;
+                if (!selectedCat) {
+                    $('categoryLimitHint').textContent = `Máximo ${MAX_PER_CATEGORY} productos por clasificación.`;
+                    $('categoryLimitHint').className = 'text-[11px] text-slate-500 mt-1';
+                    return;
+                }
+                const count = bcgProducts.filter(p => p.clasificacion === selectedCat && String(p.id) !== String(editId)).length;
+                const full = count >= MAX_PER_CATEGORY;
+                $('categoryLimitHint').textContent = full
+                    ? `Límite alcanzado (${count}/${MAX_PER_CATEGORY}) en ${selectedCat}.`
+                    : `Disponibles en ${selectedCat}: ${MAX_PER_CATEGORY - count} de ${MAX_PER_CATEGORY}.`;
+                $('categoryLimitHint').className = full
+                    ? 'text-[11px] font-bold text-[#EC008C] mt-1'
+                    : 'text-[11px] font-medium text-[#002855] mt-1';
+            }
+
+            $('fClasificacion').addEventListener('change', updateCategoryLimitHint);
+
+            function openBcgModal(product = null) {
+                $('bcgFormAlert').classList.add('hidden');
+                $('bcgForm').reset();
+
+                if (product) {
+                    $('bcgModalTitle').textContent = 'Editar Producto BCG';
+                    $('btnSaveBcg').innerHTML = '<i class="fas fa-floppy-disk text-[#00AEEF]"></i><span>Actualizar Cambios</span>';
+                    $('editBcgId').value = product.id;
+                    $('fCuadrante').value = product.cuadrante;
+                    $('fClasificacion').value = product.clasificacion;
+                    $('fNombre').value = product.nombre;
+                    $('fSaldo').value = product.saldo;
+                    $('fInterpretacion').value = product.interpretacion || '';
+                    $('fEnfoque').value = product.enfoque || '';
+                    $('fDesventajas').value = product.desventajas || '';
+                    $('fVentajas').value = product.ventajas || '';
+                    $('fEstrategias').value = product.estrategias || '';
+                } else {
+                    $('bcgModalTitle').textContent = 'Nuevo Producto BCG';
+                    $('btnSaveBcg').innerHTML = '<i class="fas fa-floppy-disk text-[#00AEEF]"></i><span>Guardar</span>';
+                    $('editBcgId').value = '';
+                }
+
+                ['fInterpretacion', 'fEnfoque', 'fDesventajas', 'fVentajas'].forEach(id => {
+                    $(`cnt-${id}`).textContent = $(id).value.length;
+                });
+                updateCategoryLimitHint();
+                $('bcgModal').classList.remove('hidden');
+                $('bcgModal').classList.add('flex');
+            }
+
+            function closeBcgModal() {
+                $('bcgModal').classList.add('hidden');
+                $('bcgModal').classList.remove('flex');
+            }
+
+            $('btnCloseBcgModal').addEventListener('click', closeBcgModal);
+            $('btnCancelBcgModal').addEventListener('click', closeBcgModal);
+
+            $('bcgForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                $('bcgFormAlert').classList.add('hidden');
+
+                const editId = $('editBcgId').value;
+                const cuadrante = $('fCuadrante').value;
+                const clasificacion = $('fClasificacion').value;
+                const nombre = $('fNombre').value.trim();
+                const saldoVal = parseFloat($('fSaldo').value);
+
+                if (!cuadrante || !clasificacion || !nombre || isNaN(saldoVal) || saldoVal < 0) {
+                    $('bcgFormAlertMsg').textContent = 'Complete todos los campos obligatorios con valores válidos (Saldo >= 0).';
+                    $('bcgFormAlert').classList.remove('hidden');
+                    return;
+                }
+
+                const existingInCat = bcgProducts.filter(p => p.clasificacion === clasificacion && String(p.id) !== String(editId)).length;
+                if (existingInCat >= MAX_PER_CATEGORY) {
+                    $('bcgFormAlertMsg').textContent = `Límite alcanzado: máximo ${MAX_PER_CATEGORY} productos en "${clasificacion}".`;
+                    $('bcgFormAlert').classList.remove('hidden');
+                    return;
+                }
+
+                const record = {
+                    id: editId ? Number(editId) : Date.now(),
+                    cuadrante,
+                    clasificacion,
+                    nombre,
+                    saldo: saldoVal,
+                    interpretacion: $('fInterpretacion').value.trim().slice(0, 200),
+                    enfoque: $('fEnfoque').value.trim().slice(0, 200),
+                    desventajas: $('fDesventajas').value.trim().slice(0, 200),
+                    ventajas: $('fVentajas').value.trim().slice(0, 200),
+                    estrategias: $('fEstrategias').value.trim()
+                };
+
+                if (editId) {
+                    const idx = bcgProducts.findIndex(p => String(p.id) === String(editId));
+                    if (idx !== -1) bcgProducts[idx] = record;
+                    showToast(`Producto "${nombre}" actualizado.`, 'success');
+                } else {
+                    bcgProducts.push(record);
+                    showToast(`Producto "${nombre}" guardado en Matriz BCG.`, 'success');
+                }
+
+                saveBcgData();
+                renderBcgAll();
+                closeBcgModal();
+            });
+
+            /* ------------------------------------------------------------------
+               MODAL FORMULARIO PESTEL
+            ------------------------------------------------------------------ */
+            function openPestelModal(item = null) {
+                $('pestelFormAlert').classList.add('hidden');
+                $('pestelForm').reset();
+
+                if (item) {
+                    $('pestelModalTitle').textContent = 'Editar Criterio PESTEL';
+                    $('btnSavePestel').innerHTML = '<i class="fas fa-floppy-disk text-[#00AEEF]"></i><span>Actualizar Cambios</span>';
+                    $('editPestelId').value = item.id;
+                    $('pFactor').value = item.factor;
+                    $('pCriterio').value = item.criterio;
+                    $('pDescripcion').value = item.descripcion;
+                    $('pTipoImpacto').value = item.tipoImpacto;
+                    $('pNivelImpacto').value = item.nivelImpacto;
+                    $('pHorizonte').value = item.horizonte;
+                    $('pTendencia').value = item.tendencia || 'Estable';
+                    $('pAccion').value = item.accion || '';
+                } else {
+                    $('pestelModalTitle').textContent = 'Formulario Criterio PESTEL';
+                    $('btnSavePestel').innerHTML = '<i class="fas fa-floppy-disk text-[#00AEEF]"></i><span>Guardar</span>';
+                    $('editPestelId').value = '';
+                    $('pTendencia').value = 'Estable';
+                }
+
+                ['pCriterio', 'pDescripcion', 'pAccion'].forEach(id => {
+                    $(`cnt-${id}`).textContent = $(id).value.length;
+                });
+                $('pestelModal').classList.remove('hidden');
+                $('pestelModal').classList.add('flex');
+            }
+
+            function closePestelModal() {
+                $('pestelModal').classList.add('hidden');
+                $('pestelModal').classList.remove('flex');
+            }
+
+            $('btnClosePestelModal').addEventListener('click', closePestelModal);
+            $('btnCancelPestelModal').addEventListener('click', closePestelModal);
+
+            $('pestelForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                $('pestelFormAlert').classList.add('hidden');
+
+                const editId = $('editPestelId').value;
+                const factor = $('pFactor').value;
+                const criterio = $('pCriterio').value.trim().slice(0, 50);
+                const descripcion = $('pDescripcion').value.trim().slice(0, 200);
+                const tipoImpacto = $('pTipoImpacto').value;
+                const nivelImpacto = $('pNivelImpacto').value;
+                const horizonte = $('pHorizonte').value;
+                const tendencia = $('pTendencia').value || 'Estable';
+                const accion = $('pAccion').value.trim().slice(0, 250);
+
+                if (!factor || !criterio || !descripcion || !tipoImpacto || !nivelImpacto || !horizonte) {
+                    $('pestelFormAlertMsg').textContent = 'Complete todos los campos obligatorios marcados con *.';
+                    $('pestelFormAlert').classList.remove('hidden');
+                    return;
+                }
+
+                const record = {
+                    id: editId ? Number(editId) : Date.now(),
+                    factor,
+                    criterio,
+                    descripcion,
+                    tipoImpacto,
+                    nivelImpacto,
+                    horizonte,
+                    tendencia,
+                    accion
+                };
+
+                if (editId) {
+                    const idx = pestelItems.findIndex(i => String(i.id) === String(editId));
+                    if (idx !== -1) pestelItems[idx] = record;
+                    showToast(`Criterio "${criterio}" actualizado.`, 'success');
+                } else {
+                    pestelItems.push(record);
+                    showToast(`Criterio "${criterio}" guardado en factor ${factor}.`, 'success');
+                }
+
+                savePestelData();
+                renderPestelAll();
+                closePestelModal();
+            });
+
+            /* ------------------------------------------------------------------
+               MODAL DE VISUALIZACIÓN DETALLADA (BCG Y PESTEL)
+            ------------------------------------------------------------------ */
+            function openDetailModal(module, item) {
+                detailTarget = { module, item };
+
+                if (module === 'bcg') {
+                    const catTotals = getBcgCategoryTotals(bcgProducts);
+                    const catTotal = catTotals[item.clasificacion] || 0;
+                    const pct = catTotal > 0 ? ((Number(item.saldo) / catTotal) * 100).toFixed(2) + '%' : '0.00%';
+                    const meta = BCG_META[item.cuadrante] || { label: item.cuadrante };
+
+                    $('detailBadge').textContent = `MATRIZ BCG  •  ${meta.label}  •  ${item.clasificacion}`;
+                    $('detailTitle').textContent = item.nombre;
+                    $('detailBody').innerHTML = `
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <span class="block text-[11px] font-bold uppercase text-slate-500">Saldo del Producto</span>
+                                <span class="text-lg font-extrabold text-[#002855]">${formatQ(item.saldo)}</span>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3.5 rounded-xl border border-slate-200">
+                                <span class="block text-[11px] font-bold uppercase text-slate-500">Participación en ${escapeHTML(item.clasificacion)}</span>
+                                <span class="text-lg font-extrabold text-[#00AEEF]">${pct}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="bg-white border border-slate-200 rounded-xl p-3.5">
+                                <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Interpretación / Lectura</h4>
+                                <p>${escapeHTML(item.interpretacion || 'No especificado.')}</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-xl p-3.5">
+                                <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Enfoque Comercial</h4>
+                                <p>${escapeHTML(item.enfoque || 'No especificado.')}</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="bg-red-50/40 border border-red-200/70 rounded-xl p-3.5">
+                                    <h4 class="text-xs font-extrabold uppercase text-[#EC008C] mb-1">Desventajas</h4>
+                                    <p>${escapeHTML(item.desventajas || 'No especificado.')}</p>
+                                </div>
+                                <div class="bg-sky-50/50 border border-sky-200/70 rounded-xl p-3.5">
+                                    <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Ventajas sobre Competidores</h4>
+                                    <p>${escapeHTML(item.ventajas || 'No especificado.')}</p>
+                                </div>
+                            </div>
+                            <div class="bg-[#FFFDF5] border border-[#FFD100]/60 rounded-xl p-3.5">
+                                <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Estrategias a Implementar</h4>
+                                <p class="whitespace-pre-line">${escapeHTML(item.estrategias || 'No especificado.')}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    $('detailBadge').textContent = `ANÁLISIS PESTEL  •  FACTOR ${item.factor.toUpperCase()}`;
+                    $('detailTitle').textContent = item.criterio;
+                    $('detailBody').innerHTML = `
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="bg-[#F4F7FA] p-3 rounded-xl border border-slate-200">
+                                <span class="block text-[10px] font-bold uppercase text-slate-500">Tipo Impacto</span>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded-md text-xs font-bold border ${getImpactTypeBadge(item.tipoImpacto)}">${escapeHTML(item.tipoImpacto)}</span>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3 rounded-xl border border-slate-200">
+                                <span class="block text-[10px] font-bold uppercase text-slate-500">Nivel</span>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded-md text-xs font-extrabold border ${getImpactLevelBadge(item.nivelImpacto)}">${escapeHTML(item.nivelImpacto)}</span>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3 rounded-xl border border-slate-200">
+                                <span class="block text-[10px] font-bold uppercase text-slate-500">Horizonte</span>
+                                <span class="block mt-1 text-xs font-bold text-[#002855]">${escapeHTML(item.horizonte)}</span>
+                            </div>
+                            <div class="bg-[#F4F7FA] p-3 rounded-xl border border-slate-200">
+                                <span class="block text-[10px] font-bold uppercase text-slate-500">Tendencia</span>
+                                <span class="block mt-1 text-xs font-bold text-[#002855]">${escapeHTML(item.tendencia || 'Estable')}</span>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-4">
+                            <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Descripción - Glosario</h4>
+                            <p class="text-slate-700">${escapeHTML(item.descripcion)}</p>
+                        </div>
+                        <div class="bg-[#FFFDF5] border border-[#FFD100]/60 rounded-xl p-4">
+                            <h4 class="text-xs font-extrabold uppercase text-[#002855] mb-1">Respuesta / Acción Estratégica</h4>
+                            <p class="text-slate-700 whitespace-pre-line">${escapeHTML(item.accion || 'Sin acción estratégica definida.')}</p>
+                        </div>
+                    `;
+                }
+
+                $('detailModal').classList.remove('hidden');
+                $('detailModal').classList.add('flex');
+            }
+
+            function closeDetailModal() {
+                $('detailModal').classList.add('hidden');
+                $('detailModal').classList.remove('flex');
+                detailTarget = null;
+            }
+
+            $('btnCloseDetailModal').addEventListener('click', closeDetailModal);
+            $('btnCloseDetailBottom').addEventListener('click', closeDetailModal);
+            $('btnEditFromDetail').addEventListener('click', () => {
+                const target = detailTarget;
+                closeDetailModal();
+                if (!target) return;
+                if (target.module === 'bcg') openBcgModal(target.item);
+                else openPestelModal(target.item);
+            });
+
+            /* ------------------------------------------------------------------
+               MODAL DE CONFIRMACIÓN DE ELIMINACIÓN Y LIMPIEZA TOTAL
+            ------------------------------------------------------------------ */
+            function openDeleteConfirm(module, item) {
+                pendingDelete = { type: 'single', module, id: item.id };
+                const label = module === 'bcg'
+                    ? `el producto "${item.nombre}" (${item.clasificacion})`
+                    : `el criterio PESTEL "${item.criterio}" (${item.factor})`;
+                $('confirmModalTitle').textContent = '¿Eliminar registro?';
+                $('confirmModalText').textContent = `Se eliminará permanentemente ${label}.`;
+                $('btnConfirmDelete').textContent = 'Eliminar';
+                $('confirmModal').classList.remove('hidden');
+                $('confirmModal').classList.add('flex');
+            }
+
+            function openClearAllConfirm() {
+                if (bcgProducts.length === 0 && pestelItems.length === 0) {
+                    showToast('La plantilla ya se encuentra completamente en blanco.', 'info');
+                    return;
+                }
+                pendingDelete = { type: 'clearAll' };
+                $('confirmModalTitle').textContent = '¿Limpiar toda la plantilla?';
+                $('confirmModalText').textContent = 'Se eliminarán todos los registros de Matriz BCG y Análisis PESTEL, dejando los saldos y contadores en cero.';
+                $('btnConfirmDelete').textContent = 'Limpiar todo';
+                $('confirmModal').classList.remove('hidden');
+                $('confirmModal').classList.add('flex');
+            }
+
+            function closeDeleteConfirm() {
+                pendingDelete = null;
+                $('confirmModal').classList.add('hidden');
+                $('confirmModal').classList.remove('flex');
+            }
+
+            $('btnClearAll').addEventListener('click', openClearAllConfirm);
+            $('btnCancelDelete').addEventListener('click', closeDeleteConfirm);
+            $('btnConfirmDelete').addEventListener('click', () => {
+                if (pendingDelete) {
+                    if (pendingDelete.type === 'clearAll') {
+                        bcgProducts = [];
+                        pestelItems = [];
+                        localStorage.removeItem(STORAGE_KEYS.BCG_PRODUCTS);
+                        localStorage.removeItem(STORAGE_KEYS.PESTEL_ITEMS);
+                        renderBcgAll();
+                        renderPestelAll();
+                        showToast('Plantilla reiniciada completamente en blanco.', 'success');
+                    } else if (pendingDelete.module === 'bcg') {
+                        bcgProducts = bcgProducts.filter(p => String(p.id) !== String(pendingDelete.id));
+                        saveBcgData();
+                        renderBcgAll();
+                        showToast('Registro eliminado correctamente.', 'info');
+                    } else {
+                        pestelItems = pestelItems.filter(i => String(i.id) !== String(pendingDelete.id));
+                        savePestelData();
+                        renderPestelAll();
+                        showToast('Registro eliminado correctamente.', 'info');
+                    }
+                }
+                closeDeleteConfirm();
+            });
+
+            /* ------------------------------------------------------------------
+               MODAL GUÍA DE USUARIO (PESTAÑAS BCG Y PESTEL)
+            ------------------------------------------------------------------ */
+            function openGuideModal() {
+                $('guideModal').classList.remove('hidden');
+                $('guideModal').classList.add('flex');
+            }
+
+            function closeGuideModal() {
+                $('guideModal').classList.add('hidden');
+                $('guideModal').classList.remove('flex');
+            }
+
+            $('btnOpenGuide').addEventListener('click', openGuideModal);
+            $('btnCloseGuide').addEventListener('click', closeGuideModal);
+            $('btnCloseGuideBottom').addEventListener('click', closeGuideModal);
+
+            document.querySelectorAll('.guide-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-guide-tab');
+                    document.querySelectorAll('.guide-tab-btn').forEach(b => {
+                        b.className = 'guide-tab-btn px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl border-b-2 border-transparent text-slate-600 hover:text-[#002855] flex items-center gap-2';
+                    });
+                    btn.className = 'guide-tab-btn px-5 py-2.5 text-xs sm:text-sm font-bold rounded-t-xl border-b-2 border-[#002855] bg-white text-[#002855] flex items-center gap-2';
+
+                    document.querySelectorAll('.guide-panel').forEach(panel => panel.classList.add('hidden'));
+                    $(`guide-${tab}`).classList.remove('hidden');
+                });
+            });
+
+            /* ------------------------------------------------------------------
+               EXPORTACIÓN CORPORATIVA A EXCEL (ExcelJS: BCG + PESTEL)
+            ------------------------------------------------------------------ */
+            const EXCEL_THIN_BORDER = {
+                top:    { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                left:   { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                right:  { style: 'thin', color: { argb: 'FFCBD5E1' } }
+            };
+
+            function estimateRowHeight(textsWithWidths) {
+                let maxLines = 2;
+                textsWithWidths.forEach(tc => {
+                    const paragraphs = String(tc.txt || '').split('\n');
+                    let lines = 0;
+                    paragraphs.forEach(par => {
+                        lines += Math.max(1, Math.ceil(par.length / tc.w));
+                    });
+                    if (lines > maxLines) maxLines = lines;
+                });
+                return Math.max(26, maxLines * 15 + 10);
+            }
+
+            function buildBcgExcelSheet(workbook, sheetName, items, userEmail, isConsolidated) {
+                const ws = workbook.addWorksheet(sheetName, { views: [{ state: 'frozen', ySplit: 3 }] });
+
+                ws.columns = [
+                    { key: 'cat', width: 22 },
+                    { key: 'bcg', width: 18 },
+                    { key: 'nombre', width: 30 },
+                    { key: 'saldo', width: 20 },
+                    { key: 'part', width: 12 },
+                    { key: 'interp', width: 34 },
+                    { key: 'enfoque', width: 34 },
+                    { key: 'desv', width: 34 },
+                    { key: 'vent', width: 34 },
+                    { key: 'estrat', width: 44 }
+                ];
+
+                ws.mergeCells('A1:J1');
+                const r1 = ws.getCell('A1');
+                r1.value = 'INTERCOP | ANEXO PLANIFICACIÓN ESTRATÉGICA 2027-2030 — MATRIZ BCG';
+                r1.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+                r1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002855' } };
+                r1.alignment = { vertical: 'middle', horizontal: 'center' };
+                ws.getRow(1).height = 30;
+
+                ws.mergeCells('A2:J2');
+                const nowStr = new Date().toLocaleString('es-GT', { dateStyle: 'long', timeStyle: 'short' });
+                const r2 = ws.getCell('A2');
+                r2.value = `Generado: ${nowStr}   |   Usuario Verificado: ${userEmail}   |   Periodo: PE 2027-2030`;
+                r2.font = { name: 'Calibri', size: 10, italic: true, color: { argb: 'FF002855' } };
+                r2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE6F7FD' } };
+                r2.alignment = { vertical: 'middle', horizontal: 'center' };
+                ws.getRow(2).height = 20;
+
+                const headerRow = ws.getRow(3);
+                headerRow.values = [
+                    'CATEGORÍA', 'BCG', 'Nombre del Producto', 'Saldo del Producto (Q)', 'Part. %',
+                    'Interpretación / Lectura', 'Enfoque Comercial', 'Desventajas',
+                    'Ventajas sobre Competidores', 'Estrategias a Implementar'
+                ];
+                headerRow.height = 28;
+                headerRow.eachCell((cell) => {
+                    cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002855' } };
+                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                    cell.border = {
+                        top:    { style: 'thin', color: { argb: 'FF00AEEF' } },
+                        left:   { style: 'thin', color: { argb: 'FF00AEEF' } },
+                        bottom: { style: 'medium', color: { argb: 'FFFFD100' } },
+                        right:  { style: 'thin', color: { argb: 'FF00AEEF' } }
+                    };
+                });
+
+                const sorted = getSortedBcg(items);
+                const catTotals = getBcgCategoryTotals(sorted);
+                let grandTotal = 0;
+                let currentRow = 4;
+
+                const categoriesPresent = CATEGORIES_ORDER.filter(c => sorted.some(p => p.clasificacion === c));
+
+                categoriesPresent.forEach(cat => {
+                    const catItems = sorted.filter(p => p.clasificacion === cat);
+                    const catStartRow = currentRow;
+                    const catTotal = catTotals[cat] || 0;
+                    grandTotal += catTotal;
+
+                    BCG_ORDER.forEach(quad => {
+                        const qItems = catItems.filter(p => p.cuadrante === quad);
+                        if (qItems.length === 0) return;
+
+                        const quadStartRow = currentRow;
+                        const meta = BCG_META[quad] || { label: quad, excelFill: 'F1F5F9' };
+
+                        qItems.forEach(p => {
+                            const saldoNum = Number(p.saldo) || 0;
+                            const partNum = catTotal > 0 ? saldoNum / catTotal : 0;
+                            const row = ws.getRow(currentRow);
+                            row.values = [
+                                p.clasificacion, meta.label, p.nombre, saldoNum, partNum,
+                                p.interpretacion || '', p.enfoque || '', p.desventajas || '',
+                                p.ventajas || '', p.estrategias || ''
+                            ];
+                            row.height = estimateRowHeight([
+                                { txt: p.nombre, w: 28 }, { txt: p.interpretacion, w: 32 },
+                                { txt: p.enfoque, w: 32 }, { txt: p.desventajas, w: 32 },
+                                { txt: p.ventajas, w: 32 }, { txt: p.estrategias, w: 42 }
+                            ]);
+
+                            row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                                cell.font = { name: 'Calibri', size: 10, color: { argb: 'FF1E293B' } };
+                                cell.border = EXCEL_THIN_BORDER;
+                                cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+
+                                if (colNumber === 1) {
+                                    cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF002855' } };
+                                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEBF5FB' } };
+                                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                                } else if (colNumber === 2) {
+                                    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + meta.excelFill } };
+                                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                                } else if (colNumber === 3) {
+                                    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                } else if (colNumber === 4) {
+                                    cell.numFmt = '"Q"#,##0.00';
+                                    cell.alignment = { vertical: 'middle', horizontal: 'right' };
+                                    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                } else if (colNumber === 5) {
+                                    cell.numFmt = '0.00%';
+                                    cell.alignment = { vertical: 'middle', horizontal: 'right' };
+                                    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                }
+                            });
+                            currentRow++;
+                        });
+
+                        if (currentRow - 1 > quadStartRow) ws.mergeCells(`B${quadStartRow}:B${currentRow - 1}`);
+                    });
+
+                    if (currentRow - 1 > catStartRow) ws.mergeCells(`A${catStartRow}:A${currentRow - 1}`);
+
+                    // Subtotal categoría
+                    const subRow = ws.getRow(currentRow);
+                    ws.mergeCells(`A${currentRow}:C${currentRow}`);
+                    subRow.getCell(1).value = `SUBTOTAL ${cat.toUpperCase()} (${catItems.length} productos)`;
+                    subRow.getCell(4).value = catTotal;
+                    subRow.getCell(5).value = catTotal > 0 ? 1 : 0;
+                    ws.mergeCells(`F${currentRow}:J${currentRow}`);
+                    subRow.height = 24;
+
+                    for (let c = 1; c <= 10; c++) {
+                        const cell = subRow.getCell(c);
+                        cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6F0FA' } };
+                        cell.border = EXCEL_THIN_BORDER;
+                        if (c === 1) cell.alignment = { vertical: 'middle', horizontal: 'right' };
+                        if (c === 4) { cell.numFmt = '"Q"#,##0.00'; cell.alignment = { vertical: 'middle', horizontal: 'right' }; }
+                        if (c === 5) { cell.numFmt = '0.00%'; cell.alignment = { vertical: 'middle', horizontal: 'right' }; }
+                    }
+                    currentRow++;
+                });
+
+                if (isConsolidated && categoriesPresent.length > 0) {
+                    const totRow = ws.getRow(currentRow);
+                    ws.mergeCells(`A${currentRow}:C${currentRow}`);
+                    totRow.getCell(1).value = `TOTAL CONSOLIDADO INTERCOP (${sorted.length} productos)`;
+                    totRow.getCell(4).value = grandTotal;
+                    ws.mergeCells(`E${currentRow}:J${currentRow}`);
+                    totRow.height = 26;
+
+                    for (let c = 1; c <= 10; c++) {
+                        const cell = totRow.getCell(c);
+                        cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002855' } };
+                        cell.border = EXCEL_THIN_BORDER;
+                        if (c === 1) cell.alignment = { vertical: 'middle', horizontal: 'right' };
+                        if (c === 4) { cell.numFmt = '"Q"#,##0.00'; cell.alignment = { vertical: 'middle', horizontal: 'right' }; }
+                    }
+                }
+            }
+
+            function buildPestelExcelSheet(workbook, items, userEmail) {
+                const ws = workbook.addWorksheet('Análisis PESTEL', { views: [{ state: 'frozen', ySplit: 3 }] });
+
+                ws.columns = [
+                    { key: 'factor', width: 18 },
+                    { key: 'criterio', width: 28 },
+                    { key: 'desc', width: 42 },
+                    { key: 'tipo', width: 18 },
+                    { key: 'nivel', width: 14 },
+                    { key: 'horizonte', width: 24 },
+                    { key: 'tendencia', width: 16 },
+                    { key: 'accion', width: 44 }
+                ];
+
+                ws.mergeCells('A1:H1');
+                const r1 = ws.getCell('A1');
+                r1.value = 'INTERCOP | ANEXO PLANIFICACIÓN ESTRATÉGICA 2027-2030 — ANÁLISIS PESTEL';
+                r1.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+                r1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002855' } };
+                r1.alignment = { vertical: 'middle', horizontal: 'center' };
+                ws.getRow(1).height = 30;
+
+                ws.mergeCells('A2:H2');
+                const nowStr = new Date().toLocaleString('es-GT', { dateStyle: 'long', timeStyle: 'short' });
+                const r2 = ws.getCell('A2');
+                r2.value = `Generado: ${nowStr}   |   Usuario Verificado: ${userEmail}   |   Periodo: PE 2027-2030`;
+                r2.font = { name: 'Calibri', size: 10, italic: true, color: { argb: 'FF002855' } };
+                r2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE6F7FD' } };
+                r2.alignment = { vertical: 'middle', horizontal: 'center' };
+                ws.getRow(2).height = 20;
+
+                const headerRow = ws.getRow(3);
+                headerRow.values = [
+                    'FACTOR', 'CRITERIO', 'DESCRIPCIÓN - GLOSARIO', 'TIPO DE IMPACTO',
+                    'NIVEL DE IMPACTO', 'HORIZONTE TEMPORAL', 'TENDENCIA', 'ACCIÓN ESTRATÉGICA'
+                ];
+                headerRow.height = 28;
+                headerRow.eachCell((cell) => {
+                    cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF002855' } };
+                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                    cell.border = {
+                        top:    { style: 'thin', color: { argb: 'FF00AEEF' } },
+                        left:   { style: 'thin', color: { argb: 'FF00AEEF' } },
+                        bottom: { style: 'medium', color: { argb: 'FFFFD100' } },
+                        right:  { style: 'thin', color: { argb: 'FF00AEEF' } }
+                    };
+                });
+
+                const sorted = getSortedPestel(items);
+                let currentRow = 4;
+
+                PESTEL_FACTORS.forEach(factor => {
+                    const fItems = sorted.filter(i => i.factor === factor);
+                    if (fItems.length === 0) return;
+
+                    const startRow = currentRow;
+                    fItems.forEach(item => {
+                        const row = ws.getRow(currentRow);
+                        row.values = [
+                            item.factor, item.criterio, item.descripcion, item.tipoImpacto,
+                            item.nivelImpacto, item.horizonte, item.tendencia || 'Estable', item.accion || ''
+                        ];
+                        row.height = estimateRowHeight([
+                            { txt: item.criterio, w: 26 },
+                            { txt: item.descripcion, w: 40 },
+                            { txt: item.accion, w: 42 }
+                        ]);
+
+                        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                            cell.font = { name: 'Calibri', size: 10, color: { argb: 'FF1E293B' } };
+                            cell.border = EXCEL_THIN_BORDER;
+                            cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+
+                            if (colNumber === 1) {
+                                cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF002855' } };
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEBF5FB' } };
+                                cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                            } else if (colNumber === 2) {
+                                cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                            } else if (colNumber === 4) {
+                                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                                cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                if (item.tipoImpacto === 'Oportunidad') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1FAE5' } };
+                                else if (item.tipoImpacto === 'Amenaza') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFE4E6' } };
+                                else cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+                            } else if (colNumber === 5) {
+                                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                                cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF002855' } };
+                                if (item.nivelImpacto === 'Alto') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFCE7F3' } };
+                                else if (item.nivelImpacto === 'Medio') cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF9DB' } };
+                                else cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE3F6FD' } };
+                            } else if (colNumber === 6 || colNumber === 7) {
+                                cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                            }
+                        });
+                        currentRow++;
+                    });
+
+                    if (currentRow - 1 > startRow) {
+                        ws.mergeCells(`A${startRow}:A${currentRow - 1}`);
+                    }
+                });
+            }
+
+            $('btnExportExcel').addEventListener('click', async () => {
+                if (bcgProducts.length === 0 && pestelItems.length === 0) {
+                    showToast('Registre al menos un producto BCG o un criterio PESTEL antes de exportar.', 'warning');
+                    return;
+                }
+                if (typeof ExcelJS === 'undefined') {
+                    showToast('La librería ExcelJS no se ha cargado. Verifique su conexión.', 'error');
+                    return;
+                }
+
+                const btn = $('btnExportExcel');
+                const origHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Generando...</span>';
+
+                try {
+                    const workbook = new ExcelJS.Workbook();
+                    workbook.creator = 'INTERCOP';
+                    workbook.created = new Date();
+                    const userEmail = sessionStorage.getItem(STORAGE_KEYS.SESSION_USER) || 'usuario@intercop.gt';
+
+                    if (bcgProducts.length > 0) {
+                        buildBcgExcelSheet(workbook, 'Matriz BCG', bcgProducts, userEmail, true);
+                        CATEGORIES_ORDER.forEach(cat => {
+                            const subset = bcgProducts.filter(p => p.clasificacion === cat);
+                            if (subset.length > 0) {
+                                buildBcgExcelSheet(workbook, `BCG ${cat}`, subset, userEmail, false);
+                            }
+                        });
+                    }
+
+                    if (pestelItems.length > 0) {
+                        buildPestelExcelSheet(workbook, pestelItems, userEmail);
+                    }
+
+                    const buffer = await workbook.xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Anexo_Planificacion_Estrategica_2027_2030_INTERCOP.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+
+                    showToast('Archivo Excel corporativo descargado con éxito.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Ocurrió un error al generar el archivo Excel.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                }
+            });
+
+            /* ------------------------------------------------------------------
+               EXPORTACIÓN EJECUTIVA A PDF (jsPDF + AutoTable: BCG + PESTEL)
+            ------------------------------------------------------------------ */
+            function drawPdfHeader(doc, sectionTitle, userEmail, nowStr) {
+                const pageWidth = doc.internal.pageSize.getWidth();
+                doc.setFillColor(0, 40, 85);
+                doc.rect(0, 0, pageWidth, 23, 'F');
+
+                const segW = pageWidth / 3;
+                doc.setFillColor(0, 174, 239); doc.rect(0, 23, segW, 1.8, 'F');
+                doc.setFillColor(255, 209, 0); doc.rect(segW, 23, segW, 1.8, 'F');
+                doc.setFillColor(236, 0, 140); doc.rect(segW * 2, 23, segW, 1.8, 'F');
+
+                // INTERCOP en blanco sobre azul marino
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bolditalic');
+                doc.setFontSize(19);
+                doc.text('INTERCOP', 12, 14);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(12.5);
+                doc.text(`Anexo Planificación Estratégica 2027-2030 — ${sectionTitle}`, 60, 11);
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8.5);
+                doc.setTextColor(180, 230, 255);
+                doc.text(`Usuario Verificado: ${userEmail}   |   Generado: ${nowStr}`, 60, 17.5);
+            }
+
+            $('btnExportPDF').addEventListener('click', () => {
+                if (bcgProducts.length === 0 && pestelItems.length === 0) {
+                    showToast('Registre al menos un producto BCG o un criterio PESTEL antes de exportar.', 'warning');
+                    return;
+                }
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    showToast('La librería jsPDF no se ha cargado. Verifique su conexión.', 'error');
+                    return;
+                }
+
+                const btn = $('btnExportPDF');
+                const origHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Generando...</span>';
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'legal' });
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const userEmail = sessionStorage.getItem(STORAGE_KEYS.SESSION_USER) || 'usuario@intercop.gt';
+                    const nowStr = new Date().toLocaleString('es-GT', { dateStyle: 'long', timeStyle: 'short' });
+                    let hasRenderedPage = false;
+
+                    // SECCIÓN 1: MATRIZ BCG
+                    if (bcgProducts.length > 0) {
+                        drawPdfHeader(doc, 'Matriz BCG', userEmail, nowStr);
+                        hasRenderedPage = true;
+
+                        const sorted = getSortedBcg(bcgProducts);
+                        const catTotals = getBcgCategoryTotals(sorted);
+                        const grandTotal = sorted.reduce((acc, p) => acc + (Number(p.saldo) || 0), 0);
+
+                        doc.setFillColor(244, 247, 250);
+                        doc.roundedRect(12, 28, pageWidth - 24, 10, 2, 2, 'F');
+                        doc.setTextColor(0, 40, 85);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(8.5);
+                        doc.text(
+                            `Ahorros: ${formatQ(catTotals['Ahorros'])}   |   Créditos: ${formatQ(catTotals['Créditos'])}   |   Canales y Servicios: ${formatQ(catTotals['Canales y Servicios'])}   |   TOTAL CONSOLIDADO: ${formatQ(grandTotal)} (${sorted.length} prod.)`,
+                            16, 34.2
+                        );
+
+                        const bodyRows = sorted.map(p => {
+                            const cTotal = catTotals[p.clasificacion] || 0;
+                            const pct = cTotal > 0 ? ((Number(p.saldo) / cTotal) * 100).toFixed(2) + '%' : '0.00%';
+                            return [
+                                p.clasificacion, p.cuadrante.toUpperCase(), p.nombre, formatQ(p.saldo), pct,
+                                p.interpretacion || '—', p.enfoque || '—', p.desventajas || '—',
+                                p.ventajas || '—', p.estrategias || '—'
+                            ];
+                        });
+
+                        doc.autoTable({
+                            startY: 42,
+                            margin: { left: 12, right: 12, bottom: 14 },
+                            head: [[
+                                'Clasificación', 'BCG', 'Producto', 'Saldo (Q)', 'Part. %',
+                                'Interpretación / Lectura', 'Enfoque Comercial',
+                                'Desventajas', 'Ventajas Competidores', 'Estrategias'
+                            ]],
+                            body: bodyRows,
+                            theme: 'grid',
+                            styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 2, textColor: [30, 41, 59], lineColor: [203, 213, 225], lineWidth: 0.2, valign: 'middle' },
+                            headStyles: { fillColor: [0, 40, 85], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                            columnStyles: {
+                                0: { cellWidth: 24, fontStyle: 'bold', fillColor: [235, 245, 251], textColor: [0, 40, 85] },
+                                1: { cellWidth: 21, fontStyle: 'bold', halign: 'center', textColor: [0, 40, 85] },
+                                2: { cellWidth: 32, fontStyle: 'bold', textColor: [0, 40, 85] },
+                                3: { cellWidth: 24, halign: 'right', fontStyle: 'bold', textColor: [0, 40, 85] },
+                                4: { cellWidth: 14, halign: 'right', fontStyle: 'bold' },
+                                5: { cellWidth: 40 },
+                                6: { cellWidth: 40 },
+                                7: { cellWidth: 38 },
+                                8: { cellWidth: 38 },
+                                9: { cellWidth: 'auto' }
+                            },
+                            didParseCell: (data) => {
+                                if (data.section === 'body' && data.column.index === 1) {
+                                    const val = String(data.cell.raw).toUpperCase();
+                                    if (val === 'ESTRELLA') data.cell.styles.fillColor = [255, 249, 219];
+                                    else if (val === 'VACA') data.cell.styles.fillColor = [227, 246, 253];
+                                    else if (val === 'INTERROGANTE') data.cell.styles.fillColor = [253, 232, 243];
+                                    else data.cell.styles.fillColor = [241, 245, 249];
+                                }
+                            }
+                        });
+                    }
+
+                    // SECCIÓN 2: ANÁLISIS PESTEL
+                    if (pestelItems.length > 0) {
+                        if (hasRenderedPage) doc.addPage('legal', 'landscape');
+                        drawPdfHeader(doc, 'Análisis PESTEL', userEmail, nowStr);
+
+                        const sortedP = getSortedPestel(pestelItems);
+                        const opCount = sortedP.filter(i => i.tipoImpacto === 'Oportunidad').length;
+                        const amCount = sortedP.filter(i => i.tipoImpacto === 'Amenaza').length;
+                        const alCount = sortedP.filter(i => i.nivelImpacto === 'Alto').length;
+
+                        doc.setFillColor(244, 247, 250);
+                        doc.roundedRect(12, 28, pageWidth - 24, 10, 2, 2, 'F');
+                        doc.setTextColor(0, 40, 85);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(8.5);
+                        doc.text(
+                            `Total Criterios PESTEL: ${sortedP.length}   |   Oportunidades: ${opCount}   |   Amenazas: ${amCount}   |   Impacto Alto: ${alCount}`,
+                            16, 34.2
+                        );
+
+                        const pestelRows = sortedP.map(i => [
+                            i.factor, i.criterio, i.descripcion, i.tipoImpacto,
+                            i.nivelImpacto, i.horizonte, i.tendencia || 'Estable', i.accion || '—'
+                        ]);
+
+                        doc.autoTable({
+                            startY: 42,
+                            margin: { left: 12, right: 12, bottom: 14 },
+                            head: [[
+                                'Factor', 'Criterio', 'Descripción - Glosario', 'Tipo Impacto',
+                                'Nivel', 'Horizonte Temporal', 'Tendencia', 'Acción Estratégica'
+                            ]],
+                            body: pestelRows,
+                            theme: 'grid',
+                            styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 2.2, textColor: [30, 41, 59], lineColor: [203, 213, 225], lineWidth: 0.2, valign: 'middle' },
+                            headStyles: { fillColor: [0, 40, 85], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                            columnStyles: {
+                                0: { cellWidth: 25, fontStyle: 'bold', fillColor: [235, 245, 251], textColor: [0, 40, 85], halign: 'center' },
+                                1: { cellWidth: 40, fontStyle: 'bold', textColor: [0, 40, 85] },
+                                2: { cellWidth: 74 },
+                                3: { cellWidth: 26, halign: 'center', fontStyle: 'bold' },
+                                4: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
+                                5: { cellWidth: 34, halign: 'center' },
+                                6: { cellWidth: 22, halign: 'center' },
+                                7: { cellWidth: 'auto' }
+                            },
+                            didParseCell: (data) => {
+                                if (data.section === 'body' && data.column.index === 3) {
+                                    const val = String(data.cell.raw);
+                                    if (val === 'Oportunidad') data.cell.styles.fillColor = [209, 250, 229];
+                                    else if (val === 'Amenaza') data.cell.styles.fillColor = [255, 228, 230];
+                                    else data.cell.styles.fillColor = [241, 245, 249];
+                                }
+                                if (data.section === 'body' && data.column.index === 4) {
+                                    const val = String(data.cell.raw);
+                                    if (val === 'Alto') data.cell.styles.fillColor = [252, 231, 243];
+                                    else if (val === 'Medio') data.cell.styles.fillColor = [255, 249, 219];
+                                    else data.cell.styles.fillColor = [227, 246, 253];
+                                }
+                            }
+                        });
+                    }
+
+                    // Pie de página numerado en todas las páginas
+                    const totalPages = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        doc.setPage(i);
+                        const pageHeight = doc.internal.pageSize.getHeight();
+                        doc.setFontSize(7.5);
+                        doc.setTextColor(100, 116, 139);
+                        doc.text('INTERCOP — Anexo Planificación Estratégica 2027-2030', 12, pageHeight - 6);
+                        doc.text(`Página ${i} de ${totalPages}`, pageWidth - 32, pageHeight - 6);
+                    }
+
+                    doc.save('Anexo_Planificacion_Estrategica_2027_2030_INTERCOP.pdf');
+                    showToast('Reporte PDF ejecutivo descargado con éxito.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Ocurrió un error al generar el PDF.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                }
+            });
+
+            /* ------------------------------------------------------------------
+               INICIALIZACIÓN
+            ------------------------------------------------------------------ */
+            function init() {
+                const activeUser = sessionStorage.getItem(STORAGE_KEYS.SESSION_USER);
+                if (activeUser) {
+                    enterApplication(activeUser);
+                } else {
+                    checkLockoutState();
+                }
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
